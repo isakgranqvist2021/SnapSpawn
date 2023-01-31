@@ -1,8 +1,11 @@
 import { AuthContainer } from '@aa/container';
 import { AppConsumer, AppContext } from '@aa/context';
+import { createUser, getUser } from '@aa/prisma/user';
+import { getSession } from '@auth0/nextjs-auth0';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { IncomingMessage, ServerResponse } from 'http';
 import Head from 'next/head';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 function renderAvatar(url: string, index: number) {
   return (
@@ -106,7 +109,15 @@ function LogoutButton() {
   );
 }
 
-function Account() {
+function Account(props: { credits: number }) {
+  const { credits } = props;
+
+  const { dispatch } = useContext(AppContext);
+
+  useEffect(() => {
+    dispatch({ type: 'set:credits', credits });
+  }, [credits, dispatch]);
+
   return (
     <React.Fragment>
       <Head>
@@ -135,3 +146,26 @@ function Account() {
 }
 
 export default Account;
+
+export async function getServerSideProps(ctx: {
+  req: IncomingMessage;
+  res: ServerResponse<IncomingMessage>;
+}) {
+  const session = await getSession(ctx.req, ctx.res);
+
+  if (!session?.user.email) {
+    return { props: {} };
+  }
+
+  let credits = 0;
+
+  const user = await getUser(session.user.email);
+
+  if (user === null) {
+    await createUser(session.user.email);
+  } else {
+    credits = user.credits;
+  }
+
+  return { props: { credits } };
+}
