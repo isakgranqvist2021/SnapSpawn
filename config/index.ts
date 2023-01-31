@@ -1,2 +1,4 @@
-export const BASE_URL = process.env.BASE_URL as string;
-export const API_KEY = process.env.API_KEY as string;
+export const env = {
+	openAiBaseUrl: process.env.OPEN_AI_BASE_URL as string,
+	openAiApiKey: process.env.OPEN_AI_API_KEY as string,
+};

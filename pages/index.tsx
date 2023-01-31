@@ -1,34 +1,46 @@
+import { useUser } from '@auth0/nextjs-auth0/client';
 import Head from 'next/head';
-import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 
-function renderImage(url: string) {
-	return <img src={url} alt='' />;
+function HomeContent() {
+  const { user, error, isLoading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (error) {
+      router.push('/error');
+      return;
+    }
+
+    if (!user) {
+      router.push('/api/auth/login');
+      return;
+    }
+
+    router.push('/account');
+    return;
+  }, [user, error, isLoading]);
+
+  return <p>Loading...</p>;
 }
 
 function Home() {
-	const [urls, setUrls] = useState<string[]>([]);
-
-	const generateAvatars = async () => {
-		const res = await fetch('/api/generate-avatar').then((res) => res.json());
-
-		setUrls(res.urls);
-	};
-
-	return (
-		<React.Fragment>
-			<Head>
-				<title>Ai Avatar</title>
-				<meta name='description' content='Ai avatar generator' />
-				<meta name='viewport' content='width=device-width, initial-scale=1' />
-				<link rel='icon' href='/favicon.ico' />
-			</Head>
-			<main>
-				<button onClick={generateAvatars}>Generate Avatars</button>
-
-				{urls.map(renderImage)}
-			</main>
-		</React.Fragment>
-	);
+  return (
+    <React.Fragment>
+      <Head>
+        <title>Ai Avatar | Home</title>
+        <meta name="description" content="Ai avatar generator" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <main>
+        <HomeContent />
+      </main>
+    </React.Fragment>
+  );
 }
 
 export default Home;

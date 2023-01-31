@@ -1,4 +1,4 @@
-import { API_KEY, BASE_URL } from '@aa/config';
+import { env } from '@aa/config';
 import { formatBase64String } from '@aa/utils';
 
 interface ApiResponse {
@@ -7,10 +7,10 @@ interface ApiResponse {
 }
 
 async function generateAvatars(prompt: string) {
-	const response: ApiResponse = await fetch(BASE_URL, {
+	const response: ApiResponse = await fetch(env.openAiBaseUrl, {
 		method: 'POST',
 		headers: {
-			Authorization: `Bearer ${API_KEY}`,
+			Authorization: `Bearer ${env.openAiApiKey}`,
 			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
