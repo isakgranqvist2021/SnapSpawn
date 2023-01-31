@@ -1,30 +1,35 @@
+import { Spinner } from '@aa/components/spinner';
 import { AuthContainer } from '@aa/container';
 import { AppConsumer, AppContext } from '@aa/context';
+import { getAvatars } from '@aa/prisma/avatar';
 import { createUser, getUser } from '@aa/prisma/user';
 import { getSession } from '@auth0/nextjs-auth0';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { IncomingMessage, ServerResponse } from 'http';
 import Head from 'next/head';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { uid } from 'uid';
 
 function renderAvatar(url: string, index: number) {
   return (
     <div key={`avatar-${index}`} className="flex flex-col gap-2 items-center">
       <img src={url} alt="" />
-      <a className="text-green-600">Download Avatar</a>
+      <a
+        href={url}
+        download={uid(10)}
+        className="text-green-600 hover:underline"
+      >
+        Download Avatar
+      </a>
     </div>
   );
-}
-
-function Spinner() {
-  return <p>Loading...</p>;
 }
 
 function MyAvatars() {
   return (
     <AppConsumer>
       {(appContext) => (
-        <div className="py-5">
+        <div className="py-5 flex flex-wrap gap-5 items-center justify-center">
           {appContext.state.avatars.map(renderAvatar)}
           {appContext.state.avatars.length === 0 && <p>You have no avatars</p>}
         </div>
@@ -71,27 +76,37 @@ function AddCreditsButton() {
 
 function GenerateAvatarsButton() {
   const appContext = useContext(AppContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const generateAvatars = async () => {
-    const res = await fetch('/api/avatar/generate-avatar').then((res) =>
-      res.json(),
-    );
+    setIsLoading(true);
+
+    const res = await fetch('/api/avatar/generate-avatar', {
+      method: 'POST',
+      body: JSON.stringify({
+        gender: 'male',
+        age: 25,
+        characteristics: 'nerdy',
+      }),
+    }).then((res) => res.json());
 
     if (Array.isArray(res.urls)) {
       appContext.dispatch({ type: 'add:avatars', avatars: res.urls });
       appContext.dispatch({ type: 'reduce:credits', by: res.urls.length });
     }
+
+    setIsLoading(false);
   };
 
   return (
     <AppConsumer>
       {(appContext) => (
         <button
-          disabled={appContext.state.credits === 0}
+          disabled={appContext.state.credits === 0 || isLoading}
           className="bg-sky-800 px-3 py-2 rounded text-white hover:bg-sky-700 disabled:opacity-20 disabled:pointer-events-none"
           onClick={generateAvatars}
         >
-          Generate Avatars
+          {isLoading ? <Spinner /> : 'Generate Avatars'}
         </button>
       )}
     </AppConsumer>
@@ -109,14 +124,15 @@ function LogoutButton() {
   );
 }
 
-function Account(props: { credits: number }) {
-  const { credits } = props;
+function Account(props: { credits: number; avatars: string[] }) {
+  const { avatars, credits } = props;
 
   const { dispatch } = useContext(AppContext);
 
   useEffect(() => {
     dispatch({ type: 'set:credits', credits });
-  }, [credits, dispatch]);
+    dispatch({ type: 'set:avatars', avatars });
+  }, [avatars, credits, dispatch]);
 
   return (
     <React.Fragment>
@@ -158,6 +174,7 @@ export async function getServerSideProps(ctx: {
   }
 
   let credits = 0;
+  let avatars: string[] = [];
 
   const user = await getUser(session.user.email);
 
@@ -165,7 +182,9 @@ export async function getServerSideProps(ctx: {
     await createUser(session.user.email);
   } else {
     credits = user.credits;
+    const avatarsResponse = await getAvatars(session.user.email);
+    avatars = avatarsResponse.map(({ avatar }) => avatar);
   }
 
-  return { props: { credits } };
+  return { props: { credits, avatars } };
 }

@@ -7,8 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
- model User {
+model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   credits   Int      @default(0)
@@ -16,3 +15,12 @@ datasource db {
 
   @@map("users")
 }
+
+model Avatar {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   
+  avatar    String
+  createdAt DateTime @default(now())
+
+  @@map("avatars")
+} 
