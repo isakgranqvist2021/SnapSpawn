@@ -1,8 +1,7 @@
-import { AuthContainer } from '@aa/container';
 import Head from 'next/head';
 import React from 'react';
 
-function Error() {
+export function Error() {
   return (
     <React.Fragment>
       <Head>
@@ -17,5 +16,3 @@ function Error() {
     </React.Fragment>
   );
 }
-
-export default Error;

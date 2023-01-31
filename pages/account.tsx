@@ -1,141 +1,24 @@
-import { Spinner } from '@aa/components/spinner';
 import { AuthContainer } from '@aa/container';
-import { AppConsumer, AppContext } from '@aa/context';
+import { AppProvider } from '@aa/context';
+import {
+  AddCreditsButton,
+  GenerateAvatarsButton,
+  LogoutButton,
+  MyAvatars,
+  UserProfile,
+} from '@aa/page-components/account';
 import { getAvatars } from '@aa/prisma/avatar';
 import { createUser, getUser } from '@aa/prisma/user';
 import { getSession } from '@auth0/nextjs-auth0';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { IncomingMessage, ServerResponse } from 'http';
 import Head from 'next/head';
-import React, { useContext, useEffect, useState } from 'react';
-import { uid } from 'uid';
+import React from 'react';
 
-function renderAvatar(url: string, index: number) {
-  return (
-    <div key={`avatar-${index}`} className="flex flex-col gap-2 items-center">
-      <img src={url} alt="" />
-      <a
-        href={url}
-        download={uid(10)}
-        className="text-green-600 hover:underline"
-      >
-        Download Avatar
-      </a>
-    </div>
-  );
-}
-
-function MyAvatars() {
-  return (
-    <AppConsumer>
-      {(appContext) => (
-        <div className="py-5 flex flex-wrap gap-5 items-center justify-center">
-          {appContext.state.avatars.map(renderAvatar)}
-          {appContext.state.avatars.length === 0 && <p>You have no avatars</p>}
-        </div>
-      )}
-    </AppConsumer>
-  );
-}
-
-function UserCredits() {
-  return (
-    <AppConsumer>
-      {(appContext) => (
-        <p className="font-medium">Credits: {appContext.state.credits}</p>
-      )}
-    </AppConsumer>
-  );
-}
-
-function UserProfile() {
-  const { user, error, isLoading } = useUser();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>{error.message}</div>;
-  if (!user) return null;
-
-  return (
-    <div className="flex gap-3 items-center border-b-2 py-2">
-      <UserCredits />
-      <p className="font-medium">{user.email}</p>
-    </div>
-  );
-}
-
-function AddCreditsButton() {
-  return (
-    <a
-      href=""
-      className="bg-green-800 px-3 py-2 rounded text-white hover:bg-green-700"
-    >
-      Add credits
-    </a>
-  );
-}
-
-function GenerateAvatarsButton() {
-  const appContext = useContext(AppContext);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const generateAvatars = async () => {
-    setIsLoading(true);
-
-    const res = await fetch('/api/avatar/generate-avatar', {
-      method: 'POST',
-      body: JSON.stringify({
-        gender: 'male',
-        age: 25,
-        characteristics: 'nerdy',
-      }),
-    }).then((res) => res.json());
-
-    if (Array.isArray(res.urls)) {
-      appContext.dispatch({ type: 'add:avatars', avatars: res.urls });
-      appContext.dispatch({ type: 'reduce:credits', by: res.urls.length });
-    }
-
-    setIsLoading(false);
-  };
-
-  return (
-    <AppConsumer>
-      {(appContext) => (
-        <button
-          disabled={appContext.state.credits === 0 || isLoading}
-          className="bg-sky-800 px-3 py-2 rounded text-white hover:bg-sky-700 disabled:opacity-20 disabled:pointer-events-none"
-          onClick={generateAvatars}
-        >
-          {isLoading ? <Spinner /> : 'Generate Avatars'}
-        </button>
-      )}
-    </AppConsumer>
-  );
-}
-
-function LogoutButton() {
-  return (
-    <a
-      className="bg-red-800 px-3 py-2 rounded text-white hover:bg-red-700"
-      href="/api/auth/logout"
-    >
-      Logout
-    </a>
-  );
-}
-
-function Account(props: { credits: number; avatars: string[] }) {
+export default function Account(props: { credits: number; avatars: string[] }) {
   const { avatars, credits } = props;
 
-  const { dispatch } = useContext(AppContext);
-
-  useEffect(() => {
-    dispatch({ type: 'set:credits', credits });
-    dispatch({ type: 'set:avatars', avatars });
-  }, [avatars, credits, dispatch]);
-
   return (
-    <React.Fragment>
+    <AppProvider avatars={avatars} credits={credits}>
       <Head>
         <title>Ai Avatar | Account</title>
         <meta name="description" content="Ai avatar generator" />
@@ -157,11 +40,9 @@ function Account(props: { credits: number; avatars: string[] }) {
           </div>
         </main>
       </AuthContainer>
-    </React.Fragment>
+    </AppProvider>
   );
 }
-
-export default Account;
 
 export async function getServerSideProps(ctx: {
   req: IncomingMessage;

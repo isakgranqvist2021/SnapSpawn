@@ -11,6 +11,11 @@ interface AppContextState {
   avatars: string[];
 }
 
+interface AppProviderProps {
+  credits: number;
+  avatars: string[];
+}
+
 type ReducerAction =
   | {
       type: 'set:credits';
@@ -29,15 +34,15 @@ type ReducerAction =
       by: number;
     };
 
-export const AppContext = createContext<{
+export interface AppContextType {
   state: AppContextState;
   dispatch: Dispatch<ReducerAction>;
-}>({
+}
+
+export const AppContext = createContext<AppContextType>({
   dispatch: (value) => {},
   state: { avatars: [], credits: 0 },
 });
-
-export const AppConsumer = AppContext.Consumer;
 
 function reducer(
   state: AppContextState,
@@ -58,15 +63,12 @@ function reducer(
   }
 }
 
-export function AppProvider(props: PropsWithChildren) {
-  const { children } = props;
+export function AppProvider(props: PropsWithChildren<AppProviderProps>) {
+  const { children, ...rest } = props;
 
   const [state, dispatch] = useReducer<Reducer<AppContextState, ReducerAction>>(
     reducer,
-    {
-      avatars: [],
-      credits: 0,
-    },
+    rest,
   );
 
   return (
@@ -75,3 +77,5 @@ export function AppProvider(props: PropsWithChildren) {
     </AppContext.Provider>
   );
 }
+
+export const AppConsumer = AppContext.Consumer;

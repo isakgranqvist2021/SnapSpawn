@@ -26,10 +26,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     await createAvatars(session.user.email, urls);
     await reduceUserCredits(session.user.email, urls.length);
 
-    res.status(200).json({ urls });
+    return res.status(200).json({ urls });
   } catch (err) {
-    console.log(err);
-    res.status(500);
+    return res.status(500).send({ urls: [] });
   }
 }
 
