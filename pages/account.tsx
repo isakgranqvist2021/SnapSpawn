@@ -5,8 +5,8 @@ import React, { useContext } from 'react';
 
 function renderAvatar(url: string, index: number) {
   return (
-    <div className="flex flex-col gap-2 items-center">
-      <img key={`avatar-${index}`} src={url} alt="" />
+    <div key={`avatar-${index}`} className="flex flex-col gap-2 items-center">
+      <img src={url} alt="" />
       <a className="text-green-600">Download Avatar</a>
     </div>
   );
@@ -20,7 +20,10 @@ function MyAvatars() {
   return (
     <AppConsumer>
       {(appContext) => (
-        <div className="py-5">{appContext.avatars.value.map(renderAvatar)}</div>
+        <div className="py-5">
+          {appContext.state.avatars.map(renderAvatar)}
+          {appContext.state.avatars.length === 0 && <p>You have no avatars</p>}
+        </div>
       )}
     </AppConsumer>
   );
@@ -30,7 +33,7 @@ function UserCredits() {
   return (
     <AppConsumer>
       {(appContext) => (
-        <p className="font-medium">Credits: {appContext.credits.value}</p>
+        <p className="font-medium">Credits: {appContext.state.credits}</p>
       )}
     </AppConsumer>
   );
@@ -69,8 +72,8 @@ function GenerateAvatarsButton() {
     const res = await fetch('/api/generate-avatar').then((res) => res.json());
 
     if (Array.isArray(res.urls)) {
-      appContext.avatars.setValue([...appContext.avatars.value, ...res.urls]);
-      appContext.credits.setValue(appContext.credits.value - res.urls.length);
+      appContext.dispatch({ type: 'add:avatars', avatars: res.urls });
+      appContext.dispatch({ type: 'reduce:credits', by: res.urls.length });
     }
   };
 
@@ -78,7 +81,7 @@ function GenerateAvatarsButton() {
     <AppConsumer>
       {(appContext) => (
         <button
-          disabled={appContext.credits.value === 0}
+          disabled={appContext.state.credits === 0}
           className="bg-sky-800 px-3 py-2 rounded text-white hover:bg-sky-700 disabled:opacity-20 disabled:pointer-events-none"
           onClick={generateAvatars}
         >
