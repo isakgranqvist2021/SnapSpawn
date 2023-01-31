@@ -1,5 +1,3 @@
-function Spinner() {
+export function Spinner() {
   return <p>Loading...</p>;
 }
-
-export default Spinner;

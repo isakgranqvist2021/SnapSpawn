@@ -1,3 +1,4 @@
+import { AuthContainer } from '@aa/container';
 import { AppConsumer, AppContext } from '@aa/context';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Head from 'next/head';
@@ -69,7 +70,9 @@ function GenerateAvatarsButton() {
   const appContext = useContext(AppContext);
 
   const generateAvatars = async () => {
-    const res = await fetch('/api/generate-avatar').then((res) => res.json());
+    const res = await fetch('/api/avatar/generate-avatar').then((res) =>
+      res.json(),
+    );
 
     if (Array.isArray(res.urls)) {
       appContext.dispatch({ type: 'add:avatars', avatars: res.urls });
@@ -112,19 +115,21 @@ function Account() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="bg-slate-800 h-screen overflow-hidden">
-        <div className="container mx-auto bg-white h-screen overflow-auto flex flex-col items-center p-5">
-          <UserProfile />
+      <AuthContainer>
+        <main className="bg-slate-800 h-screen overflow-hidden">
+          <div className="container mx-auto bg-white h-screen overflow-auto flex flex-col items-center p-5">
+            <UserProfile />
 
-          <div className="flex gap-3 border-b-2 py-5">
-            <AddCreditsButton />
-            <GenerateAvatarsButton />
-            <LogoutButton />
+            <div className="flex gap-3 border-b-2 py-5">
+              <AddCreditsButton />
+              <GenerateAvatarsButton />
+              <LogoutButton />
+            </div>
+
+            <MyAvatars />
           </div>
-
-          <MyAvatars />
-        </div>
-      </main>
+        </main>
+      </AuthContainer>
     </React.Fragment>
   );
 }
