@@ -1,7 +1,6 @@
 import { Spinner } from '@aa/components/spinner';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from 'next/router';
-import { NextResponse } from 'next/server';
 import React, { PropsWithChildren } from 'react';
 
 export function AuthContainer(props: PropsWithChildren) {
