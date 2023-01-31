@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React from 'react';
 
-export function Error() {
+export default function Error() {
   return (
     <React.Fragment>
       <Head>

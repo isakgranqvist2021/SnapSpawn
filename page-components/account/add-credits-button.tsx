@@ -1,4 +1,5 @@
 import { Spinner } from '@aa/components/spinner';
+import getStripe from '@aa/services/stripe';
 import React, { useState } from 'react';
 
 interface AddCreditsModalProps {
@@ -39,13 +40,24 @@ function AddCreditsModal(props: AddCreditsModalProps) {
   const preventPropagation = (e: React.MouseEvent) => e.stopPropagation();
 
   const continueToCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
-    setIsLoading(true);
-
     e.preventDefault();
 
-    await fetch('/api/credits/buy-credits', {
+    setIsLoading(true);
+
+    const stripe = await getStripe();
+
+    if (!stripe) {
+      setIsLoading(false);
+      return;
+    }
+
+    const res = await fetch('/api/checkout_sessions', {
       method: 'POST',
       body: JSON.stringify({ credits }),
+    }).then((res) => res.json());
+
+    await stripe.redirectToCheckout({
+      sessionId: res.id,
     });
 
     setIsLoading(false);
@@ -66,7 +78,7 @@ function AddCreditsModal(props: AddCreditsModalProps) {
               htmlFor="10"
               className="flex items-center gap-2 text-base hover:text-green-600 cursor-pointer"
             >
-              10 credits for $1
+              10 credits for €1
               <input
                 onChange={onChange}
                 type="radio"
@@ -81,7 +93,7 @@ function AddCreditsModal(props: AddCreditsModalProps) {
               htmlFor="50"
               className="flex items-center gap-2 text-base hover:text-green-600 cursor-pointer"
             >
-              50 credits for $5
+              50 credits for €4.5
               <input
                 onChange={onChange}
                 type="radio"
@@ -96,7 +108,7 @@ function AddCreditsModal(props: AddCreditsModalProps) {
               htmlFor="100"
               className="flex items-center gap-2 text-base hover:text-green-600 cursor-pointer"
             >
-              100 credits for $10
+              100 credits for €8
               <input
                 onChange={onChange}
                 type="radio"
