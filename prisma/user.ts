@@ -1,27 +1,57 @@
+import { Logger } from '@aa/services/logger';
+
 import prisma from './prisma';
 
-export function getUser(email: string) {
-  return prisma.user.findUnique({
-    where: { email },
-  });
+export async function getUser(email: string) {
+  try {
+    const result = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    return result;
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
 }
 
-export function createUser(email: string) {
-  return prisma.user.create({
-    data: { email },
-  });
+export async function createUser(email: string) {
+  try {
+    const result = await prisma.user.create({
+      data: { email },
+    });
+
+    return result;
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
 }
 
-export function updateUserCredits(email: string, credits: number) {
-  return prisma.user.update({
-    where: { email },
-    data: { credits: { increment: credits } },
-  });
+export async function addUserCredits(email: string, credits: number) {
+  try {
+    const result = await prisma.user.update({
+      where: { email },
+      data: { credits: { increment: credits } },
+    });
+
+    return result;
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
 }
 
-export function reduceUserCredits(email: string, credits: number) {
-  return prisma.user.update({
-    where: { email },
-    data: { credits: { decrement: credits } },
-  });
+export async function reduceUserCredits(email: string, credits: number) {
+  try {
+    const result = await prisma.user.update({
+      where: { email },
+      data: { credits: { decrement: credits } },
+    });
+
+    return result;
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
 }
