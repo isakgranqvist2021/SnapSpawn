@@ -1,5 +1,5 @@
 import { createAvatars } from '@aa/prisma/avatar';
-import { reduceUserCredits } from '@aa/prisma/user';
+import { getUser, reduceUserCredits } from '@aa/prisma/user';
 import generateAvatars from '@aa/services/avatar';
 import getPrompt, { PromptOptions } from '@aa/utils/prompt';
 import { getSession } from '@auth0/nextjs-auth0';
@@ -17,6 +17,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
 
     if (!session?.user.email) {
       throw new Error('cannot generate avatar while logged out');
+    }
+
+    const user = await getUser(session.user.email);
+
+    if (!user) {
+      throw new Error('cannot generate avatar for non-existent user');
+    }
+
+    if (user.credits < 1) {
+      throw new Error('cannot generate avatar without credits');
     }
 
     const prompt = getPrompt(body);

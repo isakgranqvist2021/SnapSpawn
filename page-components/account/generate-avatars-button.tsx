@@ -29,7 +29,7 @@ export function GenerateAvatarsButton() {
     return (
       <button
         disabled={appContext.state.credits === 0 || isLoading}
-        className="bg-sky-800 px-3 py-2 rounded text-white hover:bg-sky-700 disabled:opacity-20 disabled:pointer-events-none"
+        className="bg-sky-800 px-3 py-2 rounded text-white hover:bg-sky-700 disabled:opacity-50 disabled:pointer-events-none w-44 flex items-center justify-center"
         onClick={generateAvatars}
       >
         {isLoading ? <Spinner /> : 'Generate Avatars'}

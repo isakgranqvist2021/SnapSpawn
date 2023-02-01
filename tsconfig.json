@@ -25,7 +25,7 @@
     "**/*.ts",
     "**/*.tsx",
     "postcss.config.js",
-    "container/auth.container.tx"
+    "containers/auth.container.tx"
   ],
   "exclude": ["node_modules"]
 }

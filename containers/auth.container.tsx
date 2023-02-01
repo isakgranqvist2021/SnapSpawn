@@ -1,7 +1,8 @@
-import { Spinner } from '@aa/components/spinner';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from 'next/router';
 import React, { PropsWithChildren } from 'react';
+
+import { LoadingContainer } from './loading.container';
 
 export function AuthContainer(props: PropsWithChildren) {
   const { children } = props;
@@ -11,17 +12,17 @@ export function AuthContainer(props: PropsWithChildren) {
   const router = useRouter();
 
   if (isLoading) {
-    return <Spinner />;
+    return <LoadingContainer />;
   }
 
   if (error) {
     router.replace('/error');
-    return <Spinner />;
+    return <LoadingContainer />;
   }
 
   if (!user) {
     router.replace('/api/auth/login');
-    return <Spinner />;
+    return <LoadingContainer />;
   }
 
   return <React.Fragment>{children}</React.Fragment>;

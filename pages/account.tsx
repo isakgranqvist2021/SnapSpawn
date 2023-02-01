@@ -1,4 +1,4 @@
-import { AuthContainer } from '@aa/container';
+import { AuthContainer, MainContainer } from '@aa/containers';
 import { AppProvider } from '@aa/context';
 import {
   AddCreditsButton,
@@ -26,19 +26,17 @@ export default function Account(props: { credits: number; avatars: string[] }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <AuthContainer>
-        <main className="bg-slate-800 h-screen overflow-hidden">
-          <div className="container mx-auto bg-white h-screen overflow-auto flex flex-col items-center p-5">
-            <UserProfile />
+        <MainContainer>
+          <UserProfile />
 
-            <div className="flex gap-3 border-b-2 py-5">
-              <AddCreditsButton />
-              <GenerateAvatarsButton />
-              <LogoutButton />
-            </div>
-
-            <MyAvatars />
+          <div className="flex gap-3 border-b-2 py-5">
+            <AddCreditsButton />
+            <GenerateAvatarsButton />
+            <LogoutButton />
           </div>
-        </main>
+
+          <MyAvatars />
+        </MainContainer>
       </AuthContainer>
     </AppProvider>
   );
