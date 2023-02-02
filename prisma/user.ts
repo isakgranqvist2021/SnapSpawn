@@ -28,20 +28,6 @@ export async function createUser(email: string) {
   }
 }
 
-export async function addUserCredits(email: string, credits: number) {
-  try {
-    const result = await prisma.user.update({
-      where: { email },
-      data: { credits: { increment: credits } },
-    });
-
-    return result;
-  } catch (err) {
-    Logger.log('error', err);
-    return null;
-  }
-}
-
 export async function reduceUserCredits(email: string, credits: number) {
   try {
     const result = await prisma.user.update({

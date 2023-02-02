@@ -1,25 +1,43 @@
-import { env } from '@aa/config';
-import { addUserCredits } from '@aa/prisma/user';
-import { Logger } from '@aa/services/logger';
-import { stripeAmountToCredits } from '@aa/utils/credits';
-import { getSession } from '@auth0/nextjs-auth0';
+import { Request, Response } from 'express';
 import { buffer } from 'micro';
-import Cors from 'micro-cors';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { MongoClient } from 'mongodb';
 import Stripe from 'stripe';
+
+const client = new MongoClient(process.env.DATABASE_URL!);
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
 });
 
-export const config = { api: { bodyParser: false } };
+async function addUserCredits(email: string, credits: number) {
+  try {
+    await client.connect();
+    const db = client.db();
+    const collection = db.collection('users');
+
+    return await collection.updateOne({ email }, { $inc: { credits } });
+  } catch (err) {
+    return null;
+  }
+}
+
+function stripeAmountToCredits(stripeAmount: number) {
+  if (stripeAmount === 100) {
+    return 10;
+  }
+
+  if (stripeAmount === 450) {
+    return 50;
+  }
+
+  return 100;
+}
 
 function getWebhookEvent(
   buffer: Buffer,
   signature: string | string[] | undefined,
 ) {
   if (!signature) {
-    Logger.log('error', 'No signature');
     return null;
   }
 
@@ -27,17 +45,16 @@ function getWebhookEvent(
     const event = stripe.webhooks.constructEvent(
       buffer.toString(),
       signature,
-      env.webhookSecret,
+      process.env.STRIPE_WEBHOOK_SECRET!,
     );
 
     return event;
   } catch (err) {
-    Logger.log('error', err);
     return null;
   }
 }
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function (req: Request, res: Response) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     res.status(405).end('Method Not Allowed');
@@ -52,27 +69,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (event.type === 'payment_intent.succeeded') {
-    Logger.log('info', {
-      message: 'PaymentIntent successful',
-      id: (event.data.object as any).id,
-    });
     return res.status(202).send('Webhook received: PaymentIntent successful');
   }
 
   if (event.type === 'payment_intent.payment_failed') {
-    Logger.log('info', {
-      message: 'PaymentIntent failed',
-      id: (event.data.object as any).id,
-    });
     return res.status(400).send('Webhook received: PaymentIntent failed');
   }
 
   if (event.type === 'charge.succeeded') {
-    Logger.log('info', {
-      message: 'Charge successful',
-      id: (event.data.object as any).id,
-    });
-
     const paymentIntent = event.data.object as any;
 
     const credits = stripeAmountToCredits(paymentIntent.amount_captured);
@@ -83,13 +87,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(201).send('Webhook received: Charge successful');
   }
 
-  Logger.log('warning', {
-    message: 'Unhandled event',
-    id: (event.data.object as any).id,
-  });
   return res.status(204).send('Webhook received: Unhandled event');
 }
-
-export default Cors({
-  allowMethods: ['POST', 'HEAD'],
-})(handler as any);
