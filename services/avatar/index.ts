@@ -23,8 +23,8 @@ export async function generateAvatars(prompt: string) {
     }).then((res) => res.json());
 
     return response.data.map((obj) => obj.url);
-  } catch {
-    Logger.log('error', 'Error generating avatars');
+  } catch (err) {
+    Logger.log('error', err);
     return [];
   }
 }

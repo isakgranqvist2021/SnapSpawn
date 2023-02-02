@@ -2,6 +2,7 @@ import { createAvatars } from '@aa/prisma/avatar';
 import { getUser, reduceUserCredits } from '@aa/prisma/user';
 import { generateAvatars } from '@aa/services/avatar';
 import { uploadAvatar } from '@aa/services/gcp';
+import { Logger } from '@aa/services/logger';
 import { PromptOptions, getPrompt } from '@aa/utils/prompt';
 import { getSession } from '@auth0/nextjs-auth0';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -40,6 +41,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
 
     return res.status(200).json({ urls });
   } catch (err) {
+    Logger.log('error', err);
     return res.status(500).send({ urls: [] });
   }
 }
