@@ -1,5 +1,6 @@
 import { Spinner } from '@aa/components/spinner';
 import { AppConsumer, AppContextType } from '@aa/context';
+import { getButtonClassName } from '@aa/utils/styles';
 import { useState } from 'react';
 
 export function GenerateAvatarsButton() {
@@ -29,10 +30,12 @@ export function GenerateAvatarsButton() {
     return (
       <button
         disabled={appContext.state.credits === 0 || isLoading}
-        className={[
-          'relative bg-sky-800 text-sm px-2 py-1 rounded text-white hover:bg-sky-700 disabled:pointer-events-none flex items-center justify-center',
-          appContext.state.credits === 0 ? 'opacity-50' : '',
-        ].join(' ')}
+        className={getButtonClassName({
+          bgColor: 'bg-sky-800',
+          textColor: 'text-white',
+          hoverBgColor: 'bg-sky-700',
+          className: 'relative',
+        })}
         onClick={generateAvatars}
       >
         {isLoading && (

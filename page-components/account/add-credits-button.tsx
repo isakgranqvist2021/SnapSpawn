@@ -1,5 +1,7 @@
+import { Modal } from '@aa/components/modal';
 import { Spinner } from '@aa/components/spinner';
 import getStripe from '@aa/services/stripe';
+import { getButtonClassName } from '@aa/utils/styles';
 import React, { useState } from 'react';
 
 interface AddCreditsModalProps {
@@ -89,46 +91,26 @@ function AddCreditsForm() {
       </div>
 
       <button
-        type="submit"
         disabled={isLoading}
-        className="text-sm px-2 py-1 bg-green-800 rounded text-white hover:bg-green-700 mt-3 disabled:opacity-20 disabled:pointer-events-none"
+        type="submit"
+        className={getButtonClassName({
+          bgColor: 'bg-green-800',
+          textColor: 'text-white',
+          hoverBgColor: 'bg-green-700',
+          className: 'mt-4',
+        })}
       >
-        {isLoading ? <Spinner /> : 'Continue to checkout'}
+        {isLoading && (
+          <div className="absolute z-10">
+            <Spinner color="stroke-white" />
+          </div>
+        )}
+
+        <span className={isLoading ? 'opacity-0' : ''}>
+          Continue to checkout
+        </span>
       </button>
     </form>
-  );
-}
-
-function AddCreditsModal(props: AddCreditsModalProps) {
-  const { closeModal, isOpen } = props;
-
-  const preventPropagation = (e: React.MouseEvent) => e.stopPropagation();
-
-  return (
-    <div
-      className={[
-        'fixed inset-0 bg-slate-600 flex items-center justify-center ease-linear duration-100 z-20',
-        isOpen
-          ? 'bg-opacity-75 pointer-events-auto'
-          : 'bg-opacity-0 pointer-events-none',
-      ].join(' ')}
-      onClick={closeModal}
-    >
-      <div
-        className={[
-          'bg-white max-w-md w-1/2 rounded ease-linear duration-100',
-          isOpen ? 'scale-1' : 'scale-0',
-        ].join(' ')}
-        onClick={preventPropagation}
-      >
-        <div className="border-b px-4 py-3">
-          <h3 className="text-lg font-semibold">Add avatar credits</h3>
-          <p className="text-green-600 text-sm">1 credit = 1 avatar</p>
-        </div>
-
-        <AddCreditsForm />
-      </div>
-    </div>
   );
 }
 
@@ -142,12 +124,23 @@ export function AddCreditsButton() {
     <React.Fragment>
       <button
         onClick={openAddCreditsModal}
-        className="bg-green-800 text-sm px-2 py-1 rounded text-white hover:bg-green-700"
+        className={getButtonClassName({
+          bgColor: 'bg-green-800',
+          textColor: 'text-white',
+          hoverBgColor: 'bg-green-700',
+        })}
       >
         Add credits
       </button>
 
-      <AddCreditsModal closeModal={closeAddCreditsModal} isOpen={isOpen} />
+      <Modal onClose={closeAddCreditsModal} isOpen={isOpen}>
+        <div className="border-b px-4 py-3">
+          <h3 className="text-lg font-semibold">Add avatar credits</h3>
+          <p className="text-green-600 text-sm">1 credit = 1 avatar</p>
+        </div>
+
+        <AddCreditsForm />
+      </Modal>
     </React.Fragment>
   );
 }
