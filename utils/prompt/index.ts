@@ -7,7 +7,7 @@ export interface PromptOptions {
   characteristics: (typeof characteristics)[number];
 }
 
-function getPrompt(options: PromptOptions) {
+export function getPrompt(options: PromptOptions) {
   const { age, characteristics, gender } = options;
 
   return `
@@ -16,5 +16,3 @@ function getPrompt(options: PromptOptions) {
 		the following characteristics ${characteristics}
 	`;
 }
-
-export default getPrompt;

@@ -61,11 +61,7 @@ export async function getServerSideProps(ctx: {
     await createUser(session.user.email);
   } else {
     credits = user.credits;
-    const avatarsResponse = await getAvatars(session.user.email);
-
-    if (avatarsResponse) {
-      avatars = avatarsResponse.map(({ avatar }) => avatar);
-    }
+    avatars = (await getAvatars(session.user.email)) ?? [];
   }
 
   return { props: { credits, avatars } };

@@ -1,3 +1,4 @@
+import { generateSignedUrls } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 
 import prisma from './prisma';
@@ -8,7 +9,11 @@ export async function getAvatars(email: string) {
       where: { email },
     });
 
-    return result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return await generateSignedUrls(
+      result
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .map(({ avatar }) => avatar),
+    );
   } catch (err) {
     Logger.log('error', err);
     return null;
