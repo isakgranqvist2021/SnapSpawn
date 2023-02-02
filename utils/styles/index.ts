@@ -1,5 +1,4 @@
 interface GetButtonClassNameOptions {
-  disabled?: boolean;
   textColor: string;
   hoverBgColor: string;
   bgColor: string;
@@ -7,7 +6,7 @@ interface GetButtonClassNameOptions {
 }
 
 export function getButtonClassName(options: GetButtonClassNameOptions) {
-  const { disabled, textColor, hoverBgColor, bgColor, className } = options;
+  const { textColor, hoverBgColor, bgColor, className } = options;
 
   return [
     className,
@@ -15,5 +14,7 @@ export function getButtonClassName(options: GetButtonClassNameOptions) {
     textColor,
     `hover:${hoverBgColor}`,
     'flex items-center justify-center text-sm px-2 py-1 rounded disabled:opacity-20 disabled:pointer-events-none',
-  ].join(' ');
+  ]
+    .join(' ')
+    .trim();
 }
