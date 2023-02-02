@@ -22,7 +22,7 @@ export function Modal(props: ModalProps) {
     >
       <div
         className={[
-          'bg-white max-w-md w-1/2 rounded ease-linear duration-100',
+          'bg-white max-w-md w-fit rounded ease-linear duration-100',
           isOpen ? 'scale-1' : 'scale-0',
         ].join(' ')}
         onClick={preventPropagation}

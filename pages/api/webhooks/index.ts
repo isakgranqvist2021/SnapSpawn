@@ -8,7 +8,6 @@ import Cors from 'micro-cors';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
-
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
 });
@@ -49,8 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   const event = getWebhookEvent(buf, req.headers['stripe-signature']);
 
   if (!event) {
-    res.status(400).send('Webhook Error: event is null');
-    return;
+    return res.status(400).send('Webhook Error: event is null');
   }
 
   if (event.type === 'payment_intent.succeeded') {
@@ -72,7 +70,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (event.type === 'charge.succeeded') {
     Logger.log('info', {
       message: 'Charge successful',
-     id: (event.data.object as any).id,
+      id: (event.data.object as any).id,
     });
 
     const paymentIntent = event.data.object as any;

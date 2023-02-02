@@ -43,8 +43,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         payment_method_types: ['card'],
         customer_email: session.user.email,
         line_items: lineItems,
-        success_url: `${req.headers.origin}/account?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/account`,
+        success_url: `${req.headers.origin}/payment/accepted?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/payment/rejected`,
       };
 
       const checkoutSession: Stripe.Checkout.Session =
