@@ -29,10 +29,19 @@ export function GenerateAvatarsButton() {
     return (
       <button
         disabled={appContext.state.credits === 0 || isLoading}
-        className="bg-sky-800 px-3 py-2 rounded text-white hover:bg-sky-700 disabled:opacity-50 disabled:pointer-events-none w-44 flex items-center justify-center"
+        className={[
+          'relative bg-sky-800 text-sm px-2 py-1 rounded text-white hover:bg-sky-700 disabled:pointer-events-none flex items-center justify-center',
+          appContext.state.credits === 0 ? 'opacity-50' : '',
+        ].join(' ')}
         onClick={generateAvatars}
       >
-        {isLoading ? <Spinner /> : 'Generate Avatars'}
+        {isLoading && (
+          <div className="absolute z-10">
+            <Spinner color="stroke-white" />
+          </div>
+        )}
+
+        <span className={isLoading ? 'opacity-0' : ''}>Generate Avatar</span>
       </button>
     );
   };

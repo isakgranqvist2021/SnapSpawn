@@ -56,7 +56,7 @@ function reducer(
       return { ...state, credits: action.credits };
 
     case 'add:avatars':
-      return { ...state, avatars: [...state.avatars, ...action.avatars] };
+      return { ...state, avatars: [...action.avatars, ...state.avatars] };
 
     case 'reduce:credits':
       return { ...state, credits: state.credits - action.by };

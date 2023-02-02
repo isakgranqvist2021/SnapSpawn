@@ -8,7 +8,7 @@ export async function getAvatars(email: string) {
       where: { email },
     });
 
-    return result;
+    return result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   } catch (err) {
     Logger.log('error', err);
     return null;

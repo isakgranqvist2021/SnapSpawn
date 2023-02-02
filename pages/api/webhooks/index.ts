@@ -8,6 +8,7 @@ import Cors from 'micro-cors';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
 });
@@ -55,7 +56,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (event.type === 'payment_intent.succeeded') {
     Logger.log('info', {
       message: 'PaymentIntent successful',
-      paymentIntent: event.data.object,
+      id: (event.data.object as any).id,
     });
     return res.status(202).send('Webhook received: PaymentIntent successful');
   }
@@ -63,7 +64,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (event.type === 'payment_intent.payment_failed') {
     Logger.log('info', {
       message: 'PaymentIntent failed',
-      paymentIntent: event.data.object,
+      id: (event.data.object as any).id,
     });
     return res.status(400).send('Webhook received: PaymentIntent failed');
   }
@@ -71,7 +72,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (event.type === 'charge.succeeded') {
     Logger.log('info', {
       message: 'Charge successful',
-      paymentIntent: event.data.object,
+     id: (event.data.object as any).id,
     });
 
     const paymentIntent = event.data.object as any;
@@ -86,9 +87,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   Logger.log('warning', {
     message: 'Unhandled event',
-    paymentIntent: event.data.object,
+    id: (event.data.object as any).id,
   });
-  return res.status(404).send('Webhook received: Unhandled event');
+  return res.status(204).send('Webhook received: Unhandled event');
 }
 
 export default Cors({
