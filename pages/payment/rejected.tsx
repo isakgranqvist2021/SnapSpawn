@@ -1,6 +1,7 @@
 import { MainContainer } from '@aa/containers';
 import { getButtonClassName } from '@aa/utils/styles';
 import Head from 'next/head';
+import Link from 'next/link';
 import React from 'react';
 
 export default function Rejected() {
@@ -23,7 +24,7 @@ export default function Rejected() {
             payment again.
           </p>
 
-          <a
+          <Link
             className={getButtonClassName({
               bgColor: 'bg-red-800',
               textColor: 'text-white',
@@ -32,7 +33,7 @@ export default function Rejected() {
             href="/account"
           >
             Continue to your account
-          </a>
+          </Link>
         </div>
       </MainContainer>
     </React.Fragment>
