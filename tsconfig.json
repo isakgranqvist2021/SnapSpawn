@@ -27,5 +27,5 @@
     "postcss.config.js",
     "containers/auth.container.tx"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "functions"]
 }
