@@ -16,8 +16,16 @@ export default function Account(props: { credits: number; avatars: string[] }) {
     <AppProvider avatars={avatars} credits={credits}>
       <Head>
         <title>AI Portrait Studio | Account</title>
-        <meta name="description" content="AI Portrait Studio generator" />
+        <meta
+          name="description"
+          content="Get instant, custom portraits at AI Portrait Studio. Our AI technology generates unique images based on your photos. Create a personalized work of art in minutes."
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="keywords"
+          content="AI technology, Portraits, Custom, Images, Personalized, Photos, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists"
+        />
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

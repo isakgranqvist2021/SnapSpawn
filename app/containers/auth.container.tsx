@@ -1,8 +1,19 @@
+import { Spinner } from '@aa/components/spinner';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from 'next/router';
 import React, { PropsWithChildren } from 'react';
 
-import { LoadingContainer } from './loading.container';
+import { MainContainer } from './main.container';
+
+function LoadingContainer() {
+  return (
+    <MainContainer>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <Spinner />
+      </div>
+    </MainContainer>
+  );
+}
 
 export function AuthContainer(props: PropsWithChildren) {
   const { children } = props;

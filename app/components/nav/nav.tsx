@@ -2,9 +2,14 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 import React from 'react';
 
-import { AddCreditsButton, AddCreditsListItem } from './add-credits';
+import {
+  AddCreditsButton,
+  AddCreditsListItem,
+  AddCreditsModal,
+} from './add-credits';
 import {
   GenerateAvatarListItem,
+  GenerateAvatarModal,
   GenerateAvatarsButton,
 } from './generate-avatars';
 
@@ -41,17 +46,22 @@ function NavDropDown() {
 
 export function Nav() {
   return (
-    <div className="navbar bg-base-100">
-      <div className="flex-1">
-        <Link href="/" className="btn btn-ghost normal-case text-xl">
-          AI Portrait Studio
-        </Link>
+    <React.Fragment>
+      <AddCreditsModal />
+      <GenerateAvatarModal />
+
+      <div className="navbar bg-base-100">
+        <div className="flex-1">
+          <Link href="/" className="btn btn-ghost normal-case text-xl">
+            AI Portrait Studio
+          </Link>
+        </div>
+        <div className="flex-none gap-2">
+          <AddCreditsButton />
+          <GenerateAvatarsButton />
+          <NavDropDown />
+        </div>
       </div>
-      <div className="flex-none gap-2">
-        <AddCreditsButton />
-        <GenerateAvatarsButton />
-        <NavDropDown />
-      </div>
-    </div>
+    </React.Fragment>
   );
 }
