@@ -24,7 +24,7 @@ export function useGenerateAvatar() {
     }
 
     setIsLoading(false);
-  }, [appContext.dispatch, isLoading]);
+  }, [appContext, isLoading]);
 
   return { credits: appContext.state.credits, generateAvatars, isLoading };
 }

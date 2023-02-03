@@ -1,4 +1,5 @@
 import { useUser } from '@auth0/nextjs-auth0/client';
+import Link from 'next/link';
 import React from 'react';
 
 import { AddCreditsButton, AddCreditsListItem } from './add-credits';
@@ -28,10 +29,10 @@ function NavDropDown() {
         <GenerateAvatarListItem />
 
         <li>
-          <a href="/account">My Avatars</a>
+          <Link href="/account">My Avatars</Link>
         </li>
         <li>
-          <a href="/api/auth/logout">Logout</a>
+          <Link href="/api/auth/logout">Logout</Link>
         </li>
       </ul>
     </div>
@@ -42,9 +43,9 @@ export function Nav() {
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
-        <a href="/" className="btn btn-ghost normal-case text-xl">
+        <Link href="/" className="btn btn-ghost normal-case text-xl">
           AI Avatar
-        </a>
+        </Link>
       </div>
       <div className="flex-none gap-2">
         <AddCreditsButton />
