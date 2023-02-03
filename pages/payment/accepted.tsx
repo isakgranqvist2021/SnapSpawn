@@ -1,12 +1,12 @@
 import { MainContainer } from '@aa/containers';
-import { getButtonClassName } from '@aa/utils/styles';
+import { UserContainer } from '@aa/containers/user.container';
 import Head from 'next/head';
 import Link from 'next/link';
 import React from 'react';
 
 export default function Accepted() {
   return (
-    <React.Fragment>
+    <UserContainer>
       <Head>
         <title>Ai Avatar | Accepted</title>
         <meta name="description" content="Ai avatar generator" />
@@ -24,18 +24,11 @@ export default function Accepted() {
             immediately.
           </p>
 
-          <Link
-            className={getButtonClassName({
-              bgColor: 'bg-green-800',
-              textColor: 'text-white',
-              hoverBgColor: 'bg-green-700',
-            })}
-            href="/account"
-          >
+          <Link className="btn btn-success" href="/account">
             Continue to your account
           </Link>
         </div>
       </MainContainer>
-    </React.Fragment>
+    </UserContainer>
   );
 }

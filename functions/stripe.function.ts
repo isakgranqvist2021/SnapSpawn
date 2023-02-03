@@ -71,7 +71,7 @@ function getWebhookEvent(
   }
 }
 
-export default async function (req: Request, res: Response) {
+async function handleEvent(req: Request, res: Response) {
   try {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
@@ -136,4 +136,9 @@ export default async function (req: Request, res: Response) {
     console.error(err);
     return res.status(500).send('Webhook Error: Unhandled error');
   }
+}
+
+export default function (req: Request & { rawBody: any }, res: Response) {
+  req.body = req.rawBody;
+  return handleEvent(req, res);
 }

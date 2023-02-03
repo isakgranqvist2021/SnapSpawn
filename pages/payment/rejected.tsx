@@ -1,5 +1,4 @@
 import { MainContainer } from '@aa/containers';
-import { getButtonClassName } from '@aa/utils/styles';
 import Head from 'next/head';
 import Link from 'next/link';
 import React from 'react';
@@ -24,14 +23,7 @@ export default function Rejected() {
             payment again.
           </p>
 
-          <Link
-            className={getButtonClassName({
-              bgColor: 'bg-red-800',
-              textColor: 'text-white',
-              hoverBgColor: 'bg-red-700',
-            })}
-            href="/account"
-          >
+          <Link className="btn btn-error" href="/account">
             Continue to your account
           </Link>
         </div>

@@ -2,9 +2,13 @@ import { AppConsumer, AppContextType } from '@aa/context';
 
 function renderAvatar(url: string, index: number) {
   return (
-    <a href={url} key={`avatar-${index}`}>
-      <img src={url} alt="Ai generated avatar" loading="lazy" />
-    </a>
+    <div className="card bg-base-100 shadow-xl" key={`avatar-${index}`}>
+      <a className="avatar" href={url}>
+        <div className="rounded">
+          <img src={url} alt="Ai generated avatar" loading="lazy" />
+        </div>
+      </a>
+    </div>
   );
 }
 
