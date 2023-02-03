@@ -1,12 +1,11 @@
 import { useAppState } from '@aa/context';
-import Image from 'next/image';
 
 function renderAvatar(url: string, index: number) {
   return (
     <div className="card bg-base-100 shadow-xl" key={`avatar-${index}`}>
       <a className="avatar" href={url}>
         <div className="rounded">
-          <Image src={url} alt="Ai generated avatar" />
+          <img src={url} alt="Ai generated avatar" />
         </div>
       </a>
     </div>
