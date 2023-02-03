@@ -6,8 +6,8 @@ export default function Error() {
   return (
     <React.Fragment>
       <Head>
-        <title>Ai Avatar | Error</title>
-        <meta name="description" content="Ai avatar generator" />
+        <title>AI Portrait Studio | Error</title>
+        <meta name="description" content="AI Portrait Studio generator" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

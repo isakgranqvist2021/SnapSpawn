@@ -15,8 +15,8 @@ export default function Account(props: { credits: number; avatars: string[] }) {
   return (
     <AppProvider avatars={avatars} credits={credits}>
       <Head>
-        <title>Ai Avatar | Account</title>
-        <meta name="description" content="Ai avatar generator" />
+        <title>AI Portrait Studio | Account</title>
+        <meta name="description" content="AI Portrait Studio generator" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

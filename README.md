@@ -1,3 +1,3 @@
-# Ai Avatar
+# AI Portrait Studio
 
 ### generate avatars
