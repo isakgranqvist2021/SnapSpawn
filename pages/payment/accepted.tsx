@@ -1,12 +1,11 @@
 import { MainContainer } from '@aa/containers';
-import { UserContainer } from '@aa/containers/user.container';
 import Head from 'next/head';
 import Link from 'next/link';
 import React from 'react';
 
 export default function Accepted() {
   return (
-    <UserContainer>
+    <React.Fragment>
       <Head>
         <title>Ai Avatar | Accepted</title>
         <meta name="description" content="Ai avatar generator" />
@@ -29,6 +28,6 @@ export default function Accepted() {
           </Link>
         </div>
       </MainContainer>
-    </UserContainer>
+    </React.Fragment>
   );
 }

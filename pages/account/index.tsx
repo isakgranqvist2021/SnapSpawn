@@ -1,7 +1,6 @@
 import { MyAvatars } from '@aa/components/my-avatars';
 import { Nav } from '@aa/components/nav';
 import { AuthContainer, MainContainer } from '@aa/containers';
-import { UserContainer } from '@aa/containers/user.container';
 import { AppProvider } from '@aa/context';
 import { getAvatars } from '@aa/prisma/avatar';
 import { createUser, getUser } from '@aa/prisma/user';
@@ -14,24 +13,22 @@ export default function Account(props: { credits: number; avatars: string[] }) {
   const { avatars, credits } = props;
 
   return (
-    <UserContainer>
-      <AppProvider avatars={avatars} credits={credits}>
-        <Head>
-          <title>Ai Avatar | Account</title>
-          <meta name="description" content="Ai avatar generator" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
+    <AppProvider avatars={avatars} credits={credits}>
+      <Head>
+        <title>Ai Avatar | Account</title>
+        <meta name="description" content="Ai avatar generator" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-        <AuthContainer>
-          <MainContainer>
-            <Nav />
+      <AuthContainer>
+        <MainContainer>
+          <Nav />
 
-            <MyAvatars />
-          </MainContainer>
-        </AuthContainer>
-      </AppProvider>
-    </UserContainer>
+          <MyAvatars />
+        </MainContainer>
+      </AuthContainer>
+    </AppProvider>
   );
 }
 
