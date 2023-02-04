@@ -1,18 +1,18 @@
 export const genders = ['male', 'female'] as const;
 
 export const characteristics = [
-  'kind',
-  'leader',
-  'considerate',
-  'empathetic',
-  'reliable',
-  'intelligent',
-  'innovative',
-  'thoughtful',
-  'consientious',
-  'efficient',
-  'responsible',
-  'brave',
+  'futuristic',
+  'fashionable',
+  'casual',
+  'sporty',
+  'goggles',
+  'hat',
+  'headband',
+  'headphones',
+  'mask',
+  'scarf',
+  'sunglasses',
+  'turban',
 ] as const;
 
 export interface PromptOptions {
