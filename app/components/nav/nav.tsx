@@ -1,4 +1,5 @@
 import { useUser } from '@auth0/nextjs-auth0/client';
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { PropsWithChildren } from 'react';
 
@@ -31,7 +32,12 @@ function NavDropDown() {
       {!isLoading && user?.picture && (
         <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
           <div className="w-10 rounded-full">
-            <img src={user.picture} alt="User profile image" />
+            <Image
+              width={40}
+              height={40}
+              src={user.picture}
+              alt="User profile image"
+            />
           </div>
         </label>
       )}

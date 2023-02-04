@@ -13,6 +13,9 @@ async function redirects() {
 const nextConfig = {
   reactStrictMode: true,
   redirects,
+  images: {
+    domains: ['lh3.googleusercontent.com', 'storage.googleapis.com'],
+  },
 };
 
 module.exports = nextConfig;

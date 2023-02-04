@@ -26,7 +26,7 @@ export default function Account(props: { credits: number; avatars: string[] }) {
           name="keywords"
           content="AI technology, Portraits, Custom, Images, Personalized, Photos, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists"
         />
-        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+        <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

@@ -89,7 +89,7 @@ export function useGenerateAvatar() {
       });
       setIsLoading(false);
     }
-  }, [appDispatch, modalToggleRef, state, isLoading]);
+  }, [appDispatch, modalToggleRef, state]);
 
   return {
     state,

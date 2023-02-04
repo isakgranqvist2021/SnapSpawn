@@ -2,7 +2,31 @@ import { Alert, useAppDispatch, useAppState } from '@aa/context';
 import React, { useEffect } from 'react';
 
 function PageSnackbarAlert(props: Alert) {
-  const { message, id, severity } = props;
+  const { message, severity } = props;
+
+  const messageBox = (
+    <div>
+      <span>{message}</span>
+    </div>
+  );
+
+  switch (severity) {
+    case 'error':
+      return <div className="alert alert-error shadow-lg">{messageBox}</div>;
+
+    case 'info':
+      return <div className="alert alert-info shadow-lg">{messageBox}</div>;
+
+    case 'success':
+      return <div className="alert alert-success shadow-lg">{messageBox}</div>;
+
+    case 'warning':
+      return <div className="alert alert-warning shadow-lg">{messageBox}</div>;
+  }
+}
+
+function PageSnackbarToast(props: Alert) {
+  const { id } = props;
 
   const appDispatch = useAppDispatch();
 
@@ -14,21 +38,17 @@ function PageSnackbarAlert(props: Alert) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [appDispatch]);
+  }, [appDispatch, id]);
 
   return (
     <div className="toast">
-      <div className={`alert alert-${severity}`}>
-        <div>
-          <span>{message}</span>
-        </div>
-      </div>
+      <PageSnackbarAlert {...props} />
     </div>
   );
 }
 
-function renderPageSnackbarAlert(alert: Alert, index: number) {
-  return <PageSnackbarAlert key={`page-snackbar-alert-${index}`} {...alert} />;
+function renderPageSnackbarToast(alert: Alert, index: number) {
+  return <PageSnackbarToast key={`page-snackbar-toast-${index}`} {...alert} />;
 }
 
 export function PageSnackbar() {
@@ -36,7 +56,7 @@ export function PageSnackbar() {
 
   return (
     <React.Fragment>
-      {appState.alerts.map(renderPageSnackbarAlert)}
+      {appState.alerts.map(renderPageSnackbarToast)}
     </React.Fragment>
   );
 }
