@@ -1,6 +1,7 @@
 import { MyAvatars } from '@aa/components/my-avatars';
 import { Nav } from '@aa/components/nav';
 import { PageSnackbar } from '@aa/components/page-snackbar';
+import { WelcomeMessage } from '@aa/components/welcome-message';
 import { AuthContainer, MainContainer } from '@aa/containers';
 import { AppProvider } from '@aa/context';
 import { getAvatars } from '@aa/database/avatar';
@@ -38,6 +39,8 @@ export default function Account(props: {
       <AuthContainer>
         <MainContainer>
           <Nav />
+
+          <WelcomeMessage />
 
           <MyAvatars />
 

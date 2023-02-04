@@ -99,7 +99,7 @@ export function AddCreditsButton() {
 
   return (
     <label htmlFor={MODAL_ID} className="btn btn-primary">
-      Add Credits ({appState.credits})
+      Add Credits
     </label>
   );
 }
