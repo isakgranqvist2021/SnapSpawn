@@ -1,28 +1,19 @@
-import { useAppDispatch, useAppState } from '@aa/context';
-import { PromptOptions } from '@aa/utils/prompt';
+import { useAppDispatch } from '@aa/context';
+import { Characteristic, Gender, PromptModel } from '@aa/models/prompt.model';
 import { Reducer, useCallback, useReducer, useRef, useState } from 'react';
 
-const DEFAULT_FORM_STATE: PromptOptions = {
+const DEFAULT_FORM_STATE: PromptModel = {
   age: 32,
   characteristics: 'casual',
   gender: 'female',
 };
 
 type ReducerAction =
-  | {
-      type: 'set:age';
-      age: number;
-    }
-  | {
-      type: 'set:characteristics';
-      characteristics: PromptOptions['characteristics'];
-    }
-  | {
-      type: 'set:gender';
-      gender: PromptOptions['gender'];
-    };
+  | { age: number; type: 'set:age' }
+  | { characteristics: Characteristic; type: 'set:characteristics' }
+  | { gender: Gender; type: 'set:gender' };
 
-function reducer(state: PromptOptions, action: ReducerAction): PromptOptions {
+function reducer(state: PromptModel, action: ReducerAction): PromptModel {
   switch (action.type) {
     case 'set:age':
       return { ...state, age: action.age };
@@ -40,11 +31,10 @@ function reducer(state: PromptOptions, action: ReducerAction): PromptOptions {
 
 export function useGenerateAvatar() {
   const appDispatch = useAppDispatch();
-  const appState = useAppState();
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [state, dispatch] = useReducer<Reducer<PromptOptions, ReducerAction>>(
+  const [state, dispatch] = useReducer<Reducer<PromptModel, ReducerAction>>(
     reducer,
     DEFAULT_FORM_STATE,
   );
@@ -56,15 +46,15 @@ export function useGenerateAvatar() {
       setIsLoading(true);
 
       const res = await fetch('/api/avatar/generate-avatar', {
-        method: 'POST',
         body: JSON.stringify(state),
+        method: 'POST',
       }).then((res) => res.json());
 
       if (Array.isArray(res.avatars)) {
         appDispatch({ type: 'add:avatars', avatars: res.avatars });
         appDispatch({
-          type: 'reduce:credits',
           reduceCreditsBy: res.avatars.length,
+          type: 'reduce:credits',
         });
       }
 
@@ -92,11 +82,10 @@ export function useGenerateAvatar() {
   }, [appDispatch, modalToggleRef, state]);
 
   return {
-    state,
-    modalToggleRef,
-    credits: appState.credits,
+    dispatch,
     generateAvatars,
     isLoading,
-    dispatch,
+    modalToggleRef,
+    state,
   };
 }

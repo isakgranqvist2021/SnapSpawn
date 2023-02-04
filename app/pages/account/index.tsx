@@ -14,8 +14,8 @@ import Head from 'next/head';
 import React from 'react';
 
 export default function Account(props: {
-  credits: number;
   avatars: AvatarModel[];
+  credits: number;
 }) {
   const { avatars, credits } = props;
 
@@ -85,10 +85,10 @@ export async function getServerSideProps(ctx: {
             const url = await getSignedUrl(avatar);
 
             return {
-              url,
-              id: _id.toHexString(),
               createdAt: new Date(createdAt).getTime(),
+              id: _id.toHexString(),
               prompt,
+              url,
             };
           } catch {
             return null;

@@ -1,33 +1,16 @@
 import { Logger } from '@aa/services/logger';
-import clientPromise from '@aa/services/mongodb';
-import mongodb from 'mongodb';
 
-const COLLECTION_NAME = 'avatars';
-
-export interface AvatarDocument {
-  _id: mongodb.BSON.ObjectId;
-  email: string;
-  avatar: string;
-  prompt: string;
-  createdAt: number;
-}
-
-async function getCollection<T extends mongodb.Document>() {
-  try {
-    const client = await clientPromise;
-    const collection = client.db().collection<T>(COLLECTION_NAME);
-
-    return collection;
-  } catch (err) {
-    Logger.log('error', err);
-  }
-}
+import { getCollection } from '../database';
+import { AVATARS_COLLECTION_NAME } from './avatar.constants';
+import { AvatarDocument } from './avatar.types';
 
 export async function getAvatars(
   email: string,
 ): Promise<AvatarDocument[] | null> {
   try {
-    const collection = await getCollection<AvatarDocument>();
+    const collection = await getCollection<AvatarDocument>(
+      AVATARS_COLLECTION_NAME,
+    );
 
     if (!collection) {
       return null;
@@ -42,9 +25,9 @@ export async function getAvatars(
       const document: AvatarDocument = {
         _id: avatarDocument._id,
         avatar: avatarDocument.avatar,
-        prompt: avatarDocument.prompt,
-        email: avatarDocument.email,
         createdAt: avatarDocument.createdAt,
+        email: avatarDocument.email,
+        prompt: avatarDocument.prompt,
       };
 
       return document;
@@ -61,7 +44,9 @@ export async function createAvatars(
   prompt: string,
 ) {
   try {
-    const collection = await getCollection<Omit<AvatarDocument, '_id'>>();
+    const collection = await getCollection<Omit<AvatarDocument, '_id'>>(
+      AVATARS_COLLECTION_NAME,
+    );
 
     if (!collection) {
       return null;
@@ -69,10 +54,10 @@ export async function createAvatars(
 
     const documents = avatars.map((avatar) => {
       const document: Omit<AvatarDocument, '_id'> = {
-        email,
         avatar,
-        prompt,
         createdAt: Date.now(),
+        email,
+        prompt,
       };
 
       return document;

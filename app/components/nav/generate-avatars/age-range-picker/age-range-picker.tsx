@@ -1,7 +1,7 @@
 interface AgeRangePickerProps {
-  value: number;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isLoading: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: number;
 }
 
 export function AgeRangePicker(props: AgeRangePickerProps) {
@@ -15,14 +15,14 @@ export function AgeRangePicker(props: AgeRangePickerProps) {
       >
         <span className="label-text whitespace-nowrap">Age ({value})</span>
         <input
-          type="range"
-          min="1"
-          max="100"
-          disabled={isLoading}
-          onChange={onChange}
-          value={value}
           className="range"
+          disabled={isLoading}
           id="age"
+          max="100"
+          min="1"
+          onChange={onChange}
+          type="range"
+          value={value}
         />
       </label>
     </div>

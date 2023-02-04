@@ -1,17 +1,15 @@
-import { characteristics } from '@aa/utils/prompt';
+import { Characteristic, characteristics } from '@aa/models';
 
 interface PickCharacteristicsProps {
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isLoading: boolean;
-  value: (typeof characteristics)[number];
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: Characteristic;
 }
 
 export function PickCharacteristics(props: PickCharacteristicsProps) {
   const { onChange, isLoading, value } = props;
 
-  const renderCharacteristicsButton = (
-    characteristic: (typeof characteristics)[number],
-  ) => {
+  const renderCharacteristicsButton = (characteristic: Characteristic) => {
     return (
       <div className="form-control" key={characteristic}>
         <label className="label cursor-pointer flex gap-4">

@@ -1,4 +1,3 @@
-import { creditsToStripeAmount } from '@aa/utils/credits';
 import { getSession } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
@@ -9,6 +8,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const MIN_AMOUNT = 10.0;
 const MAX_AMOUNT = 5000.0;
+
+export function creditsToStripeAmount(credits: number) {
+  if (credits === 10) {
+    return 100;
+  }
+
+  if (credits === 50) {
+    return 450;
+  }
+
+  return 800;
+}
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {

@@ -3,19 +3,17 @@
 async function redirects() {
   return [
     {
-      source: '/',
       destination: '/account',
       permanent: true,
+      source: '/',
     },
   ];
 }
 
 const nextConfig = {
+  images: { domains: ['lh3.googleusercontent.com', 'storage.googleapis.com'] },
   reactStrictMode: true,
   redirects,
-  images: {
-    domains: ['lh3.googleusercontent.com', 'storage.googleapis.com'],
-  },
 };
 
 module.exports = nextConfig;

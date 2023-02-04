@@ -33,17 +33,17 @@ function NavDropDown() {
         <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
           <div className="w-10 rounded-full">
             <Image
-              width={40}
+              alt="User profile image"
               height={40}
               src={user.picture}
-              alt="User profile image"
+              width={40}
             />
           </div>
         </label>
       )}
       <ul
-        tabIndex={0}
         className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+        tabIndex={0}
       >
         <li>
           <LogoutLink>Logout</LogoutLink>
@@ -57,17 +57,17 @@ function LogoutButtomNavButton() {
   return (
     <LogoutLink className="text-error">
       <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
         className="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
       >
         <path
+          d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
         />
       </svg>
     </LogoutLink>

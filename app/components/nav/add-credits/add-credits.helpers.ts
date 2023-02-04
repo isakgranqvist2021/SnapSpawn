@@ -24,8 +24,8 @@ export function useAddCreditsModal() {
       }
 
       const res = await fetch('/api/checkout_sessions', {
-        method: 'POST',
         body: JSON.stringify({ credits }),
+        method: 'POST',
       }).then((res) => res.json());
 
       await stripe.redirectToCheckout({
@@ -35,21 +35,21 @@ export function useAddCreditsModal() {
       modalToggleRef.current?.click();
 
       appDispatch({
-        type: 'add:alert',
         alert: {
-          severity: 'success',
           message: 'You have successfully purchased credits!',
+          severity: 'success',
         },
+        type: 'add:alert',
       });
 
       setIsLoading(false);
     } catch {
       appDispatch({
-        type: 'add:alert',
         alert: {
-          severity: 'error',
           message: 'Something went wrong. Please try again.',
+          severity: 'error',
         },
+        type: 'add:alert',
       });
       setIsLoading(false);
     }
@@ -59,5 +59,11 @@ export function useAddCreditsModal() {
     setCredits(parseInt(e.target.value));
   };
 
-  return { continueToCheckout, credits, isLoading, onChange, modalToggleRef };
+  return {
+    continueToCheckout,
+    credits,
+    isLoading,
+    modalToggleRef,
+    onChange,
+  };
 }

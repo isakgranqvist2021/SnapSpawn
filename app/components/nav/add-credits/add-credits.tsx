@@ -1,6 +1,5 @@
 import { Modal } from '@aa/components/modal';
 import { Spinner } from '@aa/components/spinner';
-import { useAppState } from '@aa/context';
 import React from 'react';
 
 import { useAddCreditsModal } from './add-credits.helpers';
@@ -9,8 +8,8 @@ interface CreditRadioButtonProps {
   credits: number;
   isLoading: boolean;
   label: string;
-  value: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: number;
 }
 
 interface AddCreditsSubmitButtonProps {
@@ -20,21 +19,21 @@ interface AddCreditsSubmitButtonProps {
 const MODAL_ID = 'ADD_CREDITS_MODAL';
 
 function CreditRadioButton(props: CreditRadioButtonProps) {
-  const { credits, label, value, onChange, isLoading } = props;
+  const { credits, isLoading, label, onChange, value } = props;
 
   return (
     <div className="form-control">
       <label htmlFor={value.toString()} className="label cursor-pointer">
         <span className="label-text">{label}</span>
         <input
+          checked={credits === 10}
           className="radio"
+          disabled={isLoading}
+          id={value.toString()}
+          name="credits"
           onChange={onChange}
           type="radio"
-          id={value.toString()}
-          disabled={isLoading}
-          name="credits"
           value={value.toString()}
-          checked={credits === 10}
         />
       </label>
     </div>
@@ -58,7 +57,7 @@ function AddCreditsSubmitButton(props: AddCreditsSubmitButtonProps) {
 }
 
 export function AddCreditsModal() {
-  const { credits, isLoading, onChange, continueToCheckout, modalToggleRef } =
+  const { continueToCheckout, credits, isLoading, modalToggleRef, onChange } =
     useAddCreditsModal();
 
   return (
@@ -95,8 +94,6 @@ export function AddCreditsModal() {
 }
 
 export function AddCreditsButton() {
-  const appState = useAppState();
-
   return (
     <label htmlFor={MODAL_ID} className="btn btn-primary">
       Add Credits

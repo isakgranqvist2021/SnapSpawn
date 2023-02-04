@@ -1,5 +1,5 @@
 import { Modal } from '@aa/components/modal';
-import { characteristics, genders } from '@aa/utils/prompt';
+import { Characteristic, Gender } from '@aa/models/prompt.model';
 
 import { AgeRangePicker } from './age-range-picker';
 import { GenerateAvatarSubmitButton } from './generate-avatar-submit-button';
@@ -10,7 +10,7 @@ import { PickGender } from './pick-gender';
 const MODAL_ID = 'GENERATE_AVATAR_MODAL';
 
 export function GenerateAvatarModal() {
-  const { modalToggleRef, state, isLoading, generateAvatars, dispatch } =
+  const { dispatch, generateAvatars, isLoading, modalToggleRef, state } =
     useGenerateAvatar();
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -19,20 +19,23 @@ export function GenerateAvatarModal() {
   };
 
   const onAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({ type: 'set:age', age: parseInt(e.target.value) });
+    dispatch({
+      age: parseInt(e.target.value),
+      type: 'set:age',
+    });
   };
 
   const onGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
+      gender: e.target.value as Gender,
       type: 'set:gender',
-      gender: e.target.value as (typeof genders)[number],
     });
   };
 
   const onCharacteristicsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
+      characteristics: e.target.value as Characteristic,
       type: 'set:characteristics',
-      characteristics: e.target.value as (typeof characteristics)[number],
     });
   };
 
@@ -41,25 +44,25 @@ export function GenerateAvatarModal() {
       <form onSubmit={onSubmit} className="px-4 py-3 flex flex-col gap-5 form">
         <div className="divider">Pick Age</div>
         <AgeRangePicker
+          isLoading={isLoading}
           onChange={onAgeChange}
           value={state.age}
-          isLoading={isLoading}
         />
 
         <div className="divider">Pick Gender</div>
 
         <PickGender
+          isLoading={isLoading}
           onChange={onGenderChange}
           value={state.gender}
-          isLoading={isLoading}
         />
 
         <div className="divider">Pick Characteristics</div>
 
         <PickCharacteristics
+          isLoading={isLoading}
           onChange={onCharacteristicsChange}
           value={state.characteristics}
-          isLoading={isLoading}
         />
 
         <GenerateAvatarSubmitButton isLoading={isLoading} />

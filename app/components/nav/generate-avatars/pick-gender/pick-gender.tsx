@@ -1,15 +1,15 @@
-import { genders } from '@aa/utils/prompt';
+import { Gender, genders } from '@aa/models';
 
 interface PickGenderProps {
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isLoading: boolean;
-  value: (typeof genders)[number];
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: Gender;
 }
 
 export function PickGender(props: PickGenderProps) {
   const { onChange, isLoading, value } = props;
 
-  const renderGenderRadioButton = (gender: (typeof genders)[number]) => {
+  const renderGenderRadioButton = (gender: Gender) => {
     return (
       <div className="form-control" key={gender}>
         <label className="label cursor-pointer flex gap-4">

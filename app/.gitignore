@@ -37,4 +37,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-stripe.exe
+# for testing webhooks
+stripe.exe 

@@ -1,10 +1,10 @@
 import { createAvatars } from '@aa/database/avatar';
 import { getUser, reduceUserCredits } from '@aa/database/user';
 import { AvatarModel } from '@aa/models';
+import { PromptModel } from '@aa/models/prompt.model';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
-import { PromptOptions, getPrompt } from '@aa/utils/prompt';
 import { getSession } from '@auth0/nextjs-auth0';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -12,9 +12,15 @@ interface Data {
   avatars: AvatarModel[];
 }
 
+export function getPrompt(options: PromptModel) {
+  const { age, characteristics, gender } = options;
+
+  return `Can you give me a ${gender} avatar who is ${age} old and has the following characteristics: ${characteristics}?`;
+}
+
 async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   try {
-    const body: PromptOptions = JSON.parse(req.body);
+    const body: PromptModel = JSON.parse(req.body);
 
     const session = await getSession(req, res);
 
@@ -41,7 +47,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
       session.user.email,
       avatarIds,
       Object.keys(body)
-        .map((key) => `${key}=${body[key as keyof PromptOptions]}`)
+        .map((key) => `${key}=${body[key as keyof PromptModel]}`)
         .join('&'),
     );
 

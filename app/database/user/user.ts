@@ -1,30 +1,12 @@
 import { Logger } from '@aa/services/logger';
-import clientPromise from '@aa/services/mongodb';
-import mongodb from 'mongodb';
 
-const COLLECTION_NAME = 'users';
-
-export interface UserDocument {
-  _id: mongodb.ObjectId;
-  email: string;
-  credits: number;
-  createdAt: number;
-}
-
-async function getCollection<T extends mongodb.Document>() {
-  try {
-    const client = await clientPromise;
-    const collection = client.db().collection<T>(COLLECTION_NAME);
-
-    return collection;
-  } catch (err) {
-    Logger.log('error', err);
-  }
-}
+import { getCollection } from '../database';
+import { USERS_COLLECTION_NAME } from './user.constants';
+import { CreateUserDocument, UserDocument } from './user.types';
 
 export async function getUser(email: string) {
   try {
-    const collection = await getCollection<UserDocument>();
+    const collection = await getCollection<UserDocument>(USERS_COLLECTION_NAME);
 
     if (!collection) {
       Logger.log('error', 'Collection is null');
@@ -42,7 +24,9 @@ export async function getUser(email: string) {
 
 export async function createUser(email: string) {
   try {
-    const collection = await getCollection<Omit<UserDocument, '_id'>>();
+    const collection = await getCollection<CreateUserDocument>(
+      USERS_COLLECTION_NAME,
+    );
 
     if (!collection) {
       Logger.log('error', 'Collection is null');
@@ -51,7 +35,7 @@ export async function createUser(email: string) {
 
     await collection.createIndex({ email: 1 });
 
-    const document: Omit<UserDocument, '_id'> = {
+    const document: CreateUserDocument = {
       email,
       credits: 0,
       createdAt: Date.now(),
@@ -68,7 +52,7 @@ export async function createUser(email: string) {
 
 export async function reduceUserCredits(email: string, credits: number) {
   try {
-    const collection = await getCollection<UserDocument>();
+    const collection = await getCollection<UserDocument>(USERS_COLLECTION_NAME);
 
     if (!collection) {
       Logger.log('error', 'Collection is null');

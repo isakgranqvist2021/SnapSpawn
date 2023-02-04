@@ -4,9 +4,9 @@ import Image from 'next/image';
 
 function formatDate(timestamp: number) {
   return new Intl.DateTimeFormat(navigator.language, {
-    year: 'numeric',
-    month: '2-digit',
     day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   }).format(timestamp);
 }
 
@@ -21,11 +21,11 @@ function renderAvatar(avatar: AvatarModel, index: number) {
     >
       <figure>
         <Image
-          width={256}
-          height={256}
-          src={url}
           alt="Ai generated avatar"
+          height={256}
           loading="lazy"
+          src={url}
+          width={256}
         />
       </figure>
       <div className="card-body p-0 md:p-3">
