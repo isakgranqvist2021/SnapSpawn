@@ -33,6 +33,8 @@ export async function createAvatar(email: string, avatar: string) {
   }
 }
 
+const x = 10;
+
 export async function createAvatars(
   email: string,
   avatars: string[],
