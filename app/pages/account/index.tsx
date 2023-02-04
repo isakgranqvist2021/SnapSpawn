@@ -4,19 +4,31 @@ import { PageSnackbar } from '@aa/components/page-snackbar';
 import { WelcomeMessage } from '@aa/components/welcome-message';
 import { AuthContainer, MainContainer } from '@aa/containers';
 import { AppProvider } from '@aa/context';
-import { getAvatars } from '@aa/database/avatar';
+import { AvatarDocument, getAvatars } from '@aa/database/avatar';
 import { createUser, getUser } from '@aa/database/user';
 import { AvatarModel } from '@aa/models';
 import { getSignedUrl } from '@aa/services/gcp';
+import { Logger } from '@aa/services/logger';
 import { getSession } from '@auth0/nextjs-auth0';
 import { IncomingMessage, ServerResponse } from 'http';
 import Head from 'next/head';
 import React from 'react';
 
-export default function Account(props: {
+interface AccountProps {
   avatars: AvatarModel[];
   credits: number;
-}) {
+}
+
+interface GetServerSideProps {
+  props: AccountProps;
+}
+
+interface GetServerSidePropsContext {
+  req: IncomingMessage;
+  res: ServerResponse<IncomingMessage>;
+}
+
+export default function Account(props: AccountProps) {
   const { avatars, credits } = props;
 
   return (
@@ -51,56 +63,59 @@ export default function Account(props: {
   );
 }
 
-export async function getServerSideProps(ctx: {
-  req: IncomingMessage;
-  res: ServerResponse<IncomingMessage>;
-}) {
-  const session = await getSession(ctx.req, ctx.res);
+async function prepareAvatarModel(
+  avatarDocument: AvatarDocument,
+): Promise<AvatarModel | null> {
+  try {
+    const { _id, avatar, createdAt, prompt } = avatarDocument;
 
-  if (!session?.user.email) {
-    return { props: {} };
+    const url = await getSignedUrl(avatar);
+
+    return {
+      createdAt: new Date(createdAt).getTime(),
+      id: _id.toHexString(),
+      prompt,
+      url,
+    };
+  } catch {
+    return null;
   }
+}
 
-  let credits = 0;
-  let avatarModels: AvatarModel[] | null = null;
+export async function getServerSideProps(
+  ctx: GetServerSidePropsContext,
+): Promise<GetServerSideProps> {
+  try {
+    const session = await getSession(ctx.req, ctx.res);
 
-  const user = await getUser(session.user.email);
+    if (!session?.user.email) {
+      throw new Error('Session is null');
+    }
 
-  if (user === null) {
-    await createUser(session.user.email);
-  } else {
-    credits = user.credits;
+    const user = await getUser(session.user.email);
+
+    if (user === null) {
+      await createUser(session.user.email);
+      return { props: { credits: 0, avatars: [] } };
+    }
+
     const avatarDocuments = await getAvatars(session.user.email);
 
     if (!avatarDocuments) {
-      return { props: { credits, avatars: [] } };
+      throw new Error('Avatar documents not found');
     }
 
-    const _avatarModels = await Promise.all(
-      avatarDocuments.map(
-        async (avatarDocument): Promise<AvatarModel | null> => {
-          try {
-            const { _id, avatar, createdAt, prompt } = avatarDocument;
-
-            const url = await getSignedUrl(avatar);
-
-            return {
-              createdAt: new Date(createdAt).getTime(),
-              id: _id.toHexString(),
-              prompt,
-              url,
-            };
-          } catch {
-            return null;
-          }
-        },
-      ),
+    const avatarModels = await Promise.all(
+      avatarDocuments.map(prepareAvatarModel),
     );
 
-    avatarModels = _avatarModels.filter(
+    const avatars = avatarModels.filter(
       (avatarModel): avatarModel is AvatarModel => avatarModel !== null,
     );
-  }
 
-  return { props: { credits, avatars: avatarModels } };
+    return { props: { credits: user.credits, avatars } };
+  } catch (err) {
+    Logger.log('error', err);
+    return { props: { credits: 0, avatars: [] } };
+  }
 }

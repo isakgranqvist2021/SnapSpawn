@@ -1,5 +1,6 @@
 import { MainContainer } from '@aa/containers';
 import Head from 'next/head';
+import Link from 'next/link';
 import React from 'react';
 
 export default function Error() {
@@ -20,7 +21,18 @@ export default function Error() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <MainContainer>
-        <h1>Error</h1>
+        <div className="flex flex-col gap-3 items-center mt-10">
+          <h1 className="text-xl text-green-600">Error </h1>
+          <p className="text-center max-w-prose">
+            Oops! The page you're looking for can't be found. It may have been
+            moved, renamed, or deleted. Please try checking the URL or using the
+            search function to find what you're looking for.
+          </p>
+
+          <Link className="btn btn-error" href="/account">
+            Continue to your account
+          </Link>
+        </div>
       </MainContainer>
     </React.Fragment>
   );
