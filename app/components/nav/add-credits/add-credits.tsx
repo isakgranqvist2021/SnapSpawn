@@ -1,7 +1,7 @@
 import { Modal } from '@aa/components/modal';
 import { Spinner } from '@aa/components/spinner';
 import { useAppState } from '@aa/context';
-import React, { useContext } from 'react';
+import React from 'react';
 
 import { useAddCreditsModal } from './add-credits.helpers';
 
@@ -98,20 +98,31 @@ export function AddCreditsButton() {
   const appState = useAppState();
 
   return (
-    <React.Fragment>
-      <label htmlFor={MODAL_ID} className="btn btn-primary hidden md:flex">
-        Add Credits ({appState.credits})
-      </label>
-    </React.Fragment>
+    <label htmlFor={MODAL_ID} className="btn btn-primary">
+      Add Credits ({appState.credits})
+    </label>
   );
 }
 
-export function AddCreditsListItem() {
-  const appState = useAppState();
-
+export function AddCreditsBottomNavButton() {
   return (
-    <li className="md:hidden">
-      <label htmlFor={MODAL_ID}>Add Credits ({appState.credits})</label>
-    </li>
+    <label htmlFor={MODAL_ID}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+        className="w-6 h-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+
+      <span className="btm-nav-label">Add Credits</span>
+    </label>
   );
 }

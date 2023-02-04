@@ -1,6 +1,6 @@
-const genders = ['male', 'female'] as const;
+export const genders = ['male', 'female'] as const;
 
-const characteristics = [
+export const characteristics = [
   'kind',
   'leader',
   'considerate',
@@ -24,5 +24,5 @@ export interface PromptOptions {
 export function getPrompt(options: PromptOptions) {
   const { age, characteristics, gender } = options;
 
-  return [age, characteristics, gender].join(',');
+  return `Can you give me a ${gender} avatar who is ${age} old and has the following characteristics: ${characteristics}?`;
 }

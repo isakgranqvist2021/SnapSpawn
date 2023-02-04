@@ -1,7 +1,7 @@
 import { createAvatars } from '@aa/prisma/avatar';
 import { getUser, reduceUserCredits } from '@aa/prisma/user';
 import { generateAvatars } from '@aa/services/avatar';
-import { uploadAvatar } from '@aa/services/gcp';
+import { generateSignedUrls, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { PromptOptions, getPrompt } from '@aa/utils/prompt';
 import { getSession } from '@auth0/nextjs-auth0';
@@ -33,13 +33,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
 
     const prompt = getPrompt(body);
 
-    const urls = await generateAvatars(prompt);
-    const avatarIds = await uploadAvatar(urls);
+    const openAiUrls = await generateAvatars(prompt);
+    const avatarIds = await uploadAvatar(openAiUrls);
 
     await createAvatars(session.user.email, avatarIds);
-    await reduceUserCredits(session.user.email, urls.length);
+    await reduceUserCredits(session.user.email, openAiUrls.length);
 
-    return res.status(200).json({ urls });
+    const avatarUrls = await generateSignedUrls(avatarIds);
+
+    return res.status(200).json({ urls: avatarUrls });
   } catch (err) {
     Logger.log('error', err);
     return res.status(500).send({ urls: [] });

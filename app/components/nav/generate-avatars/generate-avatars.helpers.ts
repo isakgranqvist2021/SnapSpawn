@@ -1,39 +1,78 @@
 import { useAppDispatch, useAppState } from '@aa/context';
 import { PromptOptions } from '@aa/utils/prompt';
-import { useCallback, useContext, useState } from 'react';
+import { Reducer, useCallback, useReducer, useState } from 'react';
 
-function reducer() {}
+const DEFAULT_FORM_STATE: PromptOptions = {
+  age: 32,
+  characteristics: 'leader',
+  gender: 'female',
+};
+
+type ReducerAction =
+  | {
+      type: 'set:age';
+      age: number;
+    }
+  | {
+      type: 'set:characteristics';
+      characteristics: PromptOptions['characteristics'];
+    }
+  | {
+      type: 'set:gender';
+      gender: PromptOptions['gender'];
+    };
+
+function reducer(state: PromptOptions, action: ReducerAction): PromptOptions {
+  switch (action.type) {
+    case 'set:age':
+      return { ...state, age: action.age };
+
+    case 'set:characteristics':
+      return { ...state, characteristics: action.characteristics };
+
+    case 'set:gender':
+      return { ...state, gender: action.gender };
+
+    default:
+      return state;
+  }
+}
 
 export function useGenerateAvatar() {
-  const dispatch = useAppDispatch();
+  const appDispatch = useAppDispatch();
   const appState = useAppState();
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [promptOptions, setPromptOptions] = useState<PromptOptions>({
-    age: 32,
-    characteristics: 'leader',
-    gender: 'female',
-  });
+  const [state, dispatch] = useReducer<Reducer<PromptOptions, ReducerAction>>(
+    reducer,
+    DEFAULT_FORM_STATE,
+  );
 
   const generateAvatars = useCallback(async () => {
     setIsLoading(true);
 
     const res = await fetch('/api/avatar/generate-avatar', {
       method: 'POST',
-      body: JSON.stringify(promptOptions),
+      body: JSON.stringify(state),
     }).then((res) => res.json());
 
     if (Array.isArray(res.urls)) {
-      dispatch({ type: 'add:avatars', avatars: res.urls });
-      dispatch({
+      appDispatch({ type: 'add:avatars', avatars: res.urls });
+      appDispatch({
         type: 'reduce:credits',
         reduceCreditsBy: res.urls.length,
       });
     }
 
     setIsLoading(false);
-  }, [dispatch, isLoading]);
+  }, [appDispatch, state, isLoading]);
 
-  return { credits: appState.credits, generateAvatars, isLoading };
+  return {
+    state,
+    credits: appState.credits,
+    generateAvatars,
+    isLoading,
+    dispatch,
+  };
 }

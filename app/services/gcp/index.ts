@@ -30,7 +30,6 @@ export async function uploadAvatar(avatarUrls: string[]): Promise<string[]> {
         await bucket.file(`${avatarId}.png`).save(Buffer.from(arrayBuffer));
         return avatarId;
       } catch (err) {
-        console.log(err);
         Logger.log('error', 'Error uploading avatar');
         return null;
       }
