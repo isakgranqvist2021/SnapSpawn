@@ -3,7 +3,6 @@ module.exports = {
   content: [
     './components/**/**.{ts,tsx}',
     './containers/**/**.{ts,tsx}',
-    './page-components/**/**.{ts,tsx}',
     './pages/**/**.{ts,tsx}',
     './utils/**/**.{ts,tsx}',
   ],
