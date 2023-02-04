@@ -1,9 +1,12 @@
+import { useAppDispatch } from '@aa/context';
 import getStripe from '@aa/services/stripe';
 import { useState } from 'react';
 
 export function useAddCreditsModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [credits, setCredits] = useState(10);
+
+  const appDispatch = useAppDispatch();
 
   const continueToCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,8 +30,22 @@ export function useAddCreditsModal() {
         sessionId: res.id,
       });
 
+      appDispatch({
+        type: 'add:alert',
+        alert: {
+          severity: 'success',
+          message: 'You have successfully purchased credits!',
+        },
+      });
       setIsLoading(false);
     } catch {
+      appDispatch({
+        type: 'add:alert',
+        alert: {
+          severity: 'error',
+          message: 'Something went wrong. Please try again.',
+        },
+      });
       setIsLoading(false);
     }
   };

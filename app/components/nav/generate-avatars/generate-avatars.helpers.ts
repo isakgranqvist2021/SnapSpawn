@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppState } from '@aa/context';
 import { PromptOptions } from '@aa/utils/prompt';
-import { Reducer, useCallback, useReducer, useState } from 'react';
+import { Reducer, useCallback, useReducer, useRef, useState } from 'react';
 
 const DEFAULT_FORM_STATE: PromptOptions = {
   age: 32,
@@ -49,27 +49,51 @@ export function useGenerateAvatar() {
     DEFAULT_FORM_STATE,
   );
 
+  const modalToggleRef = useRef<HTMLInputElement>(null);
+
   const generateAvatars = useCallback(async () => {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    const res = await fetch('/api/avatar/generate-avatar', {
-      method: 'POST',
-      body: JSON.stringify(state),
-    }).then((res) => res.json());
+      const res = await fetch('/api/avatar/generate-avatar', {
+        method: 'POST',
+        body: JSON.stringify(state),
+      }).then((res) => res.json());
 
-    if (Array.isArray(res.urls)) {
-      appDispatch({ type: 'add:avatars', avatars: res.urls });
+      if (Array.isArray(res.urls)) {
+        appDispatch({ type: 'add:avatars', avatars: res.urls });
+        appDispatch({
+          type: 'reduce:credits',
+          reduceCreditsBy: res.urls.length,
+        });
+      }
+
+      modalToggleRef.current?.click();
+
       appDispatch({
-        type: 'reduce:credits',
-        reduceCreditsBy: res.urls.length,
+        type: 'add:alert',
+        alert: {
+          message: 'Avatars generated successfully!',
+          severity: 'success',
+        },
       });
-    }
 
-    setIsLoading(false);
-  }, [appDispatch, state, isLoading]);
+      setIsLoading(false);
+    } catch {
+      appDispatch({
+        type: 'add:alert',
+        alert: {
+          message: 'Something went wrong. Please try again.',
+          severity: 'error',
+        },
+      });
+      setIsLoading(false);
+    }
+  }, [appDispatch, modalToggleRef, state, isLoading]);
 
   return {
     state,
+    modalToggleRef,
     credits: appState.credits,
     generateAvatars,
     isLoading,

@@ -1,5 +1,6 @@
 import { MyAvatars } from '@aa/components/my-avatars';
 import { Nav } from '@aa/components/nav';
+import { PageSnackbar } from '@aa/components/page-snackbar';
 import { AuthContainer, MainContainer } from '@aa/containers';
 import { AppProvider } from '@aa/context';
 import { getAvatars } from '@aa/prisma/avatar';
@@ -34,6 +35,8 @@ export default function Account(props: { credits: number; avatars: string[] }) {
           <Nav />
 
           <MyAvatars />
+
+          <PageSnackbar />
         </MainContainer>
       </AuthContainer>
     </AppProvider>

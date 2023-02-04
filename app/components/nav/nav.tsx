@@ -13,10 +13,14 @@ import {
   GenerateAvatarsButton,
 } from './generate-avatars';
 
-function LogoutLink(props: PropsWithChildren) {
-  const { children } = props;
+function LogoutLink(props: React.ComponentPropsWithoutRef<'a'>) {
+  const { children, ...rest } = props;
 
-  return <Link href="/api/auth/logout">{children}</Link>;
+  return (
+    <Link href="/api/auth/logout" {...rest}>
+      {children}
+    </Link>
+  );
 }
 
 function NavDropDown() {
@@ -45,7 +49,7 @@ function NavDropDown() {
 
 function LogoutButtomNavButton() {
   return (
-    <LogoutLink>
+    <LogoutLink className="text-error">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -60,7 +64,6 @@ function LogoutButtomNavButton() {
           d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
         />
       </svg>
-      <span className="btm-nav-label">Logout</span>
     </LogoutLink>
   );
 }
