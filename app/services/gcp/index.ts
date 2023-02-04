@@ -39,17 +39,13 @@ export async function uploadAvatar(avatarUrls: string[]): Promise<string[]> {
   return avatarIds.filter((avatarId): avatarId is string => avatarId !== null);
 }
 
-export async function generateSignedUrls(avatarIds: string[]) {
-  return Promise.all(
-    avatarIds.map(async (avatarId) => {
-      const file = bucket.file(`${avatarId}.png`);
+export async function getSignedUrl(avatarId: string) {
+  const file = bucket.file(`${avatarId}.png`);
 
-      const [signedUrl] = await file.getSignedUrl({
-        action: 'read',
-        expires: Date.now() + ONE_HOUR_IN_MS,
-      });
+  const [signedUrl] = await file.getSignedUrl({
+    action: 'read',
+    expires: Date.now() + ONE_HOUR_IN_MS,
+  });
 
-      return signedUrl;
-    }),
-  );
+  return signedUrl;
 }

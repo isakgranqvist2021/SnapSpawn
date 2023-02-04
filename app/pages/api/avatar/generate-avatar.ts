@@ -1,14 +1,15 @@
-import { createAvatars } from '@aa/prisma/avatar';
-import { getUser, reduceUserCredits } from '@aa/prisma/user';
+import { createAvatars } from '@aa/database/avatar';
+import { getUser, reduceUserCredits } from '@aa/database/user';
+import { AvatarModel } from '@aa/models';
 import { generateAvatars } from '@aa/services/avatar';
-import { generateSignedUrls, uploadAvatar } from '@aa/services/gcp';
+import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { PromptOptions, getPrompt } from '@aa/utils/prompt';
 import { getSession } from '@auth0/nextjs-auth0';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 interface Data {
-  urls: string[];
+  avatars: AvatarModel[];
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -43,14 +44,26 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
         .map((key) => `${key}=${body[key as keyof PromptOptions]}`)
         .join('&'),
     );
+
     await reduceUserCredits(session.user.email, openAiUrls.length);
 
-    const avatarUrls = await generateSignedUrls(avatarIds);
+    const avatarModels: AvatarModel[] = await Promise.all(
+      avatarIds.map(async (avatarId): Promise<AvatarModel> => {
+        const url = await getSignedUrl(avatarId);
 
-    return res.status(200).json({ urls: avatarUrls });
+        return {
+          url: url,
+          id: avatarId,
+          createdAt: Date.now(),
+          prompt,
+        };
+      }),
+    );
+
+    return res.status(200).json({ avatars: avatarModels });
   } catch (err) {
     Logger.log('error', err);
-    return res.status(500).send({ urls: [] });
+    return res.status(500).send({ avatars: [] });
   }
 }
 

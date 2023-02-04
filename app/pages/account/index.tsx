@@ -3,14 +3,19 @@ import { Nav } from '@aa/components/nav';
 import { PageSnackbar } from '@aa/components/page-snackbar';
 import { AuthContainer, MainContainer } from '@aa/containers';
 import { AppProvider } from '@aa/context';
-import { getAvatars } from '@aa/prisma/avatar';
-import { createUser, getUser } from '@aa/prisma/user';
+import { getAvatars } from '@aa/database/avatar';
+import { createUser, getUser } from '@aa/database/user';
+import { AvatarModel } from '@aa/models';
+import { getSignedUrl } from '@aa/services/gcp';
 import { getSession } from '@auth0/nextjs-auth0';
 import { IncomingMessage, ServerResponse } from 'http';
 import Head from 'next/head';
 import React from 'react';
 
-export default function Account(props: { credits: number; avatars: string[] }) {
+export default function Account(props: {
+  credits: number;
+  avatars: AvatarModel[];
+}) {
   const { avatars, credits } = props;
 
   return (
@@ -54,7 +59,7 @@ export async function getServerSideProps(ctx: {
   }
 
   let credits = 0;
-  let avatars: string[] = [];
+  let avatarModels: AvatarModel[] | null = null;
 
   const user = await getUser(session.user.email);
 
@@ -62,8 +67,37 @@ export async function getServerSideProps(ctx: {
     await createUser(session.user.email);
   } else {
     credits = user.credits;
-    avatars = (await getAvatars(session.user.email)) ?? [];
+    const avatarDocuments = await getAvatars(session.user.email);
+
+    if (!avatarDocuments) {
+      return { props: { credits, avatars: [] } };
+    }
+
+    const _avatarModels = await Promise.all(
+      avatarDocuments.map(
+        async (avatarDocument): Promise<AvatarModel | null> => {
+          try {
+            const { _id, avatar, createdAt, prompt } = avatarDocument;
+
+            const url = await getSignedUrl(avatar);
+
+            return {
+              url,
+              id: _id.toHexString(),
+              createdAt: new Date(createdAt).getTime(),
+              prompt,
+            };
+          } catch {
+            return null;
+          }
+        },
+      ),
+    );
+
+    avatarModels = _avatarModels.filter(
+      (avatarModel): avatarModel is AvatarModel => avatarModel !== null,
+    );
   }
 
-  return { props: { credits, avatars } };
+  return { props: { credits, avatars: avatarModels } };
 }

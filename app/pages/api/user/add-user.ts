@@ -1,4 +1,4 @@
-import { createUser } from '@aa/prisma/user';
+import { createUser } from '@aa/database/user';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 async function handler(req: NextApiRequest, res: NextApiResponse<string>) {

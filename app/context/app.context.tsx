@@ -1,3 +1,5 @@
+import { AvatarDocument } from '@aa/database/avatar';
+import { AvatarModel } from '@aa/models';
 import {
   Dispatch,
   PropsWithChildren,
@@ -17,13 +19,13 @@ export interface Alert {
 }
 
 interface AppContextState {
-  avatars: string[];
+  avatars: AvatarModel[];
   credits: number;
   alerts: Alert[];
 }
 
 type ReducerAction =
-  | { type: 'add:avatars'; avatars: string[] }
+  | { type: 'add:avatars'; avatars: AvatarModel[] }
   | { type: 'reduce:credits'; reduceCreditsBy: number }
   | { type: 'add:alert'; alert: Omit<Alert, 'id'> }
   | { type: 'remove:alert'; id: string };

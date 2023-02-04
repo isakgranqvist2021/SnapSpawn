@@ -1,7 +1,10 @@
 import { useAppState } from '@aa/context';
+import { AvatarModel } from '@aa/models';
 import Image from 'next/image';
 
-function renderAvatar(url: string, index: number) {
+function renderAvatar(avatar: AvatarModel, index: number) {
+  const { url } = avatar;
+
   return (
     <div className="card bg-base-100 shadow-xl" key={`avatar-${index}`}>
       <a className="avatar" href={url}>

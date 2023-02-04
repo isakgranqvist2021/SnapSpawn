@@ -60,11 +60,11 @@ export function useGenerateAvatar() {
         body: JSON.stringify(state),
       }).then((res) => res.json());
 
-      if (Array.isArray(res.urls)) {
-        appDispatch({ type: 'add:avatars', avatars: res.urls });
+      if (Array.isArray(res.avatars)) {
+        appDispatch({ type: 'add:avatars', avatars: res.avatars });
         appDispatch({
           type: 'reduce:credits',
-          reduceCreditsBy: res.urls.length,
+          reduceCreditsBy: res.avatars.length,
         });
       }
 

@@ -123,8 +123,6 @@ async function handleEvent(req: Request, res: Response) {
 
 			const updateResult = await addUserCredits(email, credits);
 
-			console.log(updateResult);
-
 			if (updateResult?.modifiedCount === 1) {
 				return res.status(201).send('Webhook received: Charge successful');
 			}
