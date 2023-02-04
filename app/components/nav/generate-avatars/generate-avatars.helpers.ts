@@ -4,7 +4,7 @@ import { Reducer, useCallback, useReducer, useRef, useState } from 'react';
 
 const DEFAULT_FORM_STATE: PromptOptions = {
   age: 32,
-  characteristics: 'leader',
+  characteristics: 'casual',
   gender: 'female',
 };
 
