@@ -44,7 +44,11 @@ function AddCreditsSubmitButton(props: AddCreditsSubmitButtonProps) {
   const { isLoading } = props;
 
   return (
-    <button disabled={isLoading} type="submit" className="btn btn-primary mt-3">
+    <button
+      disabled={isLoading}
+      type="submit"
+      className="btn btn-primary w-full"
+    >
       {isLoading && (
         <div className="absolute z-10">
           <Spinner color="stroke-white" />
@@ -61,7 +65,12 @@ export function AddCreditsModal() {
     useAddCreditsModal();
 
   return (
-    <Modal ref={modalToggleRef} title="Add Credits" id={MODAL_ID}>
+    <Modal
+      footer={<AddCreditsSubmitButton isLoading={isLoading} />}
+      id={MODAL_ID}
+      ref={modalToggleRef}
+      title="Add Credits"
+    >
       <form onSubmit={continueToCheckout} className="px-4 py-3">
         <CreditRadioButton
           credits={credits}
@@ -86,8 +95,6 @@ export function AddCreditsModal() {
           value={100}
           onChange={onChange}
         />
-
-        <AddCreditsSubmitButton isLoading={isLoading} />
       </form>
     </Modal>
   );

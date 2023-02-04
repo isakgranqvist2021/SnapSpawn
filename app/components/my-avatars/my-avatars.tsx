@@ -2,16 +2,8 @@ import { useAppState } from '@aa/context';
 import { AvatarModel } from '@aa/models';
 import Image from 'next/image';
 
-function formatDate(timestamp: number) {
-  return new Intl.DateTimeFormat(navigator.language, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(timestamp);
-}
-
 function renderAvatar(avatar: AvatarModel, index: number) {
-  const { url, createdAt } = avatar;
+  const { url } = avatar;
 
   return (
     <a
@@ -28,9 +20,6 @@ function renderAvatar(avatar: AvatarModel, index: number) {
           width={256}
         />
       </figure>
-      <div className="card-body p-0 md:p-3">
-        <p className="text-center">{formatDate(createdAt)}</p>
-      </div>
     </a>
   );
 }

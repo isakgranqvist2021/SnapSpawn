@@ -13,7 +13,13 @@ export function PickGender(props: PickGenderProps) {
     return (
       <div className="form-control" key={gender}>
         <label className="label cursor-pointer flex gap-4">
-          <span className="label-text capitalize">{gender}</span>
+          <span
+            className={`label-text capitalize ${
+              value === gender ? 'text-primary' : ''
+            }`}
+          >
+            {gender}
+          </span>
           <input
             onChange={onChange}
             value={gender}

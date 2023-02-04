@@ -11,8 +11,9 @@ export function WelcomeMessage() {
   }
 
   return (
-    <div className="my-3 px-6 text-center md:w-full md:text-left">
-      <h1 className="text-2xl font-bold">Welcome, {user.name}</h1>
+    <div className="navbar bg-base-100 justify-between min-h-min py-2 px-6 md:mt-3">
+      <h1>Welcome, {user.name}</h1>
+
       {appState.credits === 0 ? (
         <p>You have no credits left</p>
       ) : (

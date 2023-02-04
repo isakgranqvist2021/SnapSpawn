@@ -40,7 +40,12 @@ export function GenerateAvatarModal() {
   };
 
   return (
-    <Modal ref={modalToggleRef} title="Generate Avatar" id={MODAL_ID}>
+    <Modal
+      footer={<GenerateAvatarSubmitButton isLoading={isLoading} />}
+      id={MODAL_ID}
+      ref={modalToggleRef}
+      title="Generate Avatar"
+    >
       <form onSubmit={onSubmit} className="px-4 py-3 flex flex-col gap-5 form">
         <div className="divider">Pick Age</div>
         <AgeRangePicker
@@ -64,8 +69,6 @@ export function GenerateAvatarModal() {
           onChange={onTraitsChange}
           value={state.traits}
         />
-
-        <GenerateAvatarSubmitButton isLoading={isLoading} />
       </form>
     </Modal>
   );
