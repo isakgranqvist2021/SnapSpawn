@@ -58,12 +58,20 @@ export function useGenerateAvatar() {
       const res = await fetch('/api/avatar/generate-avatar', {
         body: JSON.stringify(state),
         method: 'POST',
-      }).then((res) => res.json());
+      });
 
-      if (Array.isArray(res.avatars)) {
-        appDispatch({ type: 'add:avatars', avatars: res.avatars });
+      if (res.status !== 200) {
+        throw new Error(
+          'Something went wrong. Please try again. If the problem persists, please contact support.',
+        );
+      }
+
+      const data = await res.json();
+
+      if (Array.isArray(data.avatars)) {
+        appDispatch({ type: 'add:avatars', avatars: data.avatars });
         appDispatch({
-          reduceCreditsBy: res.avatars.length,
+          reduceCreditsBy: data.avatars.length,
           type: 'reduce:credits',
         });
       }

@@ -9,7 +9,7 @@ import { Session, getSession } from '@auth0/nextjs-auth0';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 interface Data {
-  avatars: AvatarModel[];
+  avatars: AvatarModel[] | null;
 }
 
 function getPrompt(promptModel: PromptModel) {
@@ -30,6 +30,11 @@ async function getAvatarModels(promptModel: PromptModel, email: string) {
   try {
     const prompt = getPrompt(promptModel);
     const openAiUrls = await generateAvatars(prompt);
+
+    if (!openAiUrls) {
+      throw new Error("couldn't generate avatars");
+    }
+
     const avatarIds = await uploadAvatar(openAiUrls);
 
     const query = Object.keys(promptModel)
@@ -51,7 +56,8 @@ async function getAvatarModels(promptModel: PromptModel, email: string) {
         };
       }),
     );
-  } catch {
+  } catch (err) {
+    Logger.log('error', err);
     return null;
   }
 }
@@ -97,7 +103,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     return res.status(200).json({ avatars: avatarModels });
   } catch (err) {
     Logger.log('error', err);
-    return res.status(500).send({ avatars: [] });
+    return res.status(500).send({ avatars: null });
   }
 }
 

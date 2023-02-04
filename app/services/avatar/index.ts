@@ -25,7 +25,7 @@ export async function generateAvatars(prompt: string) {
     return response.data.map((obj) => obj.url);
   } catch (err) {
     Logger.log('error', err);
-    return [];
+    return null;
   }
 }
 
