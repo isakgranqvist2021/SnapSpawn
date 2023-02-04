@@ -13,14 +13,14 @@ interface Data {
 }
 
 export function getPrompt(options: PromptModel) {
-  const { age, traits, gender } = options;
+  const { age, characteristics, gender, traits } = options;
 
   const parts = [
     'Can you give me',
     gender === 'rather not say' ? 'an avatar' : `a ${gender} avatar`,
     `who is ${age} old`,
-    'and has',
-    `the following traits: ${traits}?`,
+    `and is wearing ${traits}`,
+    `and has this characteristics: ${characteristics}`,
   ];
 
   return parts.join(' ');

@@ -1,4 +1,10 @@
-import { Modal } from '@aa/components/modal';
+import {
+  Modal,
+  ModalBody,
+  ModalContainer,
+  ModalFooter,
+  ModalHeader,
+} from '@aa/components/modal';
 import { Spinner } from '@aa/components/spinner';
 import React from 'react';
 
@@ -65,37 +71,41 @@ export function AddCreditsModal() {
     useAddCreditsModal();
 
   return (
-    <Modal
-      footer={<AddCreditsSubmitButton isLoading={isLoading} />}
-      id={MODAL_ID}
-      ref={modalToggleRef}
-      title="Add Credits"
-    >
-      <form onSubmit={continueToCheckout} className="px-4 py-3">
-        <CreditRadioButton
-          credits={credits}
-          isLoading={isLoading}
-          label="10 credits for €1"
-          value={10}
-          onChange={onChange}
-        />
+    <Modal id={MODAL_ID} ref={modalToggleRef} title="Add Credits">
+      <ModalContainer>
+        <form onSubmit={continueToCheckout}>
+          <ModalHeader title="Add Credits" />
+          <ModalBody>
+            <CreditRadioButton
+              credits={credits}
+              isLoading={isLoading}
+              label="10 credits for €1"
+              value={10}
+              onChange={onChange}
+            />
 
-        <CreditRadioButton
-          credits={credits}
-          isLoading={isLoading}
-          label="50 credits for €4.5"
-          value={50}
-          onChange={onChange}
-        />
+            <CreditRadioButton
+              credits={credits}
+              isLoading={isLoading}
+              label="50 credits for €4.5"
+              value={50}
+              onChange={onChange}
+            />
 
-        <CreditRadioButton
-          credits={credits}
-          isLoading={isLoading}
-          label="100 credits for €8"
-          value={100}
-          onChange={onChange}
-        />
-      </form>
+            <CreditRadioButton
+              credits={credits}
+              isLoading={isLoading}
+              label="100 credits for €8"
+              value={100}
+              onChange={onChange}
+            />
+          </ModalBody>
+
+          <ModalFooter>
+            <AddCreditsSubmitButton isLoading={isLoading} />
+          </ModalFooter>
+        </form>
+      </ModalContainer>
     </Modal>
   );
 }

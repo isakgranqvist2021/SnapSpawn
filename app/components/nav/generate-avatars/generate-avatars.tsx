@@ -1,9 +1,16 @@
-import { Modal } from '@aa/components/modal';
-import { Gender, Traits } from '@aa/models/prompt.model';
+import {
+  Modal,
+  ModalBody,
+  ModalContainer,
+  ModalFooter,
+  ModalHeader,
+} from '@aa/components/modal';
+import { Characteristic, Gender, Traits } from '@aa/models/prompt.model';
 
 import { AgeRangePicker } from './age-range-picker';
 import { GenerateAvatarSubmitButton } from './generate-avatar-submit-button';
 import { useGenerateAvatar } from './generate-avatars.helpers';
+import { PickCharacteristics } from './pick-characteristics';
 import { PickGender } from './pick-gender';
 import { PickTraits } from './pick-traits';
 
@@ -39,37 +46,54 @@ export function GenerateAvatarModal() {
     });
   };
 
+  const onCharacteristicsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      characteristics: e.target.value as Characteristic,
+      type: 'set:characteristics',
+    });
+  };
+
   return (
-    <Modal
-      footer={<GenerateAvatarSubmitButton isLoading={isLoading} />}
-      id={MODAL_ID}
-      ref={modalToggleRef}
-      title="Generate Avatar"
-    >
-      <form onSubmit={onSubmit} className="px-4 py-3 flex flex-col gap-5 form">
-        <div className="divider">Pick Age</div>
-        <AgeRangePicker
-          isLoading={isLoading}
-          onChange={onAgeChange}
-          value={state.age}
-        />
+    <Modal id={MODAL_ID} ref={modalToggleRef}>
+      <ModalContainer>
+        <form onSubmit={onSubmit}>
+          <ModalHeader title="Generate Avatar" />
+          <ModalBody>
+            <AgeRangePicker
+              isLoading={isLoading}
+              onChange={onAgeChange}
+              value={state.age}
+            />
 
-        <div className="divider">Pick Gender</div>
+            <hr />
 
-        <PickGender
-          isLoading={isLoading}
-          onChange={onGenderChange}
-          value={state.gender}
-        />
+            <PickGender
+              isLoading={isLoading}
+              onChange={onGenderChange}
+              value={state.gender}
+            />
 
-        <div className="divider">Pick Traits</div>
+            <hr />
 
-        <PickTraits
-          isLoading={isLoading}
-          onChange={onTraitsChange}
-          value={state.traits}
-        />
-      </form>
+            <PickTraits
+              isLoading={isLoading}
+              onChange={onTraitsChange}
+              value={state.traits}
+            />
+
+            <hr />
+
+            <PickCharacteristics
+              isLoading={isLoading}
+              onChange={onCharacteristicsChange}
+              value={state.characteristics}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <GenerateAvatarSubmitButton isLoading={isLoading} />
+          </ModalFooter>
+        </form>
+      </ModalContainer>
     </Modal>
   );
 }

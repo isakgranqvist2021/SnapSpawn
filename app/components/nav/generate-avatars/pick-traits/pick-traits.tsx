@@ -9,7 +9,7 @@ interface PickTraitsProps {
 export function PickTraits(props: PickTraitsProps) {
   const { onChange, isLoading, value } = props;
 
-  const rendertraitsButton = (trait: Traits) => {
+  const renderTraitButton = (trait: Traits) => {
     return (
       <div className="form-control" key={trait}>
         <label className="label cursor-pointer flex gap-2">
@@ -34,6 +34,6 @@ export function PickTraits(props: PickTraitsProps) {
   };
 
   return (
-    <div className="flex gap-2 flex-wrap">{traits.map(rendertraitsButton)}</div>
+    <div className="flex gap-2 flex-wrap">{traits.map(renderTraitButton)}</div>
   );
 }
