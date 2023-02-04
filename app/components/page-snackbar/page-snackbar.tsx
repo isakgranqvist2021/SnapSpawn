@@ -41,7 +41,7 @@ function PageSnackbarToast(props: Alert) {
   }, [appDispatch, id]);
 
   return (
-    <div className="toast">
+    <div className="toast z-20">
       <PageSnackbarAlert {...props} />
     </div>
   );

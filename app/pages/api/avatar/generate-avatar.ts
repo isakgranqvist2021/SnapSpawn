@@ -36,7 +36,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     const openAiUrls = await generateAvatars(prompt);
     const avatarIds = await uploadAvatar(openAiUrls);
 
-    await createAvatars(session.user.email, avatarIds);
+    await createAvatars(
+      session.user.email,
+      avatarIds,
+      Object.keys(body)
+        .map((key) => `${key}=${body[key as keyof PromptOptions]}`)
+        .join('&'),
+    );
     await reduceUserCredits(session.user.email, openAiUrls.length);
 
     const avatarUrls = await generateSignedUrls(avatarIds);

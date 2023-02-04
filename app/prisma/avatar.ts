@@ -33,12 +33,17 @@ export async function createAvatar(email: string, avatar: string) {
   }
 }
 
-export async function createAvatars(email: string, avatars: string[]) {
+export async function createAvatars(
+  email: string,
+  avatars: string[],
+  prompt: string,
+) {
   try {
     const result = prisma.avatar.createMany({
       data: avatars.map((avatar) => ({
         avatar,
         email,
+        prompt,
       })),
     });
 
