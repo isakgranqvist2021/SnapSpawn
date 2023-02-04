@@ -26,20 +26,10 @@ function getPrompt(promptModel: PromptModel) {
   return parts.join(' ');
 }
 
-async function prepareAvatarModel(avatarId: string): Promise<AvatarModel> {
-  const url = await getSignedUrl(avatarId);
-
-  return {
-    url: url,
-    id: avatarId,
-    createdAt: Date.now(),
-    prompt: 'Something sexy',
-  };
-}
-
 async function getAvatarModels(promptModel: PromptModel, email: string) {
   try {
-    const openAiUrls = await generateAvatars(getPrompt(promptModel));
+    const prompt = getPrompt(promptModel);
+    const openAiUrls = await generateAvatars(prompt);
     const avatarIds = await uploadAvatar(openAiUrls);
 
     const query = Object.keys(promptModel)
@@ -49,7 +39,18 @@ async function getAvatarModels(promptModel: PromptModel, email: string) {
     await createAvatars(email, avatarIds, query);
     await reduceUserCredits(email, openAiUrls.length);
 
-    return Promise.all(avatarIds.map(prepareAvatarModel));
+    return Promise.all(
+      avatarIds.map(async (avatarId): Promise<AvatarModel> => {
+        const url = await getSignedUrl(avatarId);
+
+        return {
+          createdAt: Date.now(),
+          id: avatarId,
+          prompt,
+          url,
+        };
+      }),
+    );
   } catch {
     return null;
   }
