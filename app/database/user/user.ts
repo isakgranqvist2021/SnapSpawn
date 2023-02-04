@@ -59,7 +59,10 @@ export async function reduceUserCredits(email: string, credits: number) {
       return null;
     }
 
-    const result = await collection.updateOne({ email }, { $inc: { credits } });
+    const result = await collection.updateOne(
+      { email },
+      { $inc: { credits: -credits } },
+    );
 
     return result;
   } catch (err) {
