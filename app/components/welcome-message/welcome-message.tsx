@@ -1,5 +1,6 @@
 import { useAppState } from '@aa/context';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import React from 'react';
 
 export function WelcomeMessage() {
   const { user } = useUser();
