@@ -58,11 +58,11 @@ function AddCreditsSubmitButton(props: AddCreditsSubmitButtonProps) {
 }
 
 export function AddCreditsModal() {
-  const { credits, isLoading, onChange, continueToCheckout } =
+  const { credits, isLoading, onChange, continueToCheckout, modalToggleRef } =
     useAddCreditsModal();
 
   return (
-    <Modal title="Add Credits" id={MODAL_ID}>
+    <Modal ref={modalToggleRef} title="Add Credits" id={MODAL_ID}>
       <form onSubmit={continueToCheckout} className="px-4 py-3">
         <CreditRadioButton
           credits={credits}
