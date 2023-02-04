@@ -2,7 +2,7 @@ import { useAppState } from '@aa/context';
 import { AvatarModel } from '@aa/models';
 import Image from 'next/image';
 
-function formatDateYYYYMMDDHHWithIntl(timestamp: number) {
+function formatDate(timestamp: number) {
   return new Intl.DateTimeFormat(navigator.language, {
     year: 'numeric',
     month: '2-digit',
@@ -29,7 +29,7 @@ function renderAvatar(avatar: AvatarModel, index: number) {
         />
       </figure>
       <div className="card-body p-0 md:p-3">
-        <p className="text-center">{formatDateYYYYMMDDHHWithIntl(createdAt)}</p>
+        <p className="text-center">{formatDate(createdAt)}</p>
       </div>
     </a>
   );
