@@ -99,7 +99,7 @@ function SidebarActions() {
     appDispatch({ type: 'toggle:generate-avatar-sidebar' });
 
   return (
-    <div className="w-full p-5 gap-5 flex justify-between">
+    <div className="w-full p-5 gap-5 flex flex-col items-start sm:flex-row sm:justify-between">
       <button
         className="btn btn-primary gap-2"
         onClick={toggleGenerateAvatarSidebar}
