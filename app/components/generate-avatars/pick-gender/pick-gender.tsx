@@ -34,7 +34,7 @@ export function PickGender(props: PickGenderProps) {
   };
 
   return (
-    <div className="flex gap-5 flex-wrap">
+    <div className="flex gap-2 flex-wrap">
       {genders.map(renderGenderRadioButton)}
     </div>
   );

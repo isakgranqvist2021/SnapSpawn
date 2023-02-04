@@ -1,9 +1,17 @@
+import { AddCreditsForm } from '@aa/components/add-credits';
+import { GenerateAvatarForm } from '@aa/components/generate-avatars';
+import { closeIcon, openIcon } from '@aa/components/icons';
 import { MyAvatars } from '@aa/components/my-avatars';
 import { Nav } from '@aa/components/nav';
 import { PageSnackbar } from '@aa/components/page-snackbar';
-import { WelcomeMessage } from '@aa/components/welcome-message';
-import { AuthContainer, MainContainer } from '@aa/containers';
-import { AppProvider } from '@aa/context';
+import {
+  AuthContainer,
+  MainContainer,
+  MainContainerContent,
+  MainContainerLayout,
+  MainContainerSidebar,
+} from '@aa/containers';
+import { AppProvider, useAppDispatch, useAppState } from '@aa/context';
 import { AvatarDocument, getAvatars } from '@aa/database/avatar';
 import { createUser, getUser } from '@aa/database/user';
 import { AvatarModel } from '@aa/models';
@@ -26,6 +34,106 @@ interface GetServerSideProps {
 interface GetServerSidePropsContext {
   req: IncomingMessage;
   res: ServerResponse<IncomingMessage>;
+}
+
+function GenerateAvatarSidebar() {
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+
+  const closeGenerateAvatarSidebar = () =>
+    appDispatch({ type: 'close:generate-avatar-sidebar' });
+
+  return (
+    <MainContainerSidebar
+      className="border-r"
+      isOpen={appState.generateAvatarSidebarOpen}
+      onClose={closeGenerateAvatarSidebar}
+      closeIcon={
+        <div
+          className="absolute top-1 right-1 cursor-pointer"
+          onClick={closeGenerateAvatarSidebar}
+        >
+          {closeIcon}
+        </div>
+      }
+    >
+      <GenerateAvatarForm />
+    </MainContainerSidebar>
+  );
+}
+
+function AddCreditsSidebar() {
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+
+  const closeAddCreditsSidebar = () =>
+    appDispatch({ type: 'close:add-credits-sidebar' });
+
+  return (
+    <MainContainerSidebar
+      className="border-l right-0"
+      isOpen={appState.addCreditsSidebarOpen}
+      onClose={closeAddCreditsSidebar}
+      closeIcon={
+        <div
+          className="absolute top-1 left-1 cursor-pointer"
+          onClick={closeAddCreditsSidebar}
+        >
+          {closeIcon}
+        </div>
+      }
+    >
+      <AddCreditsForm />
+    </MainContainerSidebar>
+  );
+}
+
+function SidebarActions() {
+  const appState = useAppState();
+  const appDispatch = useAppDispatch();
+
+  const toggleAddCreditsSidebar = () =>
+    appDispatch({ type: 'toggle:add-credits-sidebar' });
+
+  const toggleGenerateAvatarSidebar = () =>
+    appDispatch({ type: 'toggle:generate-avatar-sidebar' });
+
+  return (
+    <div className="w-full p-5 gap-5 flex justify-between">
+      <button
+        className="btn btn-primary gap-2"
+        onClick={toggleGenerateAvatarSidebar}
+      >
+        {appState.generateAvatarSidebarOpen ? closeIcon : openIcon}
+        Generate Avatar
+      </button>
+      <button
+        className="btn btn-secondary gap-2"
+        onClick={toggleAddCreditsSidebar}
+      >
+        {appState.addCreditsSidebarOpen ? closeIcon : openIcon}
+        Add Credits
+      </button>
+    </div>
+  );
+}
+
+function AccountMainContent() {
+  return (
+    <MainContainerLayout>
+      <GenerateAvatarSidebar />
+
+      <MainContainerContent>
+        <SidebarActions />
+
+        <hr className="w-full" />
+
+        <MyAvatars />
+      </MainContainerContent>
+
+      <AddCreditsSidebar />
+    </MainContainerLayout>
+  );
 }
 
 export default function Account(props: AccountProps) {
@@ -52,9 +160,7 @@ export default function Account(props: AccountProps) {
         <MainContainer>
           <Nav />
 
-          <WelcomeMessage />
-
-          <MyAvatars />
+          <AccountMainContent />
 
           <PageSnackbar />
         </MainContainer>
