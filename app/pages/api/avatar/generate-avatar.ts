@@ -13,9 +13,17 @@ interface Data {
 }
 
 export function getPrompt(options: PromptModel) {
-  const { age, characteristics, gender } = options;
+  const { age, traits, gender } = options;
 
-  return `Can you give me a ${gender} avatar who is ${age} old and has the following characteristics: ${characteristics}?`;
+  const parts = [
+    'Can you give me',
+    gender === 'rather not say' ? 'an avatar' : `a ${gender} avatar`,
+    `who is ${age} old`,
+    'and has',
+    `the following traits: ${traits}?`,
+  ];
+
+  return parts.join(' ');
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {

@@ -1,16 +1,16 @@
 import { useAppDispatch } from '@aa/context';
-import { Characteristic, Gender, PromptModel } from '@aa/models/prompt.model';
+import { Gender, PromptModel, Traits } from '@aa/models/prompt.model';
 import { Reducer, useCallback, useReducer, useRef, useState } from 'react';
 
 const DEFAULT_FORM_STATE: PromptModel = {
   age: 32,
-  characteristics: 'casual',
+  traits: 'casual',
   gender: 'female',
 };
 
 type ReducerAction =
   | { age: number; type: 'set:age' }
-  | { characteristics: Characteristic; type: 'set:characteristics' }
+  | { traits: Traits; type: 'set:traits' }
   | { gender: Gender; type: 'set:gender' };
 
 function reducer(state: PromptModel, action: ReducerAction): PromptModel {
@@ -18,8 +18,8 @@ function reducer(state: PromptModel, action: ReducerAction): PromptModel {
     case 'set:age':
       return { ...state, age: action.age };
 
-    case 'set:characteristics':
-      return { ...state, characteristics: action.characteristics };
+    case 'set:traits':
+      return { ...state, traits: action.traits };
 
     case 'set:gender':
       return { ...state, gender: action.gender };

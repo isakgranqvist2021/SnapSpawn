@@ -13,7 +13,7 @@ export function GenerateAvatarSubmitButton(
 
   return (
     <button
-      className="btn btn-primary mt-3"
+      className="btn btn-secondary mt-3"
       disabled={isLoading || credits === 0}
       type="submit"
     >

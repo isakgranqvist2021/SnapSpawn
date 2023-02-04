@@ -1,6 +1,6 @@
-export const genders = ['male', 'female'] as const;
+export const genders = ['male', 'female', 'rather not say'] as const;
 
-export const characteristics = [
+export const traits = [
   'casual',
   'fashionable',
   'futuristic',
@@ -17,10 +17,10 @@ export const characteristics = [
 
 export type Gender = (typeof genders)[number];
 
-export type Characteristic = (typeof characteristics)[number];
+export type Traits = (typeof traits)[number];
 
 export interface PromptModel {
   age: number;
-  characteristics: Characteristic;
+  traits: Traits;
   gender: Gender;
 }

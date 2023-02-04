@@ -1,11 +1,11 @@
 import { Modal } from '@aa/components/modal';
-import { Characteristic, Gender } from '@aa/models/prompt.model';
+import { Gender, Traits } from '@aa/models/prompt.model';
 
 import { AgeRangePicker } from './age-range-picker';
 import { GenerateAvatarSubmitButton } from './generate-avatar-submit-button';
 import { useGenerateAvatar } from './generate-avatars.helpers';
-import { PickCharacteristics } from './pick-characteristics';
 import { PickGender } from './pick-gender';
+import { PickTraits } from './pick-traits';
 
 const MODAL_ID = 'GENERATE_AVATAR_MODAL';
 
@@ -32,10 +32,10 @@ export function GenerateAvatarModal() {
     });
   };
 
-  const onCharacteristicsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onTraitsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      characteristics: e.target.value as Characteristic,
-      type: 'set:characteristics',
+      traits: e.target.value as Traits,
+      type: 'set:traits',
     });
   };
 
@@ -57,12 +57,12 @@ export function GenerateAvatarModal() {
           value={state.gender}
         />
 
-        <div className="divider">Pick Characteristics</div>
+        <div className="divider">Pick Traits</div>
 
-        <PickCharacteristics
+        <PickTraits
           isLoading={isLoading}
-          onChange={onCharacteristicsChange}
-          value={state.characteristics}
+          onChange={onTraitsChange}
+          value={state.traits}
         />
 
         <GenerateAvatarSubmitButton isLoading={isLoading} />

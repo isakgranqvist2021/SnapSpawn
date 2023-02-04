@@ -15,7 +15,7 @@ export function AgeRangePicker(props: AgeRangePickerProps) {
       >
         <span className="label-text whitespace-nowrap">Age ({value})</span>
         <input
-          className="range"
+          className="range range-primary"
           disabled={isLoading}
           id="age"
           max="100"
