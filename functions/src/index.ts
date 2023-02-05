@@ -13,13 +13,9 @@ if (!stripe) {
 
 async function addUserCredits(email: string, credits: number) {
 	try {
-		const c = new MongoClient(process.env.DATABASE_URL!);
-
-		if (!c) {
-			throw new Error('MongoClient is null');
-		}
-
-		const client = await c.connect();
+		const client = await new MongoClient(
+			process.env.MONGO_DB_DATABASE_URL!
+		).connect();
 
 		if (!client) {
 			throw new Error('MongoClient is null');
