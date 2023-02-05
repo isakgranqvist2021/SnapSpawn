@@ -4,15 +4,15 @@ options:
 timeout: '1600s'
 
 steps:
-  - name: node:18.12.1
+  - name: node:16.14.1
     dir: app
     entrypoint: yarn
     args: ['install']
 
-  - name: node:18.12.1
+  - name: node:16.14.1
     dir: app
     entrypoint: yarn
-    args: ['run', 'create-env']
+    args: ['create-env']
     env:
       - 'NODE_ENV                           = $_NODE_ENV'
       - 'DATABASE_URL                       = $_DATABASE_URL'
@@ -32,10 +32,10 @@ steps:
       - 'BUCKET_NAME                        = $_BUCKET_NAME'
       - 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = $_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'
 
-  - name: node:18.12.1
+  - name: node:16.14.1
     dir: app
     entrypoint: yarn
-    args: ['run', 'build']
+    args: ['build']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     dir: app
