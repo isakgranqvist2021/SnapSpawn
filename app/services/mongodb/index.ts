@@ -5,10 +5,6 @@ declare namespace global {
   var _mongoClientPromise: Promise<MongoClient>;
 }
 
-if (!env.databaseUri) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
-}
-
 const options: MongoClientOptions = {};
 
 let client;

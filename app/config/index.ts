@@ -9,3 +9,15 @@ export const env = {
   projectId: process.env.PROJECT_ID as string,
   clientId: process.env.CLIENT_ID as string,
 };
+
+const errors = [];
+
+for (const k in env) {
+  if (!env[k as keyof typeof env]) {
+    errors.push(`Missing env variable: ${k}\n`);
+  }
+}
+
+if (errors.length) {
+  throw new Error(errors.join(''));
+}
