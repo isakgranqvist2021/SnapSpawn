@@ -201,7 +201,7 @@ export async function getServerSideProps(
     const session = await getSession(ctx.req, ctx.res);
 
     if (!session?.user.email) {
-      throw new Error('Session is null');
+      return { props: { credits: 0, avatars: [] } };
     }
 
     const user = await getUser(session.user.email);
@@ -214,7 +214,7 @@ export async function getServerSideProps(
     const avatarDocuments = await getAvatars(session.user.email);
 
     if (!avatarDocuments) {
-      throw new Error('Avatar documents not found');
+      return { props: { credits: user.credits, avatars: [] } };
     }
 
     const avatarModels = await Promise.all(
