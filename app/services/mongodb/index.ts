@@ -1,6 +1,8 @@
 import { env } from '@aa/config';
 import { MongoClient } from 'mongodb';
 
+console.log(process.env.NODE_ENV);
+
 declare namespace global {
   var _mongoClientPromise: Promise<MongoClient>;
 }

@@ -34,4 +34,4 @@ steps:
     args: ['run', 'build', '--prefix', 'app']
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['app', 'deploy']
+    args: ['app', 'deploy', '--appyaml=./app/app.yaml']
