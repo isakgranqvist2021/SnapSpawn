@@ -1,42 +1,42 @@
-import { Traits, traits } from '@aa/models';
+import { EyeColor, eyeColors } from '@aa/models';
 
 import {
   useGenerateAvatarDispatch,
   useGenerateAvatarState,
 } from '../generate-avatars.context';
 
-export function PickTraits() {
-  const dispatch = useGenerateAvatarDispatch();
+export function PickEyeColor() {
   const state = useGenerateAvatarState();
+  const dispatch = useGenerateAvatarDispatch();
 
+  const value = state.form.eyeColor;
   const isLoading = state.isLoading;
-  const value = state.form.traits;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      traits: e.target.value as Traits,
-      type: 'set:traits',
+      eyeColor: e.target.value as EyeColor,
+      type: 'set:eyeColor',
     });
   };
 
-  const renderTraitButton = (trait: Traits) => {
+  const renderEyeColorButton = (eyeColor: EyeColor) => {
     return (
-      <div className="form-control" key={trait}>
-        <label className="label cursor-pointer flex gap-2">
+      <div className="form-control" key={eyeColor}>
+        <label className="label cursor-pointer">
           <span
             className={`label-text capitalize ${
-              value === trait ? 'text-primary' : ''
+              value.includes(eyeColor) ? 'text-primary' : ''
             }`}
           >
-            {trait}
+            {eyeColor} eyes
           </span>
           <input
             onChange={onChange}
-            value={trait}
+            value={eyeColor}
             type="radio"
             disabled={isLoading}
             className="radio"
-            checked={value === trait}
+            checked={value.includes(eyeColor)}
           />
         </label>
       </div>
@@ -45,7 +45,7 @@ export function PickTraits() {
 
   return (
     <div className="grid gap-2 grid-cols-2">
-      {traits.map(renderTraitButton)}
+      {eyeColors.map(renderEyeColorButton)}
     </div>
   );
 }

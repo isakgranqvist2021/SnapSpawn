@@ -1,11 +1,21 @@
-interface AgeRangePickerProps {
-  isLoading: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value: number;
-}
+import {
+  useGenerateAvatarDispatch,
+  useGenerateAvatarState,
+} from '../generate-avatars.context';
 
-export function AgeRangePicker(props: AgeRangePickerProps) {
-  const { value, onChange, isLoading } = props;
+export function AgeRangePicker() {
+  const dispatch = useGenerateAvatarDispatch();
+  const state = useGenerateAvatarState();
+
+  const isLoading = state.isLoading;
+  const value = state.form.age;
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      age: parseInt(e.target.value),
+      type: 'set:age',
+    });
+  };
 
   return (
     <div className="form-control">

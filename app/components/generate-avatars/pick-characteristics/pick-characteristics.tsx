@@ -1,21 +1,34 @@
-import { Characteristic, Traits, characteristics, traits } from '@aa/models';
+import { Characteristic, characteristics } from '@aa/models';
 
-interface PickCharacteristicsProps {
-  isLoading: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value: Characteristic;
-}
+import {
+  useGenerateAvatarDispatch,
+  useGenerateAvatarState,
+} from '../generate-avatars.context';
 
-export function PickCharacteristics(props: PickCharacteristicsProps) {
-  const { onChange, isLoading, value } = props;
+export function PickCharacteristics() {
+  const state = useGenerateAvatarState();
+  const dispatch = useGenerateAvatarDispatch();
+
+  const value = state.form.characteristics;
+  const isLoading = state.isLoading;
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      characteristics: e.target.value as Characteristic,
+      type: 'set:characteristics',
+    });
+  };
 
   const renderCharacteristicButton = (characteristic: Characteristic) => {
+    const isChecked = value.includes(characteristic);
+    const disabled = isLoading || (value.length >= 3 && !isChecked);
+
     return (
       <div className="form-control" key={characteristic}>
         <label className="label cursor-pointer">
           <span
             className={`label-text capitalize ${
-              value === characteristic ? 'text-primary' : ''
+              isChecked ? 'text-primary' : ''
             }`}
           >
             {characteristic}
@@ -23,10 +36,10 @@ export function PickCharacteristics(props: PickCharacteristicsProps) {
           <input
             onChange={onChange}
             value={characteristic}
-            type="radio"
-            disabled={isLoading}
-            className="radio"
-            checked={value === characteristic}
+            type="checkbox"
+            disabled={disabled}
+            className="checkbox"
+            checked={isChecked}
           />
         </label>
       </div>

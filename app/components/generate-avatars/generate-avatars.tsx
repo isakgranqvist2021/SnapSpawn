@@ -1,93 +1,74 @@
-import { Characteristic, Gender, Traits } from '@aa/models/prompt.model';
+import { memo } from 'react';
 
 import { AgeRangePicker } from './age-range-picker';
 import { GenerateAvatarSubmitButton } from './generate-avatar-submit-button';
+import { GenerateAvatarProvider } from './generate-avatars.context';
 import { useGenerateAvatar } from './generate-avatars.helpers';
 import { PickCharacteristics } from './pick-characteristics';
+import { PickEyeColor } from './pick-eye-color';
 import { PickGender } from './pick-gender';
+import { PickHairType } from './pick-hair-type';
 import { PickTraits } from './pick-traits';
 
-export function GenerateAvatarForm() {
-  const { dispatch, generateAvatars, isLoading, state } = useGenerateAvatar();
+function _GenerateAvatarsForm() {
+  const generateAvatars = useGenerateAvatar();
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     generateAvatars();
   };
 
-  const onAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({
-      age: parseInt(e.target.value),
-      type: 'set:age',
-    });
-  };
-
-  const onGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({
-      gender: e.target.value as Gender,
-      type: 'set:gender',
-    });
-  };
-
-  const onTraitsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({
-      traits: e.target.value as Traits,
-      type: 'set:traits',
-    });
-  };
-
-  const onCharacteristicsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({
-      characteristics: e.target.value as Characteristic,
-      type: 'set:characteristics',
-    });
-  };
-
   return (
     <form onSubmit={onSubmit}>
       <div className="p-5">
-        <AgeRangePicker
-          isLoading={isLoading}
-          onChange={onAgeChange}
-          value={state.age}
-        />
+        <AgeRangePicker />
       </div>
 
       <hr />
 
       <div className="p-5">
-        <PickGender
-          isLoading={isLoading}
-          onChange={onGenderChange}
-          value={state.gender}
-        />
+        <PickGender />
       </div>
 
       <hr />
 
       <div className="p-5">
-        <PickTraits
-          isLoading={isLoading}
-          onChange={onTraitsChange}
-          value={state.traits}
-        />
+        <PickHairType />
       </div>
 
       <hr />
 
       <div className="p-5">
-        <PickCharacteristics
-          isLoading={isLoading}
-          onChange={onCharacteristicsChange}
-          value={state.characteristics}
-        />
+        <PickEyeColor />
       </div>
 
       <hr />
 
       <div className="p-5">
-        <GenerateAvatarSubmitButton isLoading={isLoading} />
+        <PickTraits />
+      </div>
+
+      <hr />
+
+      <div className="p-5">
+        <PickCharacteristics />
+      </div>
+
+      <hr />
+
+      <div className="p-5">
+        <GenerateAvatarSubmitButton />
       </div>
     </form>
+  );
+}
+
+const GenerateAvatarsForm = memo(_GenerateAvatarsForm);
+
+export function GenerateAvatars() {
+  return (
+    <GenerateAvatarProvider>
+      <GenerateAvatarsForm />
+    </GenerateAvatarProvider>
   );
 }

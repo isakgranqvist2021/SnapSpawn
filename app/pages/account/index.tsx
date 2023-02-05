@@ -1,5 +1,5 @@
 import { AddCreditsForm } from '@aa/components/add-credits';
-import { GenerateAvatarForm } from '@aa/components/generate-avatars';
+import { GenerateAvatars } from '@aa/components/generate-avatars';
 import { closeIcon, openIcon } from '@aa/components/icons';
 import { MyAvatars } from '@aa/components/my-avatars';
 import { Nav } from '@aa/components/nav';
@@ -60,7 +60,7 @@ function GenerateAvatarSidebar() {
         </div>
       }
     >
-      <GenerateAvatarForm />
+      <GenerateAvatars />
     </MainContainerSidebar>
   );
 }

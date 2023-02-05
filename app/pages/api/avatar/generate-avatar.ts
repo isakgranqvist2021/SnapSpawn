@@ -13,15 +13,21 @@ interface Data {
 }
 
 function getPrompt(promptModel: PromptModel) {
-  const { age, characteristics, gender, traits } = promptModel;
+  const { age, characteristics, eyeColor, gender, hairType, traits } =
+    promptModel;
 
   const parts = [
-    'Can you give me',
-    gender === 'rather not say' ? 'an avatar' : `a ${gender} avatar`,
-    `who is ${age} old`,
-    `and is wearing ${traits}`,
-    `and has this characteristics: ${characteristics}`,
+    '2d vector art, dark background,',
+    `${age} years old`,
+    traits,
+    `${eyeColor} eyes`,
+    `${hairType} hair`,
+    ...characteristics,
   ];
+
+  if (gender !== 'rather not say') {
+    parts.push(gender);
+  }
 
   return parts.join(' ');
 }

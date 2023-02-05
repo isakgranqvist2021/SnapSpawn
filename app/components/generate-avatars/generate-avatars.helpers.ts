@@ -1,60 +1,28 @@
 import { useAppDispatch } from '@aa/context';
+import { Reducer, useCallback, useState } from 'react';
+
 import {
-  Characteristic,
-  Gender,
-  PromptModel,
-  Traits,
-} from '@aa/models/prompt.model';
-import { Reducer, useCallback, useReducer, useState } from 'react';
-
-const DEFAULT_FORM_STATE: PromptModel = {
-  age: 32,
-  traits: 'beard',
-  gender: 'female',
-  characteristics: 'casual',
-};
-
-type ReducerAction =
-  | { age: number; type: 'set:age' }
-  | { traits: Traits; type: 'set:traits' }
-  | { gender: Gender; type: 'set:gender' }
-  | { characteristics: Characteristic; type: 'set:characteristics' };
-
-function reducer(state: PromptModel, action: ReducerAction): PromptModel {
-  switch (action.type) {
-    case 'set:age':
-      return { ...state, age: action.age };
-
-    case 'set:traits':
-      return { ...state, traits: action.traits };
-
-    case 'set:gender':
-      return { ...state, gender: action.gender };
-
-    case 'set:characteristics':
-      return { ...state, characteristics: action.characteristics };
-
-    default:
-      return state;
-  }
-}
+  useGenerateAvatarDispatch,
+  useGenerateAvatarState,
+} from './generate-avatars.context';
 
 export function useGenerateAvatar() {
   const appDispatch = useAppDispatch();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const state = useGenerateAvatarState();
+  const dispatch = useGenerateAvatarDispatch();
 
-  const [state, dispatch] = useReducer<Reducer<PromptModel, ReducerAction>>(
-    reducer,
-    DEFAULT_FORM_STATE,
+  const setIsLoading = useCallback(
+    (isLoading: boolean) => dispatch({ isLoading, type: 'set:isLoading' }),
+    [dispatch],
   );
 
-  const generateAvatars = useCallback(async () => {
+  return useCallback(async () => {
     try {
       setIsLoading(true);
 
       const res = await fetch('/api/avatar/generate-avatar', {
-        body: JSON.stringify(state),
+        body: JSON.stringify(state.form),
         method: 'POST',
       });
 
@@ -95,12 +63,5 @@ export function useGenerateAvatar() {
     }
 
     appDispatch({ type: 'close:generate-avatar-sidebar' });
-  }, [appDispatch, state]);
-
-  return {
-    dispatch,
-    generateAvatars,
-    isLoading,
-    state,
-  };
+  }, [appDispatch, state.form]);
 }

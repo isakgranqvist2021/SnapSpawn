@@ -1,42 +1,42 @@
-import { Traits, traits } from '@aa/models';
+import { HairType, hairTypes } from '@aa/models';
 
 import {
   useGenerateAvatarDispatch,
   useGenerateAvatarState,
 } from '../generate-avatars.context';
 
-export function PickTraits() {
-  const dispatch = useGenerateAvatarDispatch();
+export function PickHairType() {
   const state = useGenerateAvatarState();
+  const dispatch = useGenerateAvatarDispatch();
 
+  const value = state.form.hairType;
   const isLoading = state.isLoading;
-  const value = state.form.traits;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      traits: e.target.value as Traits,
-      type: 'set:traits',
+      hairType: e.target.value as HairType,
+      type: 'set:hairType',
     });
   };
 
-  const renderTraitButton = (trait: Traits) => {
+  const renderHairTypeButton = (hairType: HairType) => {
     return (
-      <div className="form-control" key={trait}>
-        <label className="label cursor-pointer flex gap-2">
+      <div className="form-control" key={hairType}>
+        <label className="label cursor-pointer">
           <span
             className={`label-text capitalize ${
-              value === trait ? 'text-primary' : ''
+              value.includes(hairType) ? 'text-primary' : ''
             }`}
           >
-            {trait}
+            {hairType}
           </span>
           <input
             onChange={onChange}
-            value={trait}
+            value={hairType}
             type="radio"
             disabled={isLoading}
             className="radio"
-            checked={value === trait}
+            checked={value.includes(hairType)}
           />
         </label>
       </div>
@@ -45,7 +45,7 @@ export function PickTraits() {
 
   return (
     <div className="grid gap-2 grid-cols-2">
-      {traits.map(renderTraitButton)}
+      {hairTypes.map(renderHairTypeButton)}
     </div>
   );
 }

@@ -14,7 +14,7 @@ steps:
     entrypoint: npm
     env:
       - 'NODE_ENV=$_NODE_ENV'
-      - 'MONGO_DB_DATABASE_URL=$_MONGODB_DATABASE_URL'
+      - 'MONGO_DB_DATABASE_URL=$_MONGO_DB_DATABASE_URL'
 
       - 'AUTH0_SECRET=$_AUTH0_SECRET'
       - 'AUTH0_BASE_URL=$_AUTH0_BASE_URL'

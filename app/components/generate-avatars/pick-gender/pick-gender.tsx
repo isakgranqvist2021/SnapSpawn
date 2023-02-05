@@ -1,13 +1,23 @@
 import { Gender, genders } from '@aa/models';
 
-interface PickGenderProps {
-  isLoading: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value: Gender;
-}
+import {
+  useGenerateAvatarDispatch,
+  useGenerateAvatarState,
+} from '../generate-avatars.context';
 
-export function PickGender(props: PickGenderProps) {
-  const { onChange, isLoading, value } = props;
+export function PickGender() {
+  const dispatch = useGenerateAvatarDispatch();
+  const state = useGenerateAvatarState();
+
+  const isLoading = state.isLoading;
+  const value = state.form.gender;
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      gender: e.target.value as Gender,
+      type: 'set:gender',
+    });
+  };
 
   const renderGenderRadioButton = (gender: Gender) => {
     return (
