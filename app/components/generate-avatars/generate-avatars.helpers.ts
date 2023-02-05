@@ -12,14 +12,9 @@ export function useGenerateAvatar() {
   const state = useGenerateAvatarState();
   const dispatch = useGenerateAvatarDispatch();
 
-  const setIsLoading = useCallback(
-    (isLoading: boolean) => dispatch({ isLoading, type: 'set:isLoading' }),
-    [dispatch],
-  );
-
   return useCallback(async () => {
     try {
-      setIsLoading(true);
+      dispatch({ isLoading: true, type: 'set:isLoading' });
 
       const res = await fetch('/api/avatar/generate-avatar', {
         body: JSON.stringify(state.form),
@@ -50,7 +45,7 @@ export function useGenerateAvatar() {
         },
       });
 
-      setIsLoading(false);
+      dispatch({ isLoading: false, type: 'set:isLoading' });
     } catch {
       appDispatch({
         type: 'add:alert',
@@ -59,9 +54,9 @@ export function useGenerateAvatar() {
           severity: 'error',
         },
       });
-      setIsLoading(false);
+      dispatch({ isLoading: false, type: 'set:isLoading' });
     }
 
     appDispatch({ type: 'close:generate-avatar-sidebar' });
-  }, [appDispatch, state.form]);
+  }, [appDispatch, dispatch, state.form]);
 }
