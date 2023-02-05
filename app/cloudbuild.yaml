@@ -29,17 +29,22 @@ steps:
   - name: node:18.12.1
     dir: app
     entrypoint: yarn
+    id: install
 
   - name: node:18.12.1
-    dir: app
-    entrypoint: yarn
     args: ['create-env']
-
-  - name: node:18.12.1
     dir: app
     entrypoint: yarn
+    id: create-env
+    waitFor: ['install']
+
+  - name: node:18.12.1
     args: ['build']
+    dir: app
+    entrypoint: yarn
+    waitFor: ['create-env']
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    dir: app
     args: ['app', 'deploy']
+    dir: app
+    waitFor: ['build']

@@ -12,13 +12,17 @@ steps:
   - name: node:18.12.1
     dir: functions
     entrypoint: yarn
+    id: install
 
   - name: node:18.12.1
-    dir: functions
-    entrypoint: yarn
     args: ['create-env']
-
-  - name: node:18.12.1
     dir: functions
     entrypoint: yarn
+    id: create-env
+    waitFor: ['install']
+
+  - name: node:18.12.1
     args: ['build']
+    dir: functions
+    entrypoint: yarn
+    waitFor: ['create-env']
