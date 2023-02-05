@@ -58,7 +58,7 @@ function AddCreditsSubmitButton(props: AddCreditsSubmitButtonProps) {
 }
 
 export function AddCreditsForm() {
-  const { continueToCheckout, credits, isLoading, modalToggleRef, onChange } =
+  const { continueToCheckout, credits, isLoading, onChange } =
     useAddCreditsModal();
 
   return (

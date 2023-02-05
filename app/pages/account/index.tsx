@@ -4,13 +4,13 @@ import { closeIcon, openIcon } from '@aa/components/icons';
 import { MyAvatars } from '@aa/components/my-avatars';
 import { Nav } from '@aa/components/nav';
 import { PageSnackbar } from '@aa/components/page-snackbar';
+import { AuthContainer } from '@aa/containers/auth-container';
 import {
-  AuthContainer,
   MainContainer,
   MainContainerContent,
   MainContainerLayout,
   MainContainerSidebar,
-} from '@aa/containers';
+} from '@aa/containers/main-container';
 import { AppProvider, useAppDispatch, useAppState } from '@aa/context';
 import { AvatarDocument, getAvatars } from '@aa/database/avatar';
 import { createUser, getUser } from '@aa/database/user';

@@ -12,7 +12,7 @@ export function PickCharacteristics(props: PickCharacteristicsProps) {
   const renderCharacteristicButton = (characteristic: Characteristic) => {
     return (
       <div className="form-control" key={characteristic}>
-        <label className="label cursor-pointer flex gap-2">
+        <label className="label cursor-pointer">
           <span
             className={`label-text capitalize ${
               value === characteristic ? 'text-primary' : ''
@@ -34,7 +34,7 @@ export function PickCharacteristics(props: PickCharacteristicsProps) {
   };
 
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="grid gap-2 grid-cols-2">
       {characteristics.map(renderCharacteristicButton)}
     </div>
   );

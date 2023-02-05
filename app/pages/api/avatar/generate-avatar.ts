@@ -29,6 +29,7 @@ function getPrompt(promptModel: PromptModel) {
 async function getAvatarModels(promptModel: PromptModel, email: string) {
   try {
     const prompt = getPrompt(promptModel);
+
     const openAiUrls = await generateAvatars(prompt);
 
     if (!openAiUrls) {
@@ -87,6 +88,13 @@ async function getUserAndValidateCredits(session?: Session | null) {
 
 async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
   try {
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST');
+      return res.status(405).end('Method Not Allowed');
+    }
+
+    req.body = JSON.parse(req.body);
+
     const session = await getSession(req, res);
     const user = await getUserAndValidateCredits(session);
 

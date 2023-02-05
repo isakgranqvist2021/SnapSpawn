@@ -1,4 +1,4 @@
-import { MainContainer } from '@aa/containers';
+import { MainContainer } from '@aa/containers/main-container';
 import Head from 'next/head';
 import Link from 'next/link';
 import React from 'react';

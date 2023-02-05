@@ -3,7 +3,7 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter } from 'next/router';
 import React, { PropsWithChildren } from 'react';
 
-import { MainContainer } from './main.container';
+import { MainContainer } from '../main-container';
 
 function LoadingContainer() {
   return (

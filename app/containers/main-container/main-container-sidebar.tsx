@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 
 interface MainContainerSidebarProps
   extends React.ComponentPropsWithoutRef<'div'> {
@@ -10,16 +10,6 @@ interface MainContainerSidebarProps
 interface SidebarBackdropProps {
   isOpen: boolean;
   onClose: () => void;
-}
-
-export function MainContainerContent(props: PropsWithChildren) {
-  const { children } = props;
-
-  return (
-    <div className="h-full overflow-auto flex flex-col items-center flex-grow">
-      {children}
-    </div>
-  );
 }
 
 function SidebarBackdrop(props: SidebarBackdropProps) {
@@ -76,19 +66,5 @@ export function MainContainerSidebar(props: MainContainerSidebarProps) {
         </div>
       </div>
     </React.Fragment>
-  );
-}
-
-export function MainContainerLayout(props: PropsWithChildren) {
-  const { children } = props;
-
-  return <div className="flex h-full overflow-hidden bg-white">{children}</div>;
-}
-
-export function MainContainer(props: PropsWithChildren) {
-  const { children } = props;
-
-  return (
-    <main className="h-screen flex flex-col overflow-hidden">{children}</main>
   );
 }

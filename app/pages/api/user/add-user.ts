@@ -5,6 +5,13 @@ const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 async function handler(req: NextApiRequest, res: NextApiResponse<string>) {
   try {
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST');
+      return res.status(405).end('Method Not Allowed');
+    }
+
+    req.body = JSON.parse(req.body);
+
     if (!emailRegexp.test(req.body.email)) {
       return res.status(400).send('invalid email');
     }

@@ -1,14 +1,12 @@
 import { useAppDispatch } from '@aa/context';
 import getStripe from '@aa/services/stripe';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 export function useAddCreditsModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [credits, setCredits] = useState(10);
 
   const appDispatch = useAppDispatch();
-
-  const modalToggleRef = useRef<HTMLInputElement>(null);
 
   const continueToCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,8 +29,6 @@ export function useAddCreditsModal() {
       await stripe.redirectToCheckout({
         sessionId: res.id,
       });
-
-      modalToggleRef.current?.click();
 
       appDispatch({
         alert: {
@@ -63,7 +59,6 @@ export function useAddCreditsModal() {
     continueToCheckout,
     credits,
     isLoading,
-    modalToggleRef,
     onChange,
   };
 }

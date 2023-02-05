@@ -48,12 +48,14 @@ function getStripeCheckoutParams(credits: number, email: string, url?: string) {
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).end('Method Not Allowed');
-  }
-
   try {
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST');
+      return res.status(405).end('Method Not Allowed');
+    }
+
+    req.body = JSON.parse(req.body);
+
     const session = await getSession(req, res);
 
     if (!session?.user.email) {

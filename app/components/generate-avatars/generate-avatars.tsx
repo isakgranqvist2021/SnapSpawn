@@ -8,8 +8,7 @@ import { PickGender } from './pick-gender';
 import { PickTraits } from './pick-traits';
 
 export function GenerateAvatarForm() {
-  const { dispatch, generateAvatars, isLoading, modalToggleRef, state } =
-    useGenerateAvatar();
+  const { dispatch, generateAvatars, isLoading, state } = useGenerateAvatar();
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -34,6 +34,8 @@ export function PickTraits(props: PickTraitsProps) {
   };
 
   return (
-    <div className="flex gap-2 flex-wrap">{traits.map(renderTraitButton)}</div>
+    <div className="grid gap-2 grid-cols-2">
+      {traits.map(renderTraitButton)}
+    </div>
   );
 }

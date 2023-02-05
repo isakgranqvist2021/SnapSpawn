@@ -5,7 +5,7 @@ import {
   PromptModel,
   Traits,
 } from '@aa/models/prompt.model';
-import { Reducer, useCallback, useReducer, useRef, useState } from 'react';
+import { Reducer, useCallback, useReducer, useState } from 'react';
 
 const DEFAULT_FORM_STATE: PromptModel = {
   age: 32,
@@ -49,8 +49,6 @@ export function useGenerateAvatar() {
     DEFAULT_FORM_STATE,
   );
 
-  const modalToggleRef = useRef<HTMLInputElement>(null);
-
   const generateAvatars = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -76,8 +74,6 @@ export function useGenerateAvatar() {
         });
       }
 
-      modalToggleRef.current?.click();
-
       appDispatch({
         type: 'add:alert',
         alert: {
@@ -97,13 +93,14 @@ export function useGenerateAvatar() {
       });
       setIsLoading(false);
     }
-  }, [appDispatch, modalToggleRef, state]);
+
+    appDispatch({ type: 'close:generate-avatar-sidebar' });
+  }, [appDispatch, state]);
 
   return {
     dispatch,
     generateAvatars,
     isLoading,
-    modalToggleRef,
     state,
   };
 }
