@@ -4,13 +4,18 @@ options:
 timeout: '1600s'
 
 steps:
-  - name: node:18.12.1
-    entrypoint: yarn
-    args: ['install', '--modules-folder', 'app']
+  - name: bash
+    script: |
+      #!/usr/bin/env bash
+      cd app
 
   - name: node:18.12.1
     entrypoint: yarn
-    args: ['run', 'create-env', '--modules-folder', 'app']
+    args: ['install']
+
+  - name: node:18.12.1
+    entrypoint: yarn
+    args: ['run', 'create-env']
     env:
       - 'NODE_ENV                           = $_NODE_ENV'
       - 'DATABASE_URL                       = $_DATABASE_URL'
@@ -32,7 +37,7 @@ steps:
 
   - name: node:18.12.1
     entrypoint: yarn
-    args: ['run', 'build', '--modules-folder', 'app']
+    args: ['run', 'build']
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['app', 'deploy', '--appyaml=./app/app.yaml']
+    args: ['app', 'deploy']
