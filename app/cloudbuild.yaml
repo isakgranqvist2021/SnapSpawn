@@ -42,6 +42,7 @@ steps:
     args: ['build']
     dir: app
     entrypoint: yarn
+    id: build
     waitFor: ['create-env']
 
   - name: 'gcr.io/cloud-builders/gcloud'
