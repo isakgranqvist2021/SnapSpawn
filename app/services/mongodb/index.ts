@@ -1,4 +1,4 @@
-import { DATABASE_URL, NODE_ENV } from '@aa/config';
+import { MONGO_DB_DATABASE_URL, NODE_ENV } from '@aa/config';
 import { MongoClient, MongoClientOptions } from 'mongodb';
 
 declare namespace global {
@@ -14,14 +14,14 @@ if (NODE_ENV) {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
   if (!global._mongoClientPromise) {
-    client = new MongoClient(DATABASE_URL, options);
+    client = new MongoClient(MONGO_DB_DATABASE_URL, options);
     global._mongoClientPromise = client.connect();
   }
 
   clientPromise = global._mongoClientPromise;
 } else {
   // In production mode, it's best to not use a global variable.
-  client = new MongoClient(DATABASE_URL, options);
+  client = new MongoClient(MONGO_DB_DATABASE_URL, options);
   clientPromise = client.connect();
 }
 
