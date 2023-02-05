@@ -6,6 +6,10 @@ timeout: '1600s'
 steps:
   - name: node:18.12.1
     entrypoint: npm
+    args: ['install', '--prefix', 'app']
+
+  - name: node:18.12.1
+    entrypoint: npm
     args: ['run', 'create-env', '--prefix', 'app']
     env:
       - 'DATABASE_URL                       = $_DATABASE_URL'
@@ -24,10 +28,6 @@ steps:
       - 'PRIVATE_KEY                        = $_PRIVATE_KEY'
       - 'BUCKET_NAME                        = $_BUCKET_NAME'
       - 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = $_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'
-
-  - name: node:18.12.1
-    entrypoint: npm
-    args: ['install', '--prefix', 'app']
 
   - name: node:18.12.1
     entrypoint: npm
