@@ -1,4 +1,4 @@
-import { env } from '@aa/config';
+import { OPEN_AI_API_KEY, OPEN_AI_BASE_URL } from '@aa/config';
 
 import { Logger } from '../logger';
 
@@ -9,10 +9,10 @@ interface ApiResponse {
 
 export async function generateAvatars(prompt: string) {
   try {
-    const response: ApiResponse = await fetch(env.openAiBaseUrl, {
+    const response: ApiResponse = await fetch(OPEN_AI_BASE_URL, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${env.openAiApiKey}`,
+        Authorization: `Bearer ${OPEN_AI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

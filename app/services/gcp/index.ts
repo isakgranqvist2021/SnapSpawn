@@ -1,4 +1,10 @@
-import { env } from '@aa/config';
+import {
+  BUCKET_NAME,
+  CLIENT_EMAIL,
+  CLIENT_ID,
+  PRIVATE_KEY,
+  PROJECT_ID,
+} from '@aa/config';
 import { Storage } from '@google-cloud/storage';
 import { uid } from 'uid';
 
@@ -8,16 +14,16 @@ import { Logger } from '../logger';
 const ONE_HOUR_IN_MS = 1000 * 60 * 60;
 
 const storage = new Storage({
-  projectId: env.projectId,
+  projectId: PROJECT_ID,
   credentials: {
     type: 'service_account',
-    private_key: env.privateKey,
-    client_email: env.clientEmail,
-    client_id: env.clientId,
+    private_key: PRIVATE_KEY,
+    client_email: CLIENT_EMAIL,
+    client_id: CLIENT_ID,
   },
 });
 
-const bucket = storage.bucket(env.bucketName);
+const bucket = storage.bucket(BUCKET_NAME);
 
 export async function uploadAvatar(avatarUrls: string[]): Promise<string[]> {
   const avatarIds = await Promise.all(
