@@ -28,18 +28,17 @@ timeout: '1600s'
 steps:
   - name: node:18.12.1
     dir: app
-    entrypoint: npm
-    args: ['install']
+    entrypoint: yarn
 
   - name: node:18.12.1
     dir: app
-    entrypoint: npm
-    args: ['run', 'create-env']
+    entrypoint: yarn
+    args: ['create-env']
 
   - name: node:18.12.1
     dir: app
-    entrypoint: npm
-    args: ['run', 'build']
+    entrypoint: yarn
+    args: ['build']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     dir: app
