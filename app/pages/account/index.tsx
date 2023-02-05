@@ -197,37 +197,32 @@ async function prepareAvatarModel(
 export async function getServerSideProps(
   ctx: GetServerSidePropsContext,
 ): Promise<GetServerSideProps> {
-  try {
-    const session = await getSession(ctx.req, ctx.res);
+  const session = await getSession(ctx.req, ctx.res);
 
-    if (!session?.user.email) {
-      return { props: { credits: 0, avatars: [] } };
-    }
-
-    const user = await getUser(session.user.email);
-
-    if (user === null) {
-      await createUser(session.user.email);
-      return { props: { credits: 0, avatars: [] } };
-    }
-
-    const avatarDocuments = await getAvatars(session.user.email);
-
-    if (!avatarDocuments) {
-      return { props: { credits: user.credits, avatars: [] } };
-    }
-
-    const avatarModels = await Promise.all(
-      avatarDocuments.map(prepareAvatarModel),
-    );
-
-    const avatars = avatarModels.filter(
-      (avatarModel): avatarModel is AvatarModel => avatarModel !== null,
-    );
-
-    return { props: { credits: user.credits, avatars } };
-  } catch (err) {
-    Logger.log('error', err);
+  if (!session?.user.email) {
     return { props: { credits: 0, avatars: [] } };
   }
+
+  const user = await getUser(session.user.email);
+
+  if (user === null) {
+    await createUser(session.user.email);
+    return { props: { credits: 0, avatars: [] } };
+  }
+
+  const avatarDocuments = await getAvatars(session.user.email);
+
+  if (!avatarDocuments) {
+    return { props: { credits: user.credits, avatars: [] } };
+  }
+
+  const avatarModels = await Promise.all(
+    avatarDocuments.map(prepareAvatarModel),
+  );
+
+  const avatars = avatarModels.filter(
+    (avatarModel): avatarModel is AvatarModel => avatarModel !== null,
+  );
+
+  return { props: { credits: user.credits, avatars } };
 }
