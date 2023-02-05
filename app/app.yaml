@@ -1,3 +1,4 @@
+service: ai-portrait-studio
 runtime: nodejs18
 instance_class: F1
 
