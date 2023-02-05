@@ -13,58 +13,28 @@ steps:
     dir: app
     entrypoint: npm
     env:
-      - 'NODE_ENV                           = $_NODE_ENV'
-
-      - 'MONGODB_DATABASE_URL               = $_MONGODB_DATABASE_URL'
-
-      - 'AUTH0_BASE_URL                     = $_AUTH0_BASE_URL'
-      - 'AUTH0_CLIENT_SECRET                = $_AUTH0_CLIENT_SECRET'
-      - 'AUTH0_CLIENT_ID                    = $_AUTH0_CLIENT_ID'
-      - 'AUTH0_ISSUER_BASE_URL              = $_AUTH0_ISSUER_BASE_URL'
-      - 'AUTH0_SECRET                       = $_AUTH0_SECRET'
-
-      - 'OPEN_AI_API_KEY                    = $_OPEN_AI_API_KEY'
-      - 'OPEN_AI_BASE_URL                   = $_OPEN_AI_BASE_URL'
-
-      - 'GCP_PROJECT_ID                     = $_GCP_PROJECT_ID'
-      - 'GCP_CLIENT_ID                      = $_GCP_CLIENT_ID'
-      - 'GCP_CLIENT_EMAIL                   = $_GCP_CLIENT_EMAIL'
-      - 'GCP_PRIVATE_KEY                    = $_GCP_PRIVATE_KEY'
-      - 'GCP_BUCKET_NAME                    = $_GCP_BUCKET_NAME'
-
-      - 'STRIPE_SECRET_KEY                  = $_STRIPE_SECRET_KEY'
-
-      - 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = $_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'
+      - 'NODE_ENV=$_NODE_ENV'
+      - 'MONGODB_DATABASE_URL=$_MONGODB_DATABASE_URL'
+      - 'AUTH0_BASE_URL=$_AUTH0_BASE_URL'
+      - 'AUTH0_CLIENT_SECRET=$_AUTH0_CLIENT_SECRET'
+      - 'AUTH0_CLIENT_ID=$_AUTH0_CLIENT_ID'
+      - 'AUTH0_ISSUER_BASE_URL=$_AUTH0_ISSUER_BASE_URL'
+      - 'AUTH0_SECRET=$_AUTH0_SECRET'
+      - 'OPEN_AI_API_KEY=$_OPEN_AI_API_KEY'
+      - 'OPEN_AI_BASE_URL=$_OPEN_AI_BASE_URL'
+      - 'GCP_PROJECT_ID=$_GCP_PROJECT_ID'
+      - 'GCP_CLIENT_ID=$_GCP_CLIENT_ID'
+      - 'GCP_CLIENT_EMAIL=$_GCP_CLIENT_EMAIL'
+      - 'GCP_PRIVATE_KEY=$_GCP_PRIVATE_KEY'
+      - 'GCP_BUCKET_NAME=$_GCP_BUCKET_NAME'
+      - 'STRIPE_SECRET_KEY=$_STRIPE_SECRET_KEY'
+      - 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'
 
     args: ['run', 'create-env']
 
   - name: node:18.12.1
     dir: app
     entrypoint: npm
-    env:
-      - 'NODE_ENV                           = $_NODE_ENV'
-
-      - 'MONGODB_DATABASE_URL               = $_MONGODB_DATABASE_URL'
-
-      - 'AUTH0_BASE_URL                     = $_AUTH0_BASE_URL'
-      - 'AUTH0_CLIENT_SECRET                = $_AUTH0_CLIENT_SECRET'
-      - 'AUTH0_CLIENT_ID                    = $_AUTH0_CLIENT_ID'
-      - 'AUTH0_ISSUER_BASE_URL              = $_AUTH0_ISSUER_BASE_URL'
-      - 'AUTH0_SECRET                       = $_AUTH0_SECRET'
-
-      - 'OPEN_AI_API_KEY                    = $_OPEN_AI_API_KEY'
-      - 'OPEN_AI_BASE_URL                   = $_OPEN_AI_BASE_URL'
-
-      - 'GCP_PROJECT_ID                     = $_GCP_PROJECT_ID'
-      - 'GCP_CLIENT_ID                      = $_GCP_CLIENT_ID'
-      - 'GCP_CLIENT_EMAIL                   = $_GCP_CLIENT_EMAIL'
-      - 'GCP_PRIVATE_KEY                    = $_GCP_PRIVATE_KEY'
-      - 'GCP_BUCKET_NAME                    = $_GCP_BUCKET_NAME'
-
-      - 'STRIPE_SECRET_KEY                  = $_STRIPE_SECRET_KEY'
-
-      - 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = $_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'
-
     args: ['run', 'build', '--debug']
 
   - name: 'gcr.io/cloud-builders/gcloud'
