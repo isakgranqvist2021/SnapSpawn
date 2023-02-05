@@ -1,4 +1,9 @@
+import clientPromise from '@aa/services/mongodb';
 import { Head, Html, Main, NextScript } from 'next/document';
+
+(async function () {
+  await clientPromise;
+});
 
 export default function Document() {
   return (

@@ -1,5 +1,5 @@
 import { env } from '@aa/config';
-import { MongoClient } from 'mongodb';
+import { MongoClient, MongoClientOptions } from 'mongodb';
 
 declare namespace global {
   var _mongoClientPromise: Promise<MongoClient>;
@@ -9,7 +9,7 @@ if (!env.databaseUri) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
 
-const options = {};
+const options: MongoClientOptions = {};
 
 let client;
 let clientPromise: Promise<MongoClient>;
