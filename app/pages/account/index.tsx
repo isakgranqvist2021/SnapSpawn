@@ -45,12 +45,15 @@ function GenerateAvatarSidebar() {
 
   return (
     <MainContainerSidebar
-      className="border-r"
+      className={[
+        appState.addCreditsSidebarOpen ? 'border-r-l' : 'border-r-0',
+        'left-0',
+      ].join(' ')}
       isOpen={appState.generateAvatarSidebarOpen}
       onClose={closeGenerateAvatarSidebar}
       closeIcon={
         <div
-          className="absolute top-1 right-1 cursor-pointer"
+          className="absolute top-4 right-8 cursor-pointer"
           onClick={closeGenerateAvatarSidebar}
         >
           {closeIcon}
@@ -71,12 +74,15 @@ function AddCreditsSidebar() {
 
   return (
     <MainContainerSidebar
-      className="border-l right-0"
+      className={[
+        appState.addCreditsSidebarOpen ? 'border-l-l' : 'border-l-0',
+        'right-0',
+      ].join(' ')}
       isOpen={appState.addCreditsSidebarOpen}
       onClose={closeAddCreditsSidebar}
       closeIcon={
         <div
-          className="absolute top-1 left-1 cursor-pointer"
+          className="absolute top-3 left-5 cursor-pointer"
           onClick={closeAddCreditsSidebar}
         >
           {closeIcon}
