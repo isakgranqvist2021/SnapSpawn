@@ -35,7 +35,7 @@ steps:
   - name: node:18.12.1
     dir: app
     entrypoint: yarn
-    args: ['build']
+    args: ['build', '--debug']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     dir: app
