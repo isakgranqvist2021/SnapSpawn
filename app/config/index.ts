@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 const env = {
   NODE_ENV: process.env.NODE_ENV as string,
 
@@ -31,7 +29,7 @@ for (const k in env) {
 }
 
 if (errors.length) {
-  throw new Error(errors.join(''));
+  throw new Error('\n' + errors.join(''));
 }
 
 export const NODE_ENV = env.NODE_ENV;
