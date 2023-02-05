@@ -130,6 +130,7 @@ async function handleEvent(req: Request, res: Response) {
 
 		return res.status(204).send('Webhook received: Unhandled event');
 	} catch (err) {
+		console.error(err);
 		return res.status(500).send('Webhook Error: Unhandled error');
 	}
 }
