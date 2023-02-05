@@ -4,16 +4,13 @@ options:
 timeout: '1600s'
 
 steps:
-  - name: bash
-    script: |
-      #!/usr/bin/env bash
-      cd app
-
   - name: node:18.12.1
+    dir: app
     entrypoint: yarn
     args: ['install']
 
   - name: node:18.12.1
+    dir: app
     entrypoint: yarn
     args: ['run', 'create-env']
     env:
@@ -36,8 +33,10 @@ steps:
       - 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = $_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'
 
   - name: node:18.12.1
+    dir: app
     entrypoint: yarn
     args: ['run', 'build']
 
   - name: 'gcr.io/cloud-builders/gcloud'
+    dir: app
     args: ['app', 'deploy']
