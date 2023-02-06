@@ -23,30 +23,41 @@ options:
 
     - 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'
 
-timeout: '1600s'
-
 steps:
-  - name: node:18.12.1
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
     dir: app
-    entrypoint: yarn
-    id: install
+    args:
+      [
+        'build',
+        '-t',
+        'gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container',
+        '.',
+      ]
 
-  - name: node:18.12.1
-    args: ['create-env']
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
     dir: app
-    entrypoint: yarn
-    id: create-env
-    waitFor: ['install']
+    args:
+      [
+        'push',
+        'gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container',
+      ]
 
-  - name: node:18.12.1
-    args: ['build']
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     dir: app
-    entrypoint: yarn
-    id: build
-    waitFor: ['create-env']
+    entrypoint: gcloud
+    args:
+      [
+        'run',
+        'deploy',
+        'ai-portrait-studio',
+        '--image',
+        'gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container',
+        '--region',
+        'europe-west1',
+      ]
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['app', 'deploy']
-    dir: app
-    id: deploy
-    waitFor: ['build']
+images:
+  - gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container

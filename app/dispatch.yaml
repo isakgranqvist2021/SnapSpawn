@@ -1,6 +1,0 @@
-dispatch:
-  - url: 'www.aiportraitstudio.com/*'
-    service: ai-portrait-studio
-
-  - url: 'www.granqvist.dev/*'
-    service: granqvist-dev
