@@ -39,4 +39,4 @@ steps:
       - --region=europe-west1
       - --source=dist
       - --trigger-http
-      - --runtime=RUNTIME
+      - --runtime=nodejs18
