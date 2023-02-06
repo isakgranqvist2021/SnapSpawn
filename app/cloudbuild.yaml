@@ -48,4 +48,10 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy']
     dir: app
+    id: deploy
     waitFor: ['build']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['app', 'deploy', 'dispatch.yaml']
+    dir: app
+    waitFor: ['deploy']
