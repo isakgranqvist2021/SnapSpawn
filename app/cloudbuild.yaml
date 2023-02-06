@@ -11,7 +11,7 @@ steps:
         '-t',
         'gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container',
         '--build-arg',
-        'NODE_ENV=$_NODE_ENV',
+        'NODE_ENV $_NODE_ENV',
         '--build-arg',
         'MONGO_DB_DATABASE_URL=$_MONGO_DB_DATABASE_URL',
         '--build-arg',
