@@ -26,3 +26,16 @@ steps:
     dir: functions
     entrypoint: yarn
     waitFor: ['create-env']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    dir: functions
+    waitFor: ['build']
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - stripe-webhook-9
+      - --region=europe-west1
+      - --source=dist
+      - --trigger-http
+      - --runtime=RUNTIME
