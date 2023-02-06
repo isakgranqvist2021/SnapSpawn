@@ -50,8 +50,3 @@ steps:
     dir: app
     id: deploy
     waitFor: ['build']
-
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['app', 'deploy', 'dispatch.yaml', --quiet]
-    dir: app
-    waitFor: ['deploy']
