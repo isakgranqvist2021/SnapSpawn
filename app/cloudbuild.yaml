@@ -67,6 +67,15 @@ steps:
         'gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container',
         '--region',
         'europe-west1',
+        '--allow-unauthenticated',
+        '--max-instances',
+        '30',
+        '--min-instances',
+        '0',
+        '--memory',
+        '2mib',
+        '--concurrency',
+        '80',
       ]
 
 images:

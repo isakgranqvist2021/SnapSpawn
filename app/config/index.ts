@@ -23,8 +23,6 @@ const env = {
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
 };
 
-console.log(env);
-
 const errors = [];
 
 for (const k in env) {
