@@ -1,5 +1,5 @@
 options:
-  logging: NONE
+  logging: CLOUD_LOGGING_ONLY
   env:
     - 'NODE_ENV=$_NODE_ENV'
     - 'MONGO_DB_DATABASE_URL=$_MONGO_DB_DATABASE_URL'
