@@ -1,3 +1,6 @@
 dispatch:
+  - url: 'www.granqvist.dev/*'
+    service: default
+
   - url: 'www.aiportraitstudio.com/*'
     service: ai-portrait-studio
