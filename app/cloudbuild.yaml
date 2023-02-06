@@ -32,7 +32,7 @@ steps:
         'build',
         '-t',
         'gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container',
-        '--build-arg ',
+        '--build-arg',
         'NODE_ENV=$_NODE_ENV MONGO_DB_DATABASE_URL=$_MONGO_DB_DATABASE_URL AUTH0_SECRET=$_AUTH0_SECRET',
         '.',
       ]
