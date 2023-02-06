@@ -42,9 +42,11 @@ export function MyAvatars() {
         </div>
       )}
 
-      <div className="p-5 grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-        {appState.avatars.map(renderAvatar)}
-      </div>
+      {appState.avatars.length > 0 && (
+        <div className="p-5 grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+          {appState.avatars.map(renderAvatar)}
+        </div>
+      )}
     </React.Fragment>
   );
 }
