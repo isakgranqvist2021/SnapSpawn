@@ -73,7 +73,7 @@ steps:
         '--min-instances',
         '0',
         '--memory',
-        '2mib',
+        '128Mib',
         '--concurrency',
         '80',
       ]
