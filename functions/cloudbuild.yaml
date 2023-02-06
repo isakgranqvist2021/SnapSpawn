@@ -25,6 +25,7 @@ steps:
     args: ['build']
     dir: functions
     entrypoint: yarn
+    id: build
     waitFor: ['create-env']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
