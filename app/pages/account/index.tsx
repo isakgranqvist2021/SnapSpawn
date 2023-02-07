@@ -57,38 +57,34 @@ export default function Account(props: AccountProps) {
 export async function getServerSideProps(
   ctx: GetServerSidePropsContext,
 ): Promise<GetServerSideProps> {
-  try {
-    const session = await getSession(ctx.req, ctx.res);
+  const session = await getSession(ctx.req, ctx.res);
 
-    if (!session?.user.email) {
-      Logger.log('warning', session);
-      throw new Error('Session is null');
-    }
-
-    const user = await getUser(session.user.email);
-
-    if (user === null) {
-      await createUser(session.user.email);
-      return { props: { credits: 0, avatars: [] } };
-    }
-
-    const avatarDocuments = await getAvatars(session.user.email);
-
-    if (!avatarDocuments) {
-      throw new Error('Avatar documents not found');
-    }
-
-    const avatarModels = await Promise.all(
-      avatarDocuments.map(prepareAvatarModel),
-    );
-
-    const avatars = avatarModels.filter(
-      (avatarModel): avatarModel is AvatarModel => avatarModel !== null,
-    );
-
-    return { props: { credits: user.credits, avatars } };
-  } catch (err) {
-    Logger.log('error', err);
+  if (!session?.user.email) {
+    Logger.log('warning', session);
     return { props: { credits: 0, avatars: [] } };
   }
+
+  const user = await getUser(session.user.email);
+
+  if (user === null) {
+    await createUser(session.user.email);
+    return { props: { credits: 0, avatars: [] } };
+  }
+
+  const avatarDocuments = await getAvatars(session.user.email);
+
+  if (!avatarDocuments) {
+    Logger.log('warning', avatarDocuments);
+    return { props: { credits: user.credits, avatars: [] } };
+  }
+
+  const avatarModels = await Promise.all(
+    avatarDocuments.map(prepareAvatarModel),
+  );
+
+  const avatars = avatarModels.filter(
+    (avatarModel): avatarModel is AvatarModel => avatarModel !== null,
+  );
+
+  return { props: { credits: user.credits, avatars } };
 }
