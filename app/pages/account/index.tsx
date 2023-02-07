@@ -201,6 +201,7 @@ export async function getServerSideProps(
     const session = await getSession(ctx.req, ctx.res);
 
     if (!session?.user.email) {
+      Logger.log('warning', session);
       throw new Error('Session is null');
     }
 

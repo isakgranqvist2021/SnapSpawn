@@ -38,7 +38,7 @@ export function MyAvatars() {
 
       {appState.avatars.length === 0 && (
         <div>
-          <p>You have no avatars</p>
+          <p className="mt-3">You have no avatars</p>
         </div>
       )}
 
