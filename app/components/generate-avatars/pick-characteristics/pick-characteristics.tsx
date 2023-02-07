@@ -1,3 +1,4 @@
+import { useApiState } from '@aa/context/api-context';
 import { Characteristic, characteristics } from '@aa/models';
 
 import {
@@ -9,8 +10,7 @@ export function PickCharacteristics() {
   const state = useGenerateAvatarState();
   const dispatch = useGenerateAvatarDispatch();
 
-  const value = state.form.characteristics;
-  const isLoading = state.isLoading;
+  const { isLoading } = useApiState().avatars;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
@@ -20,8 +20,9 @@ export function PickCharacteristics() {
   };
 
   const renderCharacteristicButton = (characteristic: Characteristic) => {
-    const isChecked = value.includes(characteristic);
-    const disabled = isLoading || (value.length >= 3 && !isChecked);
+    const isChecked = state.characteristics.includes(characteristic);
+    const disabled =
+      isLoading || (state.characteristics.length >= 3 && !isChecked);
 
     return (
       <div className="form-control" key={characteristic}>

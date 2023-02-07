@@ -1,62 +1,73 @@
-import { useAppDispatch } from '@aa/context';
-import { Reducer, useCallback, useState } from 'react';
+import { useApiDispatch } from '@aa/context/api-context';
+import { useAppDispatch } from '@aa/context/app-context';
+import { AvatarModel } from '@aa/models';
+import { AlertSeverity } from '@aa/types';
+import { useCallback } from 'react';
 
-import {
-  useGenerateAvatarDispatch,
-  useGenerateAvatarState,
-} from './generate-avatars.context';
+import { useGenerateAvatarState } from './generate-avatars.context';
+
+function useGenerateAvatarActions() {
+  const apiDispatch = useApiDispatch();
+
+  const addAlert = (severity: AlertSeverity, message: string) => {
+    apiDispatch({ alert: { message, severity }, type: 'alerts:add' });
+  };
+
+  const setIsLoading = (isLoading: boolean) => {
+    apiDispatch({ isLoading, type: 'avatars:set-is-loading' });
+  };
+
+  const addAvatars = (avatars: AvatarModel[]) => {
+    apiDispatch({ avatars, type: 'avatars:add' });
+  };
+
+  const reduceCreditsBy = (reduceCreditsBy: number) => {
+    apiDispatch({ reduceCreditsBy, type: 'credits:reduce' });
+  };
+
+  return { addAlert, addAvatars, reduceCreditsBy, setIsLoading };
+}
 
 export function useGenerateAvatar() {
   const appDispatch = useAppDispatch();
 
   const state = useGenerateAvatarState();
-  const dispatch = useGenerateAvatarDispatch();
+
+  const { addAlert, addAvatars, reduceCreditsBy, setIsLoading } =
+    useGenerateAvatarActions();
 
   return useCallback(async () => {
     try {
-      dispatch({ isLoading: true, type: 'set:isLoading' });
+      setIsLoading(true);
 
       const res = await fetch('/api/avatar/generate-avatar', {
-        body: JSON.stringify(state.form),
+        body: JSON.stringify(state),
         method: 'POST',
       });
 
       if (res.status !== 200) {
-        throw new Error(
-          'Something went wrong. Please try again. If the problem persists, please contact support.',
-        );
+        setIsLoading(false);
+        addAlert('error', 'Something went wrong. Please try again.');
+        return;
       }
 
       const data = await res.json();
 
-      if (Array.isArray(data.avatars)) {
-        appDispatch({ type: 'add:avatars', avatars: data.avatars });
-        appDispatch({
-          reduceCreditsBy: data.avatars.length,
-          type: 'reduce:credits',
-        });
+      if (!Array.isArray(data.avatars)) {
+        setIsLoading(false);
+        addAlert('error', 'Something went wrong. Please try again.');
+        return;
       }
 
-      appDispatch({
-        type: 'add:alert',
-        alert: {
-          message: 'Avatars generated successfully!',
-          severity: 'success',
-        },
-      });
-
-      dispatch({ isLoading: false, type: 'set:isLoading' });
+      addAvatars(data.avatars);
+      reduceCreditsBy(data.avatars.length);
+      addAlert('success', 'Avatars generated successfully!');
+      setIsLoading(false);
     } catch {
-      appDispatch({
-        type: 'add:alert',
-        alert: {
-          message: 'Something went wrong. Please try again.',
-          severity: 'error',
-        },
-      });
-      dispatch({ isLoading: false, type: 'set:isLoading' });
+      setIsLoading(false);
+      addAlert('error', 'Something went wrong. Please try again.');
     }
 
     appDispatch({ type: 'close:generate-avatar-sidebar' });
-  }, [appDispatch, dispatch, state.form]);
+  }, [addAlert, addAvatars, appDispatch, reduceCreditsBy, setIsLoading, state]);
 }

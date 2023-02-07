@@ -1,15 +1,12 @@
 import { Spinner } from '@aa/components/spinner';
-import { useAppState } from '@aa/context';
+import { useApiState } from '@aa/context/api-context';
 import React from 'react';
 
-import { useGenerateAvatarState } from '../generate-avatars.context';
-
 export function GenerateAvatarSubmitButton() {
-  const state = useGenerateAvatarState();
+  const apiState = useApiState();
 
-  const isLoading = state.isLoading;
-
-  const { credits } = useAppState();
+  const credits = apiState.credits.data;
+  const isLoading = apiState.avatars.isLoading;
 
   return (
     <React.Fragment>

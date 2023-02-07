@@ -1,12 +1,21 @@
-import { useAppDispatch } from '@aa/context';
+import { useApiDispatch, useApiState } from '@aa/context/api-context';
 import getStripe from '@aa/services/stripe';
+import { AlertSeverity } from '@aa/types';
 import { useState } from 'react';
 
 export function useAddCreditsModal() {
-  const [isLoading, setIsLoading] = useState(false);
   const [credits, setCredits] = useState(10);
 
-  const appDispatch = useAppDispatch();
+  const apiState = useApiState();
+  const apiDispatch = useApiDispatch();
+
+  const setIsLoading = (isLoading: boolean) => {
+    apiDispatch({ isLoading, type: 'credits:set-is-loading' });
+  };
+
+  const addAlert = (severity: AlertSeverity, message: string) => {
+    apiDispatch({ alert: { message, severity }, type: 'alerts:add' });
+  };
 
   const continueToCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,24 +39,11 @@ export function useAddCreditsModal() {
         sessionId: res.id,
       });
 
-      appDispatch({
-        alert: {
-          message: 'You have successfully purchased credits!',
-          severity: 'success',
-        },
-        type: 'add:alert',
-      });
-
+      addAlert('success', 'You have successfully purchased credits!');
       setIsLoading(false);
     } catch {
-      appDispatch({
-        alert: {
-          message: 'Something went wrong. Please try again.',
-          severity: 'error',
-        },
-        type: 'add:alert',
-      });
       setIsLoading(false);
+      addAlert('error', 'Something went wrong. Please try again.');
     }
   };
 
@@ -56,9 +52,9 @@ export function useAddCreditsModal() {
   };
 
   return {
+    isLoading: apiState.credits.isLoading,
     continueToCheckout,
     credits,
-    isLoading,
     onChange,
   };
 }

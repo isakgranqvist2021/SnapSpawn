@@ -1,3 +1,4 @@
+import { useApiState } from '@aa/context/api-context';
 import { Gender, genders } from '@aa/models';
 
 import {
@@ -9,8 +10,7 @@ export function PickGender() {
   const dispatch = useGenerateAvatarDispatch();
   const state = useGenerateAvatarState();
 
-  const isLoading = state.isLoading;
-  const value = state.form.gender;
+  const { isLoading } = useApiState().avatars;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
@@ -25,18 +25,18 @@ export function PickGender() {
         <label className="label cursor-pointer flex gap-4">
           <span
             className={`label-text capitalize ${
-              value === gender ? 'text-primary' : ''
+              state.gender === gender ? 'text-primary' : ''
             }`}
           >
             {gender}
           </span>
           <input
             onChange={onChange}
-            value={gender}
+            value={state.gender}
             type="radio"
             disabled={isLoading}
             className="radio"
-            checked={value === gender}
+            checked={state.gender === gender}
           />
         </label>
       </div>

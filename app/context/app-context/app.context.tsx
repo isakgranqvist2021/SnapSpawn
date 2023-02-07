@@ -12,9 +12,6 @@ import { AppContextState, AppContextType, ReducerAction } from './app.types';
 const AppContext = createContext<AppContextType>({
   dispatch: (value) => {},
   state: {
-    avatars: [],
-    credits: 0,
-    alerts: [],
     addCreditsSidebarOpen: false,
     generateAvatarSidebarOpen: false,
   },
@@ -28,9 +25,6 @@ export function AppProvider(
   const [state, dispatch] = useReducer<Reducer<AppContextState, ReducerAction>>(
     appReducer,
     {
-      avatars: [],
-      credits: 0,
-      alerts: [],
       addCreditsSidebarOpen: false,
       generateAvatarSidebarOpen: false,
       ...rest,

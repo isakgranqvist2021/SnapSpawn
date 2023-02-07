@@ -11,7 +11,13 @@ async function redirects() {
 }
 
 const nextConfig = {
-  images: { domains: ['lh3.googleusercontent.com', 'storage.googleapis.com'] },
+  images: {
+    domains: [
+      'lh3.googleusercontent.com',
+      'storage.googleapis.com',
+      's.gravatar.com',
+    ],
+  },
   reactStrictMode: true,
   redirects,
 };

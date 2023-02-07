@@ -1,3 +1,4 @@
+import { useApiState } from '@aa/context/api-context';
 import { Traits, traits } from '@aa/models';
 
 import {
@@ -9,8 +10,7 @@ export function PickTraits() {
   const dispatch = useGenerateAvatarDispatch();
   const state = useGenerateAvatarState();
 
-  const isLoading = state.isLoading;
-  const value = state.form.traits;
+  const { isLoading } = useApiState().avatars;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
@@ -25,7 +25,7 @@ export function PickTraits() {
         <label className="label cursor-pointer flex gap-2">
           <span
             className={`label-text capitalize ${
-              value === trait ? 'text-primary' : ''
+              state.traits === trait ? 'text-primary' : ''
             }`}
           >
             {trait}
@@ -36,7 +36,7 @@ export function PickTraits() {
             type="radio"
             disabled={isLoading}
             className="radio"
-            checked={value === trait}
+            checked={state.traits === trait}
           />
         </label>
       </div>

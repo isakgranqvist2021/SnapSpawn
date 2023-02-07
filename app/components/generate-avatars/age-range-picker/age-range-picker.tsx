@@ -1,3 +1,5 @@
+import { useApiState } from '@aa/context/api-context';
+
 import {
   useGenerateAvatarDispatch,
   useGenerateAvatarState,
@@ -7,8 +9,7 @@ export function AgeRangePicker() {
   const dispatch = useGenerateAvatarDispatch();
   const state = useGenerateAvatarState();
 
-  const isLoading = state.isLoading;
-  const value = state.form.age;
+  const { isLoading } = useApiState().avatars;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
@@ -23,7 +24,7 @@ export function AgeRangePicker() {
         htmlFor="age"
         className="cursor-pointer items-start gap-3 flex flex-col"
       >
-        <span className="label-text whitespace-nowrap">Age ({value})</span>
+        <span className="label-text whitespace-nowrap">Age ({state.age})</span>
         <input
           className="range range-primary"
           disabled={isLoading}
@@ -32,7 +33,7 @@ export function AgeRangePicker() {
           min="1"
           onChange={onChange}
           type="range"
-          value={value}
+          value={state.age}
         />
       </label>
     </div>

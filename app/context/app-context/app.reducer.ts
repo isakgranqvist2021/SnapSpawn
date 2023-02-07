@@ -7,30 +7,6 @@ export function appReducer(
   action: ReducerAction,
 ): AppContextState {
   switch (action.type) {
-    case 'add:avatars':
-      return {
-        ...state,
-        avatars: [...action.avatars, ...state.avatars],
-      };
-
-    case 'reduce:credits':
-      return {
-        ...state,
-        credits: state.credits - action.reduceCreditsBy,
-      };
-
-    case 'add:alert':
-      return {
-        ...state,
-        alerts: [...state.alerts, { ...action.alert, id: uid() }],
-      };
-
-    case 'remove:alert':
-      const alerts = [...state.alerts];
-      const index = alerts.findIndex((alert) => alert.id === action.id);
-      alerts.splice(index, 1);
-      return { ...state, alerts };
-
     case 'close:add-credits-sidebar':
       return { ...state, addCreditsSidebarOpen: false };
 

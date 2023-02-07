@@ -1,3 +1,4 @@
+import { useApiState } from '@aa/context/api-context';
 import { HairType, hairTypes } from '@aa/models';
 
 import {
@@ -9,8 +10,7 @@ export function PickHairType() {
   const state = useGenerateAvatarState();
   const dispatch = useGenerateAvatarDispatch();
 
-  const value = state.form.hairType;
-  const isLoading = state.isLoading;
+  const { isLoading } = useApiState().avatars;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
@@ -25,7 +25,7 @@ export function PickHairType() {
         <label className="label cursor-pointer">
           <span
             className={`label-text capitalize ${
-              value.includes(hairType) ? 'text-primary' : ''
+              state.hairType === hairType ? 'text-primary' : ''
             }`}
           >
             {hairType}
@@ -36,7 +36,7 @@ export function PickHairType() {
             type="radio"
             disabled={isLoading}
             className="radio"
-            checked={value.includes(hairType)}
+            checked={state.hairType === hairType}
           />
         </label>
       </div>

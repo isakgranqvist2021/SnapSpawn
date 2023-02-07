@@ -1,3 +1,4 @@
+import { useApiState } from '@aa/context/api-context';
 import { EyeColor, eyeColors } from '@aa/models';
 
 import {
@@ -9,8 +10,7 @@ export function PickEyeColor() {
   const state = useGenerateAvatarState();
   const dispatch = useGenerateAvatarDispatch();
 
-  const value = state.form.eyeColor;
-  const isLoading = state.isLoading;
+  const { isLoading } = useApiState().avatars;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({
@@ -25,7 +25,7 @@ export function PickEyeColor() {
         <label className="label cursor-pointer">
           <span
             className={`label-text capitalize ${
-              value.includes(eyeColor) ? 'text-primary' : ''
+              state.eyeColor === eyeColor ? 'text-primary' : ''
             }`}
           >
             {eyeColor} eyes
@@ -36,7 +36,7 @@ export function PickEyeColor() {
             type="radio"
             disabled={isLoading}
             className="radio"
-            checked={value.includes(eyeColor)}
+            checked={state.eyeColor === eyeColor}
           />
         </label>
       </div>
