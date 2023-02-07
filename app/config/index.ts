@@ -1,3 +1,4 @@
+import { Logger } from '@aa/services/logger';
 import 'dotenv/config';
 
 const env = {
@@ -22,6 +23,8 @@ const env = {
 
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
 };
+
+Logger.log('info', env);
 
 const errors = [];
 

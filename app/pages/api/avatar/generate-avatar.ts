@@ -49,9 +49,8 @@ async function getAvatarModels(promptModel: PromptModel, email: string) {
       .join('&');
 
     await createAvatars(email, avatarIds, query);
-    await reduceUserCredits(email, openAiUrls.length);
 
-    return Promise.all(
+    const newAvatars = await Promise.all(
       avatarIds.map(async (avatarId): Promise<AvatarModel> => {
         const url = await getSignedUrl(avatarId);
 
@@ -63,6 +62,12 @@ async function getAvatarModels(promptModel: PromptModel, email: string) {
         };
       }),
     );
+
+    if (newAvatars.length > 0) {
+      await reduceUserCredits(email, openAiUrls.length);
+    }
+
+    return newAvatars;
   } catch (err) {
     Logger.log('error', err);
     return null;
@@ -120,5 +125,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     return res.status(500).send({ avatars: null });
   }
 }
-
 export default handler;
