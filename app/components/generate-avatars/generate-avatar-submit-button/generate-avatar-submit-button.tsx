@@ -16,7 +16,7 @@ export function GenerateAvatarSubmitButton() {
       {credits !== 0 && <p className="mb-3">You have {credits} credits</p>}
 
       <button
-        className="btn btn-secondary w-full"
+        className="btn btn-secondary w-full relative"
         disabled={isLoading || credits === 0}
         type="submit"
       >

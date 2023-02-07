@@ -1,4 +1,5 @@
 import { STRIPE_SECRET_KEY } from '@aa/config';
+import { Logger } from '@aa/services/logger';
 import { getSession } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
@@ -6,8 +7,6 @@ import Stripe from 'stripe';
 const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: '2022-11-15',
 });
-
-const createSession = stripe.checkout.sessions.create;
 
 function creditsToStripeAmount(credits: number) {
   if (credits === 10) {
@@ -69,10 +68,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       req.headers.origin,
     );
 
-    const checkoutSession = await createSession(stripeCheckoutParams);
+    const checkoutSession = await stripe.checkout.sessions.create(
+      stripeCheckoutParams,
+    );
 
     res.status(200).json(checkoutSession);
   } catch (err) {
+    Logger.log('error', err);
     res.status(500).json({
       statusCode: 500,
       message: err instanceof Error ? err.message : 'Internal server error',
