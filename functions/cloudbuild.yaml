@@ -12,6 +12,7 @@ steps:
   - name: node:18.12.1
     dir: functions
     entrypoint: yarn
+    args: ['install']
     id: install
 
   - name: node:18.12.1
