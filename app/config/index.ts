@@ -24,8 +24,6 @@ const env = {
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
 };
 
-Logger.log('info', env);
-
 const errors = [];
 
 for (const k in env) {
