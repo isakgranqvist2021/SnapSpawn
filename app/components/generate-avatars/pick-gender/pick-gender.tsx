@@ -13,10 +13,7 @@ export function PickGender() {
   const { isLoading } = useApiState().avatars;
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({
-      gender: e.target.value as Gender,
-      type: 'set:gender',
-    });
+    dispatch({ gender: e.target.value as Gender, type: 'set:gender' });
   };
 
   const renderGenderRadioButton = (gender: Gender) => {
@@ -32,7 +29,7 @@ export function PickGender() {
           </span>
           <input
             onChange={onChange}
-            value={state.gender}
+            value={gender}
             type="radio"
             disabled={isLoading}
             className="radio"
