@@ -1,6 +1,6 @@
 import { STRIPE_SECRET_KEY } from '@aa/config';
 import { Logger } from '@aa/services/logger';
-import { getSession } from '@auth0/nextjs-auth0';
+import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
@@ -82,4 +82,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default handler;
+export default withApiAuthRequired(handler);

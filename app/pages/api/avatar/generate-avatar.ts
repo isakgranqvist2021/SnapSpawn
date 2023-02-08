@@ -5,7 +5,7 @@ import { PromptModel } from '@aa/models/prompt.model';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
-import { Session, getSession } from '@auth0/nextjs-auth0';
+import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 interface Data {
@@ -125,4 +125,5 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     return res.status(500).send({ avatars: null });
   }
 }
-export default handler;
+
+export default withApiAuthRequired(handler);
