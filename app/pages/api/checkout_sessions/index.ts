@@ -1,7 +1,6 @@
 import { STRIPE_SECRET_KEY } from '@aa/config';
 import { Logger } from '@aa/services/logger';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
-import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(STRIPE_SECRET_KEY, {
@@ -47,7 +46,7 @@ function getStripeCheckoutParams(credits: number, email: string, url?: string) {
   return params;
 }
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default withApiAuthRequired(async (req, res) => {
   try {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
@@ -80,6 +79,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       message: err instanceof Error ? err.message : 'Internal server error',
     });
   }
-}
-
-export default withApiAuthRequired(handler);
+});

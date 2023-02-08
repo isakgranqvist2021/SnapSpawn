@@ -6,7 +6,6 @@ import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
-import type { NextApiRequest, NextApiResponse } from 'next';
 
 interface Data {
   avatars: AvatarModel[] | null;
@@ -97,7 +96,7 @@ async function getUserAndValidateCredits(session?: Session | null) {
   }
 }
 
-async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export default withApiAuthRequired(async (req, res) => {
   try {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
@@ -124,6 +123,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     Logger.log('error', err);
     return res.status(500).send({ avatars: null });
   }
-}
-
-export default withApiAuthRequired(handler);
+});
