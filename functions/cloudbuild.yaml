@@ -30,6 +30,7 @@ steps:
     waitFor: ['create-env']
 
   - name: bash
+    dir: functions
     script: |
       #!/usr/bin/env bash
       mv package.json dist/package.json
