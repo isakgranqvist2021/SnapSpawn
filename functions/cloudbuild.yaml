@@ -29,15 +29,23 @@ steps:
     id: build
     waitFor: ['create-env']
 
+  - name: bash
+    script: |
+      #!/usr/bin/env bash
+      mv package.json dist/package.json
+
+    id: test
+    waitFor: ['move-package.json']
+
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     dir: functions
-    waitFor: ['build']
+    waitFor: ['move-package.json']
     args:
       - gcloud
       - functions
       - deploy
       - stripe-webhook-9
       - --region=europe-west1
-      - --source=.
+      - --source=dist
       - --trigger-http
       - --runtime=nodejs18
