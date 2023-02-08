@@ -34,8 +34,8 @@ steps:
       #!/usr/bin/env bash
       mv package.json dist/package.json
 
-    id: test
-    waitFor: ['move-package.json']
+    id: move-package.json
+    waitFor: ['build']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     dir: functions
