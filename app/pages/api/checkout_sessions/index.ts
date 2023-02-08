@@ -7,20 +7,14 @@ const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: '2022-11-15',
 });
 
-function creditsToStripeAmount(credits: number) {
-  if (credits === 10) {
-    return 100;
-  }
-
-  if (credits === 50) {
-    return 450;
-  }
-
-  return 800;
-}
+const creditsMap = new Map([
+  [10, 100],
+  [50, 450],
+  [100, 800],
+]);
 
 function getStripeCheckoutParams(credits: number, email: string, url?: string) {
-  const amount = creditsToStripeAmount(credits);
+  const amount = creditsMap.get(credits);
 
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
     {

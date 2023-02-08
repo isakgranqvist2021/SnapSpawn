@@ -11,6 +11,12 @@ if (!stripe) {
 	throw new Error('Stripe is null');
 }
 
+const amountMap = new Map([
+	[100, 10],
+	[450, 50],
+	[800, 100],
+]);
+
 async function addUserCredits(email: string, credits: number) {
 	try {
 		const client = await new MongoClient(
@@ -32,18 +38,6 @@ async function addUserCredits(email: string, credits: number) {
 		console.error(err);
 		return null;
 	}
-}
-
-function stripeAmountToCredits(stripeAmount: number) {
-	if (stripeAmount === 100) {
-		return 10;
-	}
-
-	if (stripeAmount === 450) {
-		return 50;
-	}
-
-	return 100;
 }
 
 function getWebhookEvent(
@@ -101,7 +95,7 @@ async function handleEvent(req: Request, res: Response) {
 					);
 			}
 
-			const credits = stripeAmountToCredits(paymentIntent.amount_captured);
+			const credits = amountMap.get(paymentIntent.amount_captured);
 
 			if (!credits) {
 				return res
