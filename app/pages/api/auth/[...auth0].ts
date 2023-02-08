@@ -1,6 +1,7 @@
 import { Logger } from '@aa/services/logger';
 import { Session, handleAuth, handleCallback } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 
 function onError(req: NextApiRequest, res: NextApiResponse, error: Error) {
   Logger.log('error', error.message, { req, res, error });
@@ -24,10 +25,10 @@ async function callback(req: NextApiRequest, res: NextApiResponse) {
     Logger.log('error', err);
 
     if (err instanceof Error) {
-      return res.status(500).send(err.message);
+      return res.redirect('/account');
     }
 
-    return res.status(500).end();
+    return res.redirect('/account');
   }
 }
 
