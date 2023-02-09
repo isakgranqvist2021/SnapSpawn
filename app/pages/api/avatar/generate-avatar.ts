@@ -7,28 +7,26 @@ import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 
-interface Data {
-  avatars: AvatarModel[] | null;
-}
-
 function getPrompt(promptModel: PromptModel) {
-  const { age, characteristics, eyeColor, gender, hairType, traits } =
-    promptModel;
+  const { characteristics, gender, traits } = promptModel;
 
   const parts = [
-    '2d vector art, dark background,',
-    `${age} years old`,
-    traits,
-    `${eyeColor} eyes`,
-    `${hairType} hair`,
-    ...characteristics,
+    `A ${characteristics}`,
+    'circle shaped',
+    'close up',
+    'medium light',
+    'fictional',
+    'digital social media profile avatar',
+    'colourful lighting',
+    'vector art',
+    `wearing ${traits}`,
   ];
 
   if (gender !== 'rather not say') {
     parts.push(gender);
   }
 
-  return parts.join(' ');
+  return parts.join(', ');
 }
 
 async function getAvatarModels(promptModel: PromptModel, email: string) {

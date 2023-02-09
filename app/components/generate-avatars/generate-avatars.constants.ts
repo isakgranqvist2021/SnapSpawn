@@ -1,10 +1,7 @@
 import { PromptModel } from '@aa/models';
 
 export const DEFAULT_FORM_STATE: PromptModel = {
-  age: 32,
-  characteristics: ['casual'],
-  eyeColor: 'blue',
+  characteristics: 'afrofuturism',
   gender: 'female',
-  hairType: 'bald',
   traits: 'beard',
 };

@@ -1,5 +1,4 @@
 import { AvatarModel } from '@aa/models';
-import { IncomingMessage, ServerResponse } from 'http';
 
 export interface AccountProps {
   avatars: AvatarModel[];
@@ -8,11 +7,6 @@ export interface AccountProps {
 
 export interface GetServerSideProps {
   props: AccountProps;
-}
-
-export interface GetServerSidePropsContext {
-  req: IncomingMessage;
-  res: ServerResponse<IncomingMessage>;
 }
 
 export type AlertSeverity = 'error' | 'info' | 'success' | 'warning';

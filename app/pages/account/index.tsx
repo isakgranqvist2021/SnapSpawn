@@ -8,11 +8,7 @@ import { getAvatars } from '@aa/database/avatar';
 import { createUser, getUser } from '@aa/database/user';
 import { AvatarModel } from '@aa/models';
 import { Logger } from '@aa/services/logger';
-import {
-  AccountProps,
-  GetServerSideProps,
-  GetServerSidePropsContext,
-} from '@aa/types';
+import { AccountProps, GetServerSideProps } from '@aa/types';
 import { prepareAvatarModel } from '@aa/utils';
 import { getSession, withPageAuthRequired } from '@auth0/nextjs-auth0';
 import Head from 'next/head';

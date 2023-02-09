@@ -7,20 +7,41 @@ interface ApiResponse {
   data: { url: string }[];
 }
 
-export async function generateAvatars(prompt: string) {
+declare const sizes: ['256x256', '512x512', '1024x1024x'];
+type Size = (typeof sizes)[number];
+
+const maxN = 10;
+const minN = 1;
+
+export async function generateAvatars(
+  prompt: string,
+  size: Size = '256x256',
+  n = 1,
+) {
   try {
-    const response: ApiResponse = await fetch(OPEN_AI_BASE_URL, {
+    if (n > maxN) {
+      throw new Error(`n must be less than ${maxN}`);
+    }
+
+    if (n < minN) {
+      throw new Error(`n must be greater than ${minN}`);
+    }
+
+    const requestInit: RequestInit = {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${OPEN_AI_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        prompt,
-        n: 1,
-        size: '256x256',
-      }),
-    }).then((res) => res.json());
+      body: JSON.stringify({ prompt, n, size }),
+    };
+
+    const response: ApiResponse = await fetch(
+      OPEN_AI_BASE_URL,
+      requestInit,
+    ).then((res) => res.json());
+
+    console.log(response);
 
     return response.data.map((obj) => obj.url);
   } catch (err) {

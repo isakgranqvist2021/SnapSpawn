@@ -1,6 +1,6 @@
 version: 2
 updates:
-  - package-ecosystem: 'yarn'
+  - package-ecosystem: 'npm'
     directory: '/app'
     target-branch: 'develop'
     schedule:
@@ -8,7 +8,7 @@ updates:
     labels:
       - 'dependencies'
 
-  - package-ecosystem: 'yarn'
+  - package-ecosystem: 'npm'
     directory: '/functions'
     target-branch: 'develop'
     schedule:

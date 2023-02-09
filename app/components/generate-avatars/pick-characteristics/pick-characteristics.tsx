@@ -21,8 +21,6 @@ export function PickCharacteristics() {
 
   const renderCharacteristicButton = (characteristic: Characteristic) => {
     const isChecked = state.characteristics.includes(characteristic);
-    const disabled =
-      isLoading || (state.characteristics.length >= 3 && !isChecked);
 
     return (
       <div className="form-control" key={characteristic}>
@@ -35,11 +33,11 @@ export function PickCharacteristics() {
             {characteristic}
           </span>
           <input
+            disabled={isLoading}
             onChange={onChange}
             value={characteristic}
-            type="checkbox"
-            disabled={disabled}
-            className="checkbox"
+            type="radio"
+            className="radio"
             checked={isChecked}
           />
         </label>
