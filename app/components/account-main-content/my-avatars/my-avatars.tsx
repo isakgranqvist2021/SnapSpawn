@@ -28,7 +28,7 @@ function AvatarCard(props: AvatarModel) {
 
   const renderPill = (pill: string, index: number) => {
     return (
-      <div className="badge badge-outline capitalize" key={`${url}-${index}`}>
+      <div className="badge badge-md capitalize" key={`${url}-${index}`}>
         {pill}
       </div>
     );
@@ -50,13 +50,15 @@ function AvatarCard(props: AvatarModel) {
       </figure>
       <div className="card-body items-center">
         <h2 className="card-title">{formatTimestampWithIntl(createdAt)}</h2>
-        <div className="card-actions justify-end">{pills.map(renderPill)}</div>
+        <div className="card-actions justify-center">
+          {pills.map(renderPill)}
+        </div>
       </div>
     </a>
   );
 }
 
-function renderAvatar(avatar: AvatarModel, index: number) {
+function renderAvatar(avatar: AvatarModel) {
   return <AvatarCard {...avatar} key={avatar.url} />;
 }
 
@@ -68,17 +70,17 @@ export function MyAvatars() {
   return (
     <React.Fragment>
       <div className="pt-5 px-5 w-full">
+        <div className="stats shadow items-center items-center flex md:items-start md:inline-grid">
+          <AvatarsStatsCard />
+          <CreditsStatsCard />
+        </div>
+
         {avatars.isLoading && (
           <div className="w-full px-5 pt-5 flex gap-3">
             <Spinner />
             <p>Generating avatar...</p>
           </div>
         )}
-
-        <div className="stats shadow items-center items-center flex md:items-start md:inline-grid">
-          <AvatarsStatsCard />
-          <CreditsStatsCard />
-        </div>
       </div>
 
       {avatars.data.length > 0 && (
