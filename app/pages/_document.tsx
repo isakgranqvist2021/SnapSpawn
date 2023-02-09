@@ -16,7 +16,7 @@ export default function Document() {
   return (
     <Html lang="en" data-theme="light">
       <Head />
-      <Script>{googleAnalytics}</Script>
+      <Script id="google-analytics">{googleAnalytics}</Script>
       <Script
         async
         src="https://www.googletagmanager.com/gtag/js?id=G-DMYWSZ00P0"
