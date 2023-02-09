@@ -1,6 +1,7 @@
 import { MainContainer } from '@aa/containers/main-container';
 import Head from 'next/head';
 import Link from 'next/link';
+import Script from 'next/script';
 import React from 'react';
 
 export default function Accepted() {
@@ -20,6 +21,21 @@ export default function Accepted() {
         <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-DMYWSZ00P0"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-DMYWSZ00P0');
+        `}
+      </Script>
+
       <MainContainer>
         <div className="flex flex-col gap-3 items-center mt-10">
           <h1 className="text-xl text-green-600">

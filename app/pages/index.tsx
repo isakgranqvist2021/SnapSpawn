@@ -2,6 +2,7 @@ import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
 import Head from 'next/head';
 import Link from 'next/link';
+import Script from 'next/script';
 import React from 'react';
 
 function HeroSection() {
@@ -46,6 +47,20 @@ function Home() {
         <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-DMYWSZ00P0"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-DMYWSZ00P0');
+        `}
+      </Script>
 
       <MainContainer>
         <Nav />

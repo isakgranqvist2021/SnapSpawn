@@ -63,6 +63,7 @@ steps:
         'run',
         'deploy',
         'ai-portrait-studio',
+        '--cpu-boost',
         '--allow-unauthenticated',
         '--service-account',
         '680698972592-compute@developer.gserviceaccount.com',

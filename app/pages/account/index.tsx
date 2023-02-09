@@ -12,6 +12,7 @@ import { AccountProps, GetServerSideProps } from '@aa/types';
 import { prepareAvatarModel } from '@aa/utils';
 import { getSession, withPageAuthRequired } from '@auth0/nextjs-auth0';
 import Head from 'next/head';
+import Script from 'next/script';
 import React from 'react';
 
 export default function Account(props: AccountProps) {
@@ -34,6 +35,20 @@ export default function Account(props: AccountProps) {
           <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
+
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-DMYWSZ00P0"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-DMYWSZ00P0');
+        `}
+        </Script>
 
         <MainContainer>
           <Nav />
