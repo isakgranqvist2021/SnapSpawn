@@ -17,8 +17,8 @@ function formatTimestampWithIntl(timestamp: number) {
   }).format(date);
 }
 
-function renderAvatar(avatar: AvatarModel, index: number) {
-  const { url, createdAt, prompt } = avatar;
+function AvatarCard(props: AvatarModel) {
+  const { url, createdAt, prompt } = props;
 
   const pills = prompt.split('&').map((pair) => {
     const [_, value] = pair.split('=');
@@ -26,14 +26,9 @@ function renderAvatar(avatar: AvatarModel, index: number) {
     return value;
   });
 
-  const id = useId();
-
   const renderPill = (pill: string, index: number) => {
     return (
-      <div
-        className="badge badge-outline capitalize"
-        key={`pill-${id}-${index}`}
-      >
+      <div className="badge badge-outline capitalize" key={`${url}-${index}`}>
         {pill}
       </div>
     );
@@ -42,7 +37,6 @@ function renderAvatar(avatar: AvatarModel, index: number) {
   return (
     <a
       href={url}
-      key={`avatar-${index}`}
       className="card bg-base-100 shadow-xl hover:shadow-2xl ease-linear duration-100"
     >
       <figure>
@@ -60,6 +54,10 @@ function renderAvatar(avatar: AvatarModel, index: number) {
       </div>
     </a>
   );
+}
+
+function renderAvatar(avatar: AvatarModel, index: number) {
+  return <AvatarCard {...avatar} key={avatar.url} />;
 }
 
 export function MyAvatars() {
