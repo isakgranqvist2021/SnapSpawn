@@ -1,5 +1,6 @@
 import { NODE_ENV } from '@aa/config';
 import { GetServerSidePropsContext } from 'next';
+import Image from 'next/image';
 import { NextResponse } from 'next/server';
 import { useState } from 'react';
 
@@ -50,11 +51,11 @@ export default function Testing() {
         </button>
       </div>
 
-      <div className="overflow-auto flex flex-wrap gap-3 px-5 pb-5">
+      {/* <div className="overflow-auto flex flex-wrap gap-3 px-5 pb-5">
         {urls.map((url) => (
-          <img key={url} src={url} alt="" />
+          <Image key={url} src={url} alt="" />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }
