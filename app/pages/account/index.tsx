@@ -1,4 +1,5 @@
 import { AccountMainContent } from '@aa/components/account-main-content';
+import { DefaultHead } from '@aa/components/default-head';
 import { Nav } from '@aa/components/nav';
 import { PageSnackbar } from '@aa/components/page-snackbar';
 import { MainContainer } from '@aa/containers/main-container';
@@ -11,8 +12,6 @@ import { Logger } from '@aa/services/logger';
 import { AccountProps, GetServerSideProps } from '@aa/types';
 import { prepareAvatarModel } from '@aa/utils';
 import { getSession, withPageAuthRequired } from '@auth0/nextjs-auth0';
-import Head from 'next/head';
-import Script from 'next/script';
 import React from 'react';
 
 export default function Account(props: AccountProps) {
@@ -21,34 +20,7 @@ export default function Account(props: AccountProps) {
   return (
     <ApiProvider avatars={avatars} credits={credits}>
       <AppProvider>
-        <Head>
-          <title>AI Portrait Studio | Account</title>
-          <meta
-            name="description"
-            content="Get instant, custom portraits at AI Portrait Studio. Our AI technology generates unique images based on your photos. Create a personalized work of art in minutes."
-          />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <meta
-            name="keywords"
-            content="AI technology, Portraits, Custom, Images, Personalized, Photos, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists"
-          />
-          <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-DMYWSZ00P0"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){window.dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-DMYWSZ00P0');
-        `}
-        </Script>
+        <DefaultHead title="Account" />
 
         <MainContainer>
           <Nav />

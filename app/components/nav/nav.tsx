@@ -3,25 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-function LogoutLink(props: React.ComponentPropsWithoutRef<'a'>) {
-  const { children, ...rest } = props;
-
-  return (
-    <Link href="/api/auth/logout" {...rest}>
-      {children}
-    </Link>
-  );
-}
-
-function SignInLink(props: React.ComponentPropsWithoutRef<'a'>) {
-  const { children, ...rest } = props;
-
-  return (
-    <Link href="/api/auth/login" {...rest}>
-      {children}
-    </Link>
-  );
-}
+import { NavDropdownLink } from '../nav-dropdown-link';
 
 function UserProfileImage() {
   const { isLoading, user } = useUser();
@@ -75,17 +57,17 @@ function NavDropDown() {
         className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
         tabIndex={0}
       >
-        {user && (
-          <li>
-            <LogoutLink>Logout</LogoutLink>
-          </li>
-        )}
+        <li>
+          <NavDropdownLink href="/account">Avatar Studio</NavDropdownLink>
+        </li>
 
-        {!user && (
-          <li>
-            <SignInLink>Sign In</SignInLink>
-          </li>
-        )}
+        <li>
+          {user ? (
+            <NavDropdownLink href="/api/auth/logout">Logout</NavDropdownLink>
+          ) : (
+            <NavDropdownLink href="/api/auth/login">Sign In</NavDropdownLink>
+          )}
+        </li>
       </ul>
     </div>
   );

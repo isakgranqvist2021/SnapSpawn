@@ -21,7 +21,7 @@ export function SidebarActions() {
   return (
     <div className="w-full px-5 pt-5 gap-5 flex flex-col items-start sm:flex-row">
       <a
-        className="link link-hover link-primary flex gap-3"
+        className="link link-hover link-primary flex gap-2"
         onClick={toggleGenerateAvatarSidebar}
       >
         {appState.generateAvatarSidebarOpen ? closeIcon : openIcon}
@@ -29,7 +29,7 @@ export function SidebarActions() {
       </a>
 
       <a
-        className="link link-hover link-secondary flex gap-3"
+        className="link link-hover link-secondary flex gap-2"
         onClick={toggleAddCreditsSidebar}
       >
         {appState.addCreditsSidebarOpen ? closeIcon : openIcon}

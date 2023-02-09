@@ -1,11 +1,13 @@
+import { DefaultHead } from '@aa/components/default-head';
 import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
-import Head from 'next/head';
+import { UserProvider, useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
-import Script from 'next/script';
 import React from 'react';
 
 function HeroSection() {
+  const { user } = useUser();
+
   return (
     <div
       className="hero min-h-screen"
@@ -21,8 +23,11 @@ function HeroSection() {
             Create professional & stunning digital portraits with ease using Ai
             Portrait Studio. AI-powered & user-friendly. Get started now!
           </p>
-          <Link href="/api/auth/login" className="btn btn-accent">
-            Get Started
+          <Link
+            href={user ? '/account' : '/api/auth/login'}
+            className="btn btn-accent"
+          >
+            {user ? 'Continue to your account' : 'Get started'}
           </Link>
         </div>
       </div>
@@ -32,42 +37,15 @@ function HeroSection() {
 
 function Home() {
   return (
-    <React.Fragment>
-      <Head>
-        <title>AI Portrait Studio | Home</title>
-        <meta
-          name="description"
-          content="Get instant, custom portraits at AI Portrait Studio. Our AI technology generates unique images based on your photos. Create a personalized work of art in minutes."
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta
-          name="keywords"
-          content="AI technology, Portraits, Custom, Images, Personalized, Photos, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists"
-        />
-        <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-DMYWSZ00P0"
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){window.dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-DMYWSZ00P0');
-        `}
-      </Script>
+    <UserProvider>
+      <DefaultHead title="Home" />
 
       <MainContainer>
         <Nav />
 
         <HeroSection />
       </MainContainer>
-    </React.Fragment>
+    </UserProvider>
   );
 }
 
