@@ -2,18 +2,48 @@ import { Spinner } from '@aa/components/spinner';
 import { useApiState } from '@aa/context/api-context';
 import { AvatarModel } from '@aa/models';
 import Image from 'next/image';
-import React from 'react';
+import React, { useId } from 'react';
 
-import { SidebarActions } from '../sidebar-actions';
+import { AvatarsStatsCard, CreditsStatsCard } from '../sidebar-actions';
+
+function formatTimestampWithIntl(timestamp: number) {
+  const date = new Date(timestamp);
+
+  const locale = globalThis.navigator?.language ?? 'sv-SE';
+
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+}
 
 function renderAvatar(avatar: AvatarModel, index: number) {
-  const { url } = avatar;
+  const { url, createdAt, prompt } = avatar;
+
+  const pills = prompt.split('&').map((pair) => {
+    const [_, value] = pair.split('=');
+
+    return value;
+  });
+
+  const id = useId();
+
+  const renderPill = (pill: string, index: number) => {
+    return (
+      <div
+        className="badge badge-outline capitalize"
+        key={`pill-${id}-${index}`}
+      >
+        {pill}
+      </div>
+    );
+  };
 
   return (
     <a
       href={url}
       key={`avatar-${index}`}
-      className="card bg-base-100 shadow-xl"
+      className="card bg-base-100 shadow-xl hover:shadow-2xl ease-linear duration-100"
     >
       <figure>
         <Image
@@ -24,6 +54,10 @@ function renderAvatar(avatar: AvatarModel, index: number) {
           width={256}
         />
       </figure>
+      <div className="card-body items-center">
+        <h2 className="card-title">{formatTimestampWithIntl(createdAt)}</h2>
+        <div className="card-actions justify-end">{pills.map(renderPill)}</div>
+      </div>
     </a>
   );
 }
@@ -31,32 +65,27 @@ function renderAvatar(avatar: AvatarModel, index: number) {
 export function MyAvatars() {
   const apiState = useApiState();
 
-  const { data: avatars, isLoading } = apiState.avatars;
+  const { avatars } = apiState;
 
   return (
     <React.Fragment>
-      {avatars.length > 0 && (
-        <h1 className="w-full px-5 pt-5 text-2xl font-bold">
-          My Avatars ({avatars.length})
-        </h1>
-      )}
+      <div className="pt-5 px-5 w-full">
+        {avatars.isLoading && (
+          <div className="w-full px-5 pt-5 flex gap-3">
+            <Spinner />
+            <p>Generating avatar...</p>
+          </div>
+        )}
 
-      {isLoading && (
-        <div className="w-full px-5 pt-5 flex gap-3">
-          <Spinner />
-          <p>Generating avatar...</p>
+        <div className="stats shadow items-center items-center flex md:items-start md:inline-grid">
+          <AvatarsStatsCard />
+          <CreditsStatsCard />
         </div>
-      )}
+      </div>
 
-      {avatars.length === 0 && (
-        <p className="w-full px-5 pt-5">You have no avatars</p>
-      )}
-
-      <SidebarActions />
-
-      {avatars.length > 0 && (
-        <div className="w-full p-5 grid gap-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-          {avatars.map(renderAvatar)}
+      {avatars.data.length > 0 && (
+        <div className="w-full p-5 my-avatars">
+          {avatars.data.map(renderAvatar)}
         </div>
       )}
     </React.Fragment>
