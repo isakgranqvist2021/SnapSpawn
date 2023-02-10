@@ -7,7 +7,7 @@ interface ApiResponse {
   data: { url: string }[];
 }
 
-declare const sizes: ['256x256', '512x512', '1024x1024x'];
+declare const sizes: ['256x256', '512x512', '1024x1024'];
 type Size = (typeof sizes)[number];
 
 const maxN = 10;
@@ -40,8 +40,6 @@ export async function generateAvatars(
       OPEN_AI_BASE_URL,
       requestInit,
     ).then((res) => res.json());
-
-    console.log(response);
 
     return response.data.map((obj) => obj.url);
   } catch (err) {

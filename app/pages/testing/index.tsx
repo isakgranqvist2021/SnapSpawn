@@ -1,6 +1,5 @@
 import { NODE_ENV } from '@aa/config';
 import { GetServerSidePropsContext } from 'next';
-import Image from 'next/image';
 import { NextResponse } from 'next/server';
 import { useState } from 'react';
 
@@ -32,7 +31,7 @@ export default function Testing() {
   };
 
   return (
-    <div className="bg-base-200 w-screen h-screen overflow-hidden">
+    <div className="bg-base-200 w-screen h-screen overflow-x-hidden">
       <div className="flex flex-col gap-3 p-5 w-72">
         <textarea
           className="textarea border resize"
@@ -51,16 +50,16 @@ export default function Testing() {
         </button>
       </div>
 
-      {/* <div className="overflow-auto flex flex-wrap gap-3 px-5 pb-5">
+      <div className="overflow-auto flex flex-wrap gap-3 px-5 pb-5">
         {urls.map((url) => (
-          <Image key={url} src={url} alt="" />
+          <img key={url} src={url} alt="" />
         ))}
-      </div> */}
+      </div>
     </div>
   );
 }
 
-export function getServerSideProps(context: GetServerSidePropsContext) {
+export function getServerSideProps() {
   if (NODE_ENV === 'production') {
     return NextResponse.redirect('/account');
   }
