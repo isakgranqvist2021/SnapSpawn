@@ -12,3 +12,30 @@
   gap: 2rem;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
+
+.hero {
+  position: relative;
+}
+
+.hero-content {
+  z-index: 5;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background-color: rgba(0, 0, 0, 0.384);
+}
+
+.hero::before {
+  inset: 0;
+  z-index: 3;
+  position: absolute;
+  content: '';
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: blur(10px);
+  background-image: url('/img-4cNJT7lfSEG6bnqyEFIVYIOU.png');
+}
