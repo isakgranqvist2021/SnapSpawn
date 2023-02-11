@@ -20,7 +20,7 @@ export function PickCharacteristics() {
   };
 
   const renderCharacteristicButton = (characteristic: Characteristic) => {
-    const isChecked = state.characteristics.includes(characteristic);
+    const isChecked = state.form.characteristics === characteristic;
 
     return (
       <div className="form-control" key={characteristic}>
@@ -46,7 +46,7 @@ export function PickCharacteristics() {
   };
 
   return (
-    <div className="grid gap-2 grid-cols-2">
+    <div className="grid gap-2 grid-cols-3">
       {characteristics.map(renderCharacteristicButton)}
     </div>
   );

@@ -1,21 +1,20 @@
-import { MyAvatars } from '@aa/components/my-avatars';
+import { AddCreditsForm } from '@aa/components/add-credits';
 import {
   AuthPageContainer,
   DefaultProps,
 } from '@aa/containers/auth-page-container';
 import { loadServerSideProps } from '@aa/utils';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
-import React from 'react';
 
-export default function Account(props: DefaultProps) {
+export default function Refill(props: DefaultProps) {
   return (
-    <AuthPageContainer title="Account" {...props}>
-      <MyAvatars />
+    <AuthPageContainer title="Add Credits" {...props}>
+      <AddCreditsForm />
     </AuthPageContainer>
   );
 }
 
 export const getServerSideProps = withPageAuthRequired({
-  returnTo: '/account',
+  returnTo: '/refill',
   getServerSideProps: loadServerSideProps,
 });

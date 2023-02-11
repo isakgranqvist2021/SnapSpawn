@@ -1,12 +1,14 @@
 import { useApiState } from '@aa/context/api-context';
-import { useAppDispatch } from '@aa/context/app-context';
+import Link from 'next/link';
 
-export function CreditsStatsCard() {
+interface StatsCardsProps {
+  hideActions?: boolean;
+}
+
+export function CreditsStatsCard(props: StatsCardsProps) {
+  const { hideActions } = props;
+
   const apiState = useApiState();
-  const appDispatch = useAppDispatch();
-
-  const toggleAddCreditsSidebar = () =>
-    appDispatch({ type: 'toggle:add-credits-sidebar' });
 
   const { credits } = apiState;
 
@@ -31,21 +33,21 @@ export function CreditsStatsCard() {
 
       <div className="stat-title">Total Credits</div>
       <div className="stat-value">{credits.data}</div>
-      <div className="stat-actions">
-        <button onClick={toggleAddCreditsSidebar} className="btn btn-sm">
-          Add Credits
-        </button>
-      </div>
+      {!hideActions && (
+        <div className="stat-actions">
+          <Link href="/refill" className="btn btn-sm">
+            Add Credits
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
 
-export function AvatarsStatsCard() {
-  const apiState = useApiState();
-  const appDispatch = useAppDispatch();
+export function AvatarsStatsCard(props: StatsCardsProps) {
+  const { hideActions } = props;
 
-  const toggleGenerateAvatarSidebar = () =>
-    appDispatch({ type: 'toggle:generate-avatar-sidebar' });
+  const apiState = useApiState();
 
   const { avatars } = apiState;
 
@@ -70,14 +72,22 @@ export function AvatarsStatsCard() {
 
       <div className="stat-title">Total Avatars</div>
       <div className="stat-value">{avatars.data.length}</div>
-      <div className="stat-actions">
-        <button
-          className="btn btn-sm btn-accent"
-          onClick={toggleGenerateAvatarSidebar}
-        >
-          New Avatar
-        </button>
-      </div>
+      {!hideActions && (
+        <div className="stat-actions">
+          <Link className="btn btn-sm btn-accent" href="/create">
+            New Avatar
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function StatsCards(props: StatsCardsProps) {
+  return (
+    <div className="stats shadow items-center items-center flex md:items-start md:inline-grid">
+      <AvatarsStatsCard {...props} />
+      <CreditsStatsCard {...props} />
     </div>
   );
 }

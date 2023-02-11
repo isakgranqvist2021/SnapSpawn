@@ -1,10 +1,13 @@
 import { useApiDispatch } from '@aa/context/api-context';
-import { useAppDispatch } from '@aa/context/app-context';
 import { AvatarModel } from '@aa/models';
 import { AlertSeverity } from '@aa/types';
 import { useCallback } from 'react';
 
-import { useGenerateAvatarState } from './generate-avatars.context';
+import {
+  useGenerateAvatarDispatch,
+  useGenerateAvatarState,
+} from './generate-avatars.context';
+import { GenerateAvatarApiResponse } from './generate-avatars.types';
 
 function useGenerateAvatarActions() {
   const apiDispatch = useApiDispatch();
@@ -29,19 +32,22 @@ function useGenerateAvatarActions() {
 }
 
 export function useGenerateAvatar() {
-  const appDispatch = useAppDispatch();
-
   const state = useGenerateAvatarState();
+  const dispatch = useGenerateAvatarDispatch();
 
   const { addAlert, addAvatars, reduceCreditsBy, setIsLoading } =
     useGenerateAvatarActions();
+
+  const setResult = (result: string[]) => {
+    dispatch({ result, type: 'set:result' });
+  };
 
   return useCallback(async () => {
     try {
       setIsLoading(true);
 
       const res = await fetch('/api/avatar/generate-avatar', {
-        body: JSON.stringify(state),
+        body: JSON.stringify(state.form),
         method: 'POST',
       });
 
@@ -51,16 +57,15 @@ export function useGenerateAvatar() {
         return;
       }
 
-      const data = await res.json();
+      const data: GenerateAvatarApiResponse = await res.json();
 
-      console.log(data);
-
-      if (!Array.isArray(data.avatars)) {
+      if (!data || !Array.isArray(data.avatars)) {
         setIsLoading(false);
         addAlert('error', 'Something went wrong. Please try again.');
         return;
       }
 
+      setResult(data.avatars.map((avatar: AvatarModel) => avatar.url));
       addAvatars(data.avatars);
       reduceCreditsBy(data.avatars.length);
       addAlert('success', 'Avatars generated successfully!');
@@ -69,7 +74,5 @@ export function useGenerateAvatar() {
       setIsLoading(false);
       addAlert('error', 'Something went wrong. Please try again.');
     }
-
-    appDispatch({ type: 'close:generate-avatar-sidebar' });
-  }, [addAlert, addAvatars, appDispatch, reduceCreditsBy, setIsLoading, state]);
+  }, [addAlert, addAvatars, reduceCreditsBy, setIsLoading, state]);
 }

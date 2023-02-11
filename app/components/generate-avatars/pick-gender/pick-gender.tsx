@@ -22,7 +22,7 @@ export function PickGender() {
         <label className="label cursor-pointer flex gap-4">
           <span
             className={`label-text capitalize ${
-              state.gender === gender ? 'text-primary' : ''
+              state.form.gender === gender ? 'text-primary' : ''
             }`}
           >
             {gender}
@@ -33,7 +33,7 @@ export function PickGender() {
             type="radio"
             disabled={isLoading}
             className="radio"
-            checked={state.gender === gender}
+            checked={state.form.gender === gender}
           />
         </label>
       </div>

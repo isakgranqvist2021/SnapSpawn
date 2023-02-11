@@ -32,7 +32,7 @@ function HeroSection() {
 
 function Home() {
   return (
-    <UserProvider>
+    <React.Fragment>
       <DefaultHead title="Home" />
 
       <MainContainer>
@@ -40,7 +40,7 @@ function Home() {
 
         <HeroSection />
       </MainContainer>
-    </UserProvider>
+    </React.Fragment>
   );
 }
 

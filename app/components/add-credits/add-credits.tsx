@@ -62,7 +62,10 @@ export function AddCreditsForm() {
     useAddCreditsModal();
 
   return (
-    <form onSubmit={continueToCheckout}>
+    <form
+      className="shadow-xl p-5 max-w-4xl m-auto rounded"
+      onSubmit={continueToCheckout}
+    >
       <div className="p-5">
         <CreditRadioButton
           credits={credits}

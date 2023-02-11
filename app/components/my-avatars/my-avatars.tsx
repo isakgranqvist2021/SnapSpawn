@@ -2,9 +2,9 @@ import { Spinner } from '@aa/components/spinner';
 import { useApiState } from '@aa/context/api-context';
 import { AvatarModel } from '@aa/models';
 import Image from 'next/image';
-import React, { useId } from 'react';
+import React from 'react';
 
-import { AvatarsStatsCard, CreditsStatsCard } from '../sidebar-actions';
+import { StatsCards } from '../stats-cards';
 
 function formatTimestampWithIntl(timestamp: number) {
   const date = new Date(timestamp);
@@ -70,10 +70,7 @@ export function MyAvatars() {
   return (
     <React.Fragment>
       <div className="pt-5 px-5 w-full">
-        <div className="stats shadow items-center items-center flex md:items-start md:inline-grid">
-          <AvatarsStatsCard />
-          <CreditsStatsCard />
-        </div>
+        <StatsCards />
 
         {avatars.isLoading && (
           <div className="w-full px-5 pt-5 flex gap-3">

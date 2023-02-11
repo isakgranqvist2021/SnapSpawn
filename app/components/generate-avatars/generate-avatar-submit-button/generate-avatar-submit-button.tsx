@@ -10,10 +10,8 @@ export function GenerateAvatarSubmitButton() {
 
   return (
     <React.Fragment>
-      {credits !== 0 && <p className="mb-3">You have {credits} credits</p>}
-
       <button
-        className="btn btn-secondary w-full relative"
+        className="btn btn-secondary relative"
         disabled={isLoading || credits === 0}
         type="submit"
       >

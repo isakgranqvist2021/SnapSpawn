@@ -25,7 +25,7 @@ export function PickTraits() {
         <label className="label cursor-pointer flex gap-2">
           <span
             className={`label-text capitalize ${
-              state.traits === trait ? 'text-primary' : ''
+              state.form.traits === trait ? 'text-primary' : ''
             }`}
           >
             {trait}
@@ -36,7 +36,7 @@ export function PickTraits() {
             type="radio"
             disabled={isLoading}
             className="radio"
-            checked={state.traits === trait}
+            checked={state.form.traits === trait}
           />
         </label>
       </div>
@@ -44,7 +44,7 @@ export function PickTraits() {
   };
 
   return (
-    <div className="grid gap-2 grid-cols-2">
+    <div className="grid gap-2 grid-cols-3">
       {traits.map(renderTraitButton)}
     </div>
   );

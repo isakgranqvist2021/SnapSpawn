@@ -16,7 +16,7 @@ export const traits = [
 export const characteristics = [
   'vaporwave',
   'apocalyptic',
-  'gothic, fantasy',
+  'fantasy',
   'cybernetic',
   'steampunk',
   'memphis',

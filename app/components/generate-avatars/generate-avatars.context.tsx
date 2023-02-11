@@ -4,7 +4,6 @@ import {
   Reducer,
   createContext,
   useContext,
-  useEffect,
   useReducer,
 } from 'react';
 
@@ -12,23 +11,32 @@ import { DEFAULT_FORM_STATE } from './generate-avatars.constants';
 import { reducer } from './generate-avatars.reducer';
 import { ReducerAction } from './generate-avatars.types';
 
+export interface GenerateAvatarState {
+  form: PromptModel;
+  result: string[] | null;
+}
+
 interface GenerateAvatarContextType {
   dispatch: React.Dispatch<ReducerAction>;
-  state: PromptModel;
+  state: GenerateAvatarState;
 }
+
+const INITIAL_STATE: GenerateAvatarState = {
+  form: DEFAULT_FORM_STATE,
+  result: null,
+};
 
 export const GenerateAvatarContext = createContext<GenerateAvatarContextType>({
   dispatch: () => {},
-  state: DEFAULT_FORM_STATE,
+  state: INITIAL_STATE,
 });
 
 export function GenerateAvatarProvider(props: PropsWithChildren) {
   const { children } = props;
 
-  const [state, dispatch] = useReducer<Reducer<PromptModel, ReducerAction>>(
-    reducer,
-    DEFAULT_FORM_STATE,
-  );
+  const [state, dispatch] = useReducer<
+    Reducer<GenerateAvatarState, ReducerAction>
+  >(reducer, INITIAL_STATE);
 
   return (
     <GenerateAvatarContext.Provider value={{ dispatch, state }}>

@@ -62,10 +62,18 @@ function NavDropDown() {
         </li>
 
         <li>
+          <NavDropdownLink href="/create">Generate Avatar</NavDropdownLink>
+        </li>
+
+        <li>
+          <NavDropdownLink href="/refill">Add Credits</NavDropdownLink>
+        </li>
+
+        <li>
           {user ? (
             <NavDropdownLink href="/api/auth/logout">Logout</NavDropdownLink>
           ) : (
-            <NavDropdownLink href="/api/auth/login">Sign In</NavDropdownLink>
+            <NavDropdownLink href="/api/auth/login">Log In</NavDropdownLink>
           )}
         </li>
       </ul>
