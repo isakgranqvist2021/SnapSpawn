@@ -24,5 +24,5 @@ jobs:
 
       - name: Build
         run: |
-          yarn install
-          yarn build
+          yarn install --prefix app
+          yarn build --prefix app
