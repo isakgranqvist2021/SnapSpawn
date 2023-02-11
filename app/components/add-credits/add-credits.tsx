@@ -41,11 +41,7 @@ function AddCreditsSubmitButton(props: AddCreditsSubmitButtonProps) {
   const { isLoading } = props;
 
   return (
-    <button
-      disabled={isLoading}
-      type="submit"
-      className="btn btn-primary w-full"
-    >
+    <button disabled={isLoading} type="submit" className="btn btn-primary">
       {isLoading && (
         <div className="absolute z-10">
           <Spinner color="stroke-white" />
@@ -63,9 +59,19 @@ export function AddCreditsForm() {
 
   return (
     <form
-      className="shadow-xl p-5 max-w-4xl m-auto rounded"
+      className="shadow p-5 max-w-4xl m-auto rounded"
       onSubmit={continueToCheckout}
     >
+      <div className="pb-5">
+        <h1 className="text-3xl leading-10">Add Credits</h1>
+        <p className="max-w-prose">
+          You can add credits to your account to generate more avatars. Credits
+          will be added to your account after the payment has been completed.
+        </p>
+      </div>
+
+      <hr />
+
       <div className="p-5">
         <CreditRadioButton
           credits={credits}
@@ -94,7 +100,7 @@ export function AddCreditsForm() {
 
       <hr />
 
-      <div className="p-5">
+      <div className="py-5 flex justify-end">
         <AddCreditsSubmitButton isLoading={isLoading} />
       </div>
     </form>
