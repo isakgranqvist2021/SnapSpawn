@@ -73,7 +73,7 @@ steps:
         '--max-instances',
         '30',
         '--min-instances',
-        '0',
+        '1',
         '--memory',
         '512Mi',
         '--concurrency',
