@@ -2,12 +2,17 @@ import { Logger } from '@aa/services/logger';
 
 import { getCollection } from '../database';
 import { AVATARS_COLLECTION_NAME } from './avatar.constants';
-import { AvatarDocument } from './avatar.types';
+import {
+  AvatarDocument,
+  CreateAvatarDocument,
+  CreateAvatarsOptions,
+  GetAvatarsOptions,
+} from './avatar.types';
 
-export async function getAvatars(
-  email: string,
-): Promise<AvatarDocument[] | null> {
+export async function getAvatars(options: GetAvatarsOptions) {
   try {
+    const { email } = options;
+
     const collection = await getCollection<AvatarDocument>(
       AVATARS_COLLECTION_NAME,
     );
@@ -38,13 +43,11 @@ export async function getAvatars(
   }
 }
 
-export async function createAvatars(
-  email: string,
-  avatars: string[],
-  prompt: string,
-) {
+export async function createAvatars(options: CreateAvatarsOptions) {
   try {
-    const collection = await getCollection<Omit<AvatarDocument, '_id'>>(
+    const { avatars, email, prompt } = options;
+
+    const collection = await getCollection<CreateAvatarDocument>(
       AVATARS_COLLECTION_NAME,
     );
 
@@ -53,7 +56,7 @@ export async function createAvatars(
     }
 
     const documents = avatars.map((avatar) => {
-      const document: Omit<AvatarDocument, '_id'> = {
+      const document: CreateAvatarDocument = {
         avatar,
         createdAt: Date.now(),
         email,

@@ -2,10 +2,18 @@ import { Logger } from '@aa/services/logger';
 
 import { getCollection } from '../database';
 import { USERS_COLLECTION_NAME } from './user.constants';
-import { CreateUserDocument, UserDocument } from './user.types';
+import {
+  CreateUserDocument,
+  CreateUserOptions,
+  GetUserOptions,
+  ReduceUserCreditsOptions,
+  UserDocument,
+} from './user.types';
 
-export async function getUser(email: string) {
+export async function getUser(options: GetUserOptions) {
   try {
+    const { email } = options;
+
     const collection = await getCollection<UserDocument>(USERS_COLLECTION_NAME);
 
     if (!collection) {
@@ -22,8 +30,10 @@ export async function getUser(email: string) {
   }
 }
 
-export async function createUser(email: string) {
+export async function createUser(options: CreateUserOptions) {
   try {
+    const { email } = options;
+
     const collection = await getCollection<CreateUserDocument>(
       USERS_COLLECTION_NAME,
     );
@@ -50,8 +60,10 @@ export async function createUser(email: string) {
   }
 }
 
-export async function reduceUserCredits(email: string, credits: number) {
+export async function reduceUserCredits(options: ReduceUserCreditsOptions) {
   try {
+    const { email, credits } = options;
+
     const collection = await getCollection<UserDocument>(USERS_COLLECTION_NAME);
 
     if (!collection) {

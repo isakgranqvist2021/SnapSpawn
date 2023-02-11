@@ -7,3 +7,15 @@ export interface AvatarDocument {
   email: string;
   prompt: string;
 }
+
+export type CreateAvatarDocument = Omit<AvatarDocument, '_id'>;
+
+export interface GetAvatarsOptions {
+  email: string;
+}
+
+export interface CreateAvatarsOptions {
+  avatars: string[];
+  email: string;
+  prompt: string;
+}

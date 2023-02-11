@@ -12,7 +12,7 @@ function UserProfileImage() {
     return (
       <div
         tabIndex={0}
-        className="w-10 h-10 rounded-full bg-neutral flex justify-center items-center avatar btn-ghost btn p-0 line-height-0 min-h-0 text-white hover:bg-neutral-focus"
+        className="w-10 h-10 rounded-full bg-neutral flex justify-center items-center avatar btn-ghost btn p-0 line-height-0 min-h-0 text-white hover:bg-neutral-focus tooltip"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,11 @@ function UserProfileImage() {
   }
 
   return (
-    <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+    <label
+      tabIndex={0}
+      className="btn btn-ghost btn-circle avatar tooltip tooltip-left flex"
+      data-tip={user.email}
+    >
       <div className="w-10 rounded-full">
         <Image
           alt="User profile image"

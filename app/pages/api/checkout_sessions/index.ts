@@ -1,4 +1,5 @@
 import { STRIPE_SECRET_KEY } from '@aa/config';
+import { creditsMap } from '@aa/models';
 import { Logger } from '@aa/services/logger';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import Stripe from 'stripe';
@@ -6,12 +7,6 @@ import Stripe from 'stripe';
 const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: '2022-11-15',
 });
-
-const creditsMap = new Map([
-  [10, 100],
-  [50, 450],
-  [100, 800],
-]);
 
 function getStripeCheckoutParams(credits: number, email: string, url?: string) {
   const amount = creditsMap.get(credits);

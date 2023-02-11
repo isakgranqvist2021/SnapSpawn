@@ -12,3 +12,16 @@ export interface CreateUserDocument {
   credits: number;
   email: string;
 }
+
+export interface ReduceUserCreditsOptions {
+  credits: number;
+  email: string;
+}
+
+export interface CreateUserOptions {
+  email: string;
+}
+
+export interface GetUserOptions {
+  email: string;
+}

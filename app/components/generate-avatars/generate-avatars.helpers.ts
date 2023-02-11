@@ -42,11 +42,11 @@ export function useGenerateAvatar() {
     dispatch({ result, type: 'set:result' });
   };
 
-  return useCallback(async () => {
+  const generateAvatars = useCallback(async () => {
     try {
       setIsLoading(true);
 
-      const res = await fetch('/api/avatar/generate-avatar', {
+      const res = await fetch('/api/create', {
         body: JSON.stringify(state.form),
         method: 'POST',
       });
@@ -75,4 +75,6 @@ export function useGenerateAvatar() {
       addAlert('error', 'Something went wrong. Please try again.');
     }
   }, [addAlert, addAvatars, reduceCreditsBy, setIsLoading, state]);
+
+  return generateAvatars;
 }
