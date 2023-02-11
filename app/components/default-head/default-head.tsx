@@ -29,7 +29,7 @@ export function DefaultHead(props: DefaultHeadProps) {
       </Head>
 
       <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-DMYWSZ00P0"
+        src="https://www.googletagmanager.com/gtag/js?id=G-FST7LMK8T9"
         strategy="afterInteractive"
       />
       <Script id="google-analytics" strategy="afterInteractive">
@@ -38,7 +38,7 @@ export function DefaultHead(props: DefaultHeadProps) {
           function gtag(){window.dataLayer.push(arguments);}
           gtag('js', new Date());
 
-          gtag('config', 'G-DMYWSZ00P0');
+          gtag('config', 'G-FST7LMK8T9');
         `}
       </Script>
 
