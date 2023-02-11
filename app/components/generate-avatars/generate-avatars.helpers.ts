@@ -53,6 +53,8 @@ export function useGenerateAvatar() {
 
       const data = await res.json();
 
+      console.log(data);
+
       if (!Array.isArray(data.avatars)) {
         setIsLoading(false);
         addAlert('error', 'Something went wrong. Please try again.');

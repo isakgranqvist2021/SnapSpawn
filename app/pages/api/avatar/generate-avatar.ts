@@ -31,9 +31,7 @@ function getPrompt(promptModel: PromptModel) {
 
 async function getAvatarModels(promptModel: PromptModel, email: string) {
   try {
-    const prompt = getPrompt(promptModel);
-
-    const openAiUrls = await generateAvatars(prompt);
+    const openAiUrls = await generateAvatars(getPrompt(promptModel));
 
     if (!openAiUrls) {
       throw new Error("couldn't generate avatars");
@@ -54,7 +52,7 @@ async function getAvatarModels(promptModel: PromptModel, email: string) {
         return {
           createdAt: Date.now(),
           id: avatarId,
-          prompt,
+          prompt: query,
           url,
         };
       }),
