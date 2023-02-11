@@ -36,7 +36,7 @@ function Home() {
       <DefaultHead title="Home" />
 
       <MainContainer>
-        <Nav />
+        <Nav className="navbar bg-base-200 flex fixed z-30" />
 
         <HeroSection />
       </MainContainer>

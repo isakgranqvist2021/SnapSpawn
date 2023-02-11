@@ -73,20 +73,18 @@ function NavDropDown() {
   );
 }
 
-export function Nav() {
+export function Nav(props: React.ComponentPropsWithoutRef<'div'>) {
   return (
-    <React.Fragment>
-      <div className="navbar bg-base-200 flex">
-        <div className="flex-1">
-          <Link href="/" className="btn btn-ghost normal-case text-xl">
-            AI Portrait Studio
-          </Link>
-        </div>
-
-        <div className="flex-none gap-2">
-          <NavDropDown />
-        </div>
+    <div className="navbar bg-base-200 flex" {...props}>
+      <div className="flex-1">
+        <Link href="/" className="btn btn-ghost normal-case text-xl">
+          AI Portrait Studio
+        </Link>
       </div>
-    </React.Fragment>
+
+      <div className="flex-none gap-2">
+        <NavDropDown />
+      </div>
+    </div>
   );
 }
