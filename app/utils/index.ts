@@ -33,14 +33,16 @@ export async function loadServerSideProps(ctx: GetServerSidePropsContext) {
     return { props: { credits: 0, avatars: [] } };
   }
 
-  const user = await getUser(session.user.email);
+  const email = session.user.email;
+
+  const user = await getUser({ email });
 
   if (user === null) {
-    await createUser(session.user.email);
+    await createUser({ email });
     return { props: { credits: 0, avatars: [] } };
   }
 
-  const avatarDocuments = await getAvatars(session.user.email);
+  const avatarDocuments = await getAvatars({ email });
 
   if (!avatarDocuments) {
     Logger.log('warning', avatarDocuments);
@@ -56,4 +58,12 @@ export async function loadServerSideProps(ctx: GetServerSidePropsContext) {
   );
 
   return { props: { credits: user.credits, avatars } };
+}
+
+export function createQueryUrlFromObject<T extends object>(obj: T) {
+  const query = Object.keys(obj)
+    .map((key) => `${key}=${obj[key as keyof T]}`)
+    .join('&');
+
+  return query;
 }

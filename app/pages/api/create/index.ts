@@ -1,11 +1,14 @@
 import { createAvatars } from '@aa/database/avatar';
+import { createTransaction } from '@aa/database/transaction';
 import { getUser, reduceUserCredits } from '@aa/database/user';
-import { AvatarModel } from '@aa/models';
+import { AvatarModel, creditsMap } from '@aa/models';
 import { PromptModel } from '@aa/models/prompt.model';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
+import { createQueryUrlFromObject } from '@aa/utils';
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 function getPrompt(promptModel: PromptModel) {
   const { characteristics, gender, traits } = promptModel;
@@ -29,9 +32,23 @@ function getPrompt(promptModel: PromptModel) {
   return parts.join(', ');
 }
 
-async function getAvatarModels(promptModel: PromptModel, email: string) {
+async function createAvatarModels(promptModel: PromptModel, email: string) {
   try {
+    const prepareAvatarModel = async (
+      avatarId: string,
+    ): Promise<AvatarModel> => {
+      const url = await getSignedUrl(avatarId);
+
+      return {
+        createdAt: Date.now(),
+        id: avatarId,
+        prompt: query,
+        url,
+      };
+    };
+
     const openAiUrls = await generateAvatars(getPrompt(promptModel));
+    const query = createQueryUrlFromObject(promptModel);
 
     if (!openAiUrls) {
       throw new Error("couldn't generate avatars");
@@ -39,27 +56,13 @@ async function getAvatarModels(promptModel: PromptModel, email: string) {
 
     const avatarIds = await uploadAvatar(openAiUrls);
 
-    const query = Object.keys(promptModel)
-      .map((key) => `${key}=${promptModel[key as keyof PromptModel]}`)
-      .join('&');
+    await createAvatars({ email, avatars: avatarIds, prompt: query });
 
-    await createAvatars(email, avatarIds, query);
-
-    const newAvatars = await Promise.all(
-      avatarIds.map(async (avatarId): Promise<AvatarModel> => {
-        const url = await getSignedUrl(avatarId);
-
-        return {
-          createdAt: Date.now(),
-          id: avatarId,
-          prompt: query,
-          url,
-        };
-      }),
-    );
+    const newAvatars = await Promise.all(avatarIds.map(prepareAvatarModel));
 
     if (newAvatars.length > 0) {
-      await reduceUserCredits(email, openAiUrls.length);
+      await reduceUserCredits({ email, credits: openAiUrls.length });
+      await createTransaction({ email, credits: openAiUrls.length });
     }
 
     return newAvatars;
@@ -75,7 +78,7 @@ async function getUserAndValidateCredits(session?: Session | null) {
       throw new Error('cannot generate avatar while logged out');
     }
 
-    const user = await getUser(session.user.email);
+    const user = await getUser({ email: session.user.email });
 
     if (!user) {
       throw new Error('cannot generate avatar for non-existent user');
@@ -92,7 +95,7 @@ async function getUserAndValidateCredits(session?: Session | null) {
   }
 }
 
-export default withApiAuthRequired(async (req, res) => {
+async function create(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
@@ -108,7 +111,7 @@ export default withApiAuthRequired(async (req, res) => {
       throw new Error('cannot generate avatar user is null');
     }
 
-    const avatarModels = await getAvatarModels(req.body, user.email);
+    const avatarModels = await createAvatarModels(req.body, user.email);
 
     if (!avatarModels) {
       throw new Error('cannot generate avatar avatarModels is null');
@@ -119,4 +122,6 @@ export default withApiAuthRequired(async (req, res) => {
     Logger.log('error', err);
     return res.status(500).send({ avatars: null });
   }
-});
+}
+
+export default withApiAuthRequired(create);
