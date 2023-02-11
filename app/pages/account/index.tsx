@@ -1,106 +1,21 @@
 import { MyAvatars } from '@aa/components/my-avatars';
-import { Nav } from '@aa/components/nav';
-import { PageSnackbar } from '@aa/components/page-snackbar';
-import { WelcomeMessage } from '@aa/components/welcome-message';
-import { AuthContainer, MainContainer } from '@aa/containers';
-import { AppProvider } from '@aa/context';
-import { getAvatars } from '@aa/database/avatar';
-import { createUser, getUser } from '@aa/database/user';
-import { AvatarModel } from '@aa/models';
-import { getSignedUrl } from '@aa/services/gcp';
-import { getSession } from '@auth0/nextjs-auth0';
-import { IncomingMessage, ServerResponse } from 'http';
-import Head from 'next/head';
+import {
+  AuthPageContainer,
+  DefaultProps,
+} from '@aa/containers/auth-page-container';
+import { loadServerSideProps } from '@aa/utils';
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import React from 'react';
 
-export default function Account(props: {
-  avatars: AvatarModel[];
-  credits: number;
-}) {
-  const { avatars, credits } = props;
-
+export default function Account(props: DefaultProps) {
   return (
-    <AppProvider avatars={avatars} credits={credits}>
-      <Head>
-        <title>AI Portrait Studio | Account</title>
-        <meta
-          name="description"
-          content="Get instant, custom portraits at AI Portrait Studio. Our AI technology generates unique images based on your photos. Create a personalized work of art in minutes."
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta
-          name="keywords"
-          content="AI technology, Portraits, Custom, Images, Personalized, Photos, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists"
-        />
-        <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <AuthContainer>
-        <MainContainer>
-          <Nav />
-
-          <WelcomeMessage />
-
-          <MyAvatars />
-
-          <PageSnackbar />
-        </MainContainer>
-      </AuthContainer>
-    </AppProvider>
+    <AuthPageContainer title="Account" {...props}>
+      <MyAvatars />
+    </AuthPageContainer>
   );
 }
 
-export async function getServerSideProps(ctx: {
-  req: IncomingMessage;
-  res: ServerResponse<IncomingMessage>;
-}) {
-  const session = await getSession(ctx.req, ctx.res);
-
-  if (!session?.user.email) {
-    return { props: {} };
-  }
-
-  let credits = 0;
-  let avatarModels: AvatarModel[] | null = null;
-
-  const user = await getUser(session.user.email);
-
-  if (user === null) {
-    await createUser(session.user.email);
-  } else {
-    credits = user.credits;
-    const avatarDocuments = await getAvatars(session.user.email);
-
-    if (!avatarDocuments) {
-      return { props: { credits, avatars: [] } };
-    }
-
-    const _avatarModels = await Promise.all(
-      avatarDocuments.map(
-        async (avatarDocument): Promise<AvatarModel | null> => {
-          try {
-            const { _id, avatar, createdAt, prompt } = avatarDocument;
-
-            const url = await getSignedUrl(avatar);
-
-            return {
-              createdAt: new Date(createdAt).getTime(),
-              id: _id.toHexString(),
-              prompt,
-              url,
-            };
-          } catch {
-            return null;
-          }
-        },
-      ),
-    );
-
-    avatarModels = _avatarModels.filter(
-      (avatarModel): avatarModel is AvatarModel => avatarModel !== null,
-    );
-  }
-
-  return { props: { credits, avatars: avatarModels } };
-}
+export const getServerSideProps = withPageAuthRequired({
+  returnTo: '/account',
+  getServerSideProps: loadServerSideProps,
+});

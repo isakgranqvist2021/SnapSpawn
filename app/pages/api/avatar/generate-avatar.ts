@@ -5,33 +5,72 @@ import { PromptModel } from '@aa/models/prompt.model';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
-import { getSession } from '@auth0/nextjs-auth0';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 
-interface Data {
-  avatars: AvatarModel[];
-}
-
-export function getPrompt(options: PromptModel) {
-  const { age, traits, gender } = options;
+function getPrompt(promptModel: PromptModel) {
+  const { characteristics, gender, traits } = promptModel;
 
   const parts = [
-    'Can you give me',
-    gender === 'rather not say' ? 'an avatar' : `a ${gender} avatar`,
-    `who is ${age} old`,
-    'and has',
-    `the following traits: ${traits}?`,
+    `A ${characteristics}`,
+    'circle shaped',
+    'close up',
+    'medium light',
+    'fictional',
+    'digital social media profile avatar',
+    'colourful lighting',
+    'vector art',
+    `wearing ${traits}`,
   ];
 
-  return parts.join(' ');
+  if (gender !== 'rather not say') {
+    parts.push(gender);
+  }
+
+  return parts.join(', ');
 }
 
-async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+async function getAvatarModels(promptModel: PromptModel, email: string) {
   try {
-    const body: PromptModel = JSON.parse(req.body);
+    const openAiUrls = await generateAvatars(getPrompt(promptModel));
 
-    const session = await getSession(req, res);
+    if (!openAiUrls) {
+      throw new Error("couldn't generate avatars");
+    }
 
+    const avatarIds = await uploadAvatar(openAiUrls);
+
+    const query = Object.keys(promptModel)
+      .map((key) => `${key}=${promptModel[key as keyof PromptModel]}`)
+      .join('&');
+
+    await createAvatars(email, avatarIds, query);
+
+    const newAvatars = await Promise.all(
+      avatarIds.map(async (avatarId): Promise<AvatarModel> => {
+        const url = await getSignedUrl(avatarId);
+
+        return {
+          createdAt: Date.now(),
+          id: avatarId,
+          prompt: query,
+          url,
+        };
+      }),
+    );
+
+    if (newAvatars.length > 0) {
+      await reduceUserCredits(email, openAiUrls.length);
+    }
+
+    return newAvatars;
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
+}
+
+async function getUserAndValidateCredits(session?: Session | null) {
+  try {
     if (!session?.user.email) {
       throw new Error('cannot generate avatar while logged out');
     }
@@ -42,43 +81,42 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
       throw new Error('cannot generate avatar for non-existent user');
     }
 
-    if (user.credits < 1) {
+    if (user.credits <= 0) {
       throw new Error('cannot generate avatar without credits');
     }
 
-    const prompt = getPrompt(body);
+    return user;
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
+}
 
-    const openAiUrls = await generateAvatars(prompt);
-    const avatarIds = await uploadAvatar(openAiUrls);
+export default withApiAuthRequired(async (req, res) => {
+  try {
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST');
+      return res.status(405).end('Method Not Allowed');
+    }
 
-    await createAvatars(
-      session.user.email,
-      avatarIds,
-      Object.keys(body)
-        .map((key) => `${key}=${body[key as keyof PromptModel]}`)
-        .join('&'),
-    );
+    req.body = JSON.parse(req.body);
 
-    await reduceUserCredits(session.user.email, openAiUrls.length);
+    const session = await getSession(req, res);
+    const user = await getUserAndValidateCredits(session);
 
-    const avatarModels: AvatarModel[] = await Promise.all(
-      avatarIds.map(async (avatarId): Promise<AvatarModel> => {
-        const url = await getSignedUrl(avatarId);
+    if (!user) {
+      throw new Error('cannot generate avatar user is null');
+    }
 
-        return {
-          url: url,
-          id: avatarId,
-          createdAt: Date.now(),
-          prompt,
-        };
-      }),
-    );
+    const avatarModels = await getAvatarModels(req.body, user.email);
+
+    if (!avatarModels) {
+      throw new Error('cannot generate avatar avatarModels is null');
+    }
 
     return res.status(200).json({ avatars: avatarModels });
   } catch (err) {
     Logger.log('error', err);
-    return res.status(500).send({ avatars: [] });
+    return res.status(500).send({ avatars: null });
   }
-}
-
-export default handler;
+});

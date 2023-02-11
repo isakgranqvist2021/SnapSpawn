@@ -1,4 +1,5 @@
-import { Alert, useAppDispatch, useAppState } from '@aa/context';
+import { useApiDispatch, useApiState } from '@aa/context/api-context';
+import { Alert } from '@aa/types';
 import React, { useEffect } from 'react';
 
 function PageSnackbarAlert(props: Alert) {
@@ -28,17 +29,17 @@ function PageSnackbarAlert(props: Alert) {
 function PageSnackbarToast(props: Alert) {
   const { id } = props;
 
-  const appDispatch = useAppDispatch();
+  const apiDispatch = useApiDispatch();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      appDispatch({ type: 'remove:alert', id });
+      apiDispatch({ type: 'alerts:remove', id });
     }, 5000);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [appDispatch, id]);
+  }, [apiDispatch, id]);
 
   return (
     <div className="toast z-20">
@@ -52,11 +53,11 @@ function renderPageSnackbarToast(alert: Alert, index: number) {
 }
 
 export function PageSnackbar() {
-  const appState = useAppState();
+  const apiState = useApiState();
 
   return (
     <React.Fragment>
-      {appState.alerts.map(renderPageSnackbarToast)}
+      {apiState.alerts.map(renderPageSnackbarToast)}
     </React.Fragment>
   );
 }

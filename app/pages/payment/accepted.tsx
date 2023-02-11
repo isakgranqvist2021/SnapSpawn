@@ -1,25 +1,15 @@
-import { MainContainer } from '@aa/containers';
+import { DefaultHead } from '@aa/components/default-head';
+import { MainContainer } from '@aa/containers/main-container';
 import Head from 'next/head';
 import Link from 'next/link';
+import Script from 'next/script';
 import React from 'react';
 
 export default function Accepted() {
   return (
     <React.Fragment>
-      <Head>
-        <title>AI Portrait Studio | Payment Accepted</title>
-        <meta
-          name="description"
-          content="Get instant, custom portraits at AI Portrait Studio. Our AI technology generates unique images based on your photos. Create a personalized work of art in minutes."
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta
-          name="keywords"
-          content="AI technology, Portraits, Custom, Images, Personalized, Photos, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists"
-        />
-        <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <DefaultHead title="Payment Accepted" />
+
       <MainContainer>
         <div className="flex flex-col gap-3 items-center mt-10">
           <h1 className="text-xl text-green-600">

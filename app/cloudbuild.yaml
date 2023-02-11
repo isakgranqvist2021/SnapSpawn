@@ -1,0 +1,84 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: app
+    args:
+      [
+        'build',
+        '-t',
+        'gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container',
+        '--build-arg',
+        'NODE_ENV=$_NODE_ENV',
+        '--build-arg',
+        'MONGO_DB_DATABASE_URL=$_MONGO_DB_DATABASE_URL',
+        '--build-arg',
+        'AUTH0_SECRET=$_AUTH0_SECRET',
+        '--build-arg',
+        'AUTH0_BASE_URL=$_AUTH0_BASE_URL',
+        '--build-arg',
+        'AUTH0_ISSUER_BASE_URL=$_AUTH0_ISSUER_BASE_URL',
+        '--build-arg',
+        'AUTH0_CLIENT_ID=$_AUTH0_CLIENT_ID',
+        '--build-arg',
+        'AUTH0_CLIENT_SECRET=$_AUTH0_CLIENT_SECRET',
+        '--build-arg',
+        'OPEN_AI_API_KEY=$_OPEN_AI_API_KEY',
+        '--build-arg',
+        'OPEN_AI_BASE_URL=$_OPEN_AI_BASE_URL',
+        '--build-arg',
+        'GCP_PROJECT_ID=$_GCP_PROJECT_ID',
+        '--build-arg',
+        'GCP_CLIENT_ID=$_GCP_CLIENT_ID',
+        '--build-arg',
+        'GCP_CLIENT_EMAIL=$_GCP_CLIENT_EMAIL',
+        '--build-arg',
+        'GCP_PRIVATE_KEY=$_GCP_PRIVATE_KEY',
+        '--build-arg',
+        'GCP_BUCKET_NAME=$_GCP_BUCKET_NAME',
+        '--build-arg',
+        'STRIPE_SECRET_KEY=$_STRIPE_SECRET_KEY',
+        '--build-arg',
+        'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
+        '.',
+      ]
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: app
+    args:
+      [
+        'push',
+        'gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container',
+      ]
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    dir: app
+    entrypoint: gcloud
+    args:
+      [
+        'run',
+        'deploy',
+        'ai-portrait-studio',
+        '--allow-unauthenticated',
+        '--service-account',
+        '680698972592-compute@developer.gserviceaccount.com',
+        '--image',
+        'gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container',
+        '--region',
+        'europe-west1',
+        '--max-instances',
+        '30',
+        '--min-instances',
+        '1',
+        '--memory',
+        '512Mi',
+        '--concurrency',
+        '80',
+      ]
+
+images:
+  - gcr.io/gothic-venture-373811/ai-portrait-studio-docker-container
