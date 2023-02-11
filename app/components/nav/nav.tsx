@@ -81,14 +81,25 @@ function NavDropDown() {
   );
 }
 
+function NavCompanyLogo() {
+  const { user } = useUser();
+
+  return (
+    <div className="flex-1">
+      <Link
+        href={!user ? '/' : '/account'}
+        className="btn btn-ghost normal-case text-xl"
+      >
+        AI Portrait Studio
+      </Link>
+    </div>
+  );
+}
+
 export function Nav(props: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div className="navbar bg-base-200 flex" {...props}>
-      <div className="flex-1">
-        <Link href="/" className="btn btn-ghost normal-case text-xl">
-          AI Portrait Studio
-        </Link>
-      </div>
+      <NavCompanyLogo />
 
       <div className="flex-none gap-2">
         <NavDropDown />

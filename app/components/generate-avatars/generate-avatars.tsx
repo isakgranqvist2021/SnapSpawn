@@ -1,3 +1,4 @@
+import { useApiState } from '@aa/context/api-context';
 import Link from 'next/link';
 import { memo } from 'react';
 
@@ -12,6 +13,17 @@ import { PickCharacteristics } from './pick-characteristics';
 import { PickGender } from './pick-gender';
 import { PickTraits } from './pick-traits';
 
+function UserCreditsText() {
+  const state = useApiState();
+
+  return (
+    <h1 className="text-3xl">
+      You have <span className="text-secondary">{state.credits.data}</span>{' '}
+      credits
+    </h1>
+  );
+}
+
 function _GenerateAvatarsFormContent() {
   const generateAvatars = useGenerateAvatar();
 
@@ -22,6 +34,8 @@ function _GenerateAvatarsFormContent() {
 
   return (
     <form className="shadow p-5 max-w-4xl mx-auto rounded" onSubmit={onSubmit}>
+      <UserCreditsText />
+
       <div className="p-5">
         <PickGender />
       </div>
@@ -76,10 +90,6 @@ export function GenerateAvatarsForm() {
   return (
     <GenerateAvatarProvider>
       <div className="p-5 flex flex-col gap-5">
-        <div className="mx-auto">
-          <StatsCards hideActions />
-        </div>
-
         <GenerateAvatarsFormContent />
         <AvatarGenerationResult />
       </div>
