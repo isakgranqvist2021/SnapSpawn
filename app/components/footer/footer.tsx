@@ -29,9 +29,6 @@ export function Footer() {
         <Link href="/account" className="link link-hover">
           Avatar Studio
         </Link>
-        <Link href="/cookie-policy" className="link link-hover">
-          Cookie Policy
-        </Link>
       </div>
 
       <div>
