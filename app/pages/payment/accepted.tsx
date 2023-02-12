@@ -1,8 +1,6 @@
 import { DefaultHead } from '@aa/components/default-head';
 import { MainContainer } from '@aa/containers/main-container';
-import Head from 'next/head';
 import Link from 'next/link';
-import Script from 'next/script';
 import React from 'react';
 
 export default function Accepted() {
