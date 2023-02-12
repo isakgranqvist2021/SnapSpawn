@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { createReadStream } from 'fs';
+import { createReadStream, readdirSync } from 'fs';
 import { Configuration, OpenAIApi } from 'openai';
 import path from 'path';
 
@@ -32,11 +32,21 @@ async function createImageVariant(path: string) {
 }
 
 async function main() {
-  const url = await createImageVariant(
-    path.join(path.resolve('assets'), 'img-4cNJT7lfSEG6bnqyEFIVYIOU.png'),
+  const files = readdirSync(path.resolve('assets'));
+
+  const promises = await Promise.all(
+    files.map(async (file) => {
+      const url = await createImageVariant(
+        path.join(path.resolve('assets'), file),
+      );
+
+      return url;
+    }),
   );
 
-  console.log(url);
+  promises.forEach((url) => {
+    console.log(url);
+  });
 
   // textGenerator('How would you go about tuning OpenAI Dall-E?');
 }
