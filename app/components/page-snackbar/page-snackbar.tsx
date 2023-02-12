@@ -1,4 +1,4 @@
-import { useApiDispatch, useApiState } from '@aa/context/api-context';
+import { useApiState, useStaticMethods } from '@aa/context/api-context';
 import { Alert } from '@aa/types';
 import React, { useEffect } from 'react';
 
@@ -13,33 +13,41 @@ function PageSnackbarAlert(props: Alert) {
 
   switch (severity) {
     case 'error':
-      return <div className="alert alert-error shadow-lg">{messageBox}</div>;
+      return (
+        <div className="alert alert-error shadow-lg z-30">{messageBox}</div>
+      );
 
     case 'info':
-      return <div className="alert alert-info shadow-lg">{messageBox}</div>;
+      return (
+        <div className="alert alert-info shadow-lg z-30">{messageBox}</div>
+      );
 
     case 'success':
-      return <div className="alert alert-success shadow-lg">{messageBox}</div>;
+      return (
+        <div className="alert alert-success shadow-lg z-30">{messageBox}</div>
+      );
 
     case 'warning':
-      return <div className="alert alert-warning shadow-lg">{messageBox}</div>;
+      return (
+        <div className="alert alert-warning shadow-lg z-30">{messageBox}</div>
+      );
   }
 }
 
 function PageSnackbarToast(props: Alert) {
   const { id } = props;
 
-  const apiDispatch = useApiDispatch();
+  const staticMethods = useStaticMethods();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      apiDispatch({ type: 'alerts:remove', id });
+      staticMethods.clearAlert(id);
     }, 5000);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [apiDispatch, id]);
+  }, [staticMethods, id]);
 
   return (
     <div className="toast z-20">

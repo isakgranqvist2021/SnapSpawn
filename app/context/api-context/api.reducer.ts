@@ -89,7 +89,7 @@ export function apiReducer(
     return avatarsReducer(state, action);
   }
 
-  if (action.type.startsWith('alert:')) {
+  if (action.type.startsWith('alerts:')) {
     return alertsReducer(state, action);
   }
 

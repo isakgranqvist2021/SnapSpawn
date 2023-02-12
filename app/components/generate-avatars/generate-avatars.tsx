@@ -2,7 +2,6 @@ import { useApiState } from '@aa/context/api-context';
 import Link from 'next/link';
 import React, { memo } from 'react';
 
-import { StatsCards } from '../stats-cards';
 import { FormSection } from './form-section';
 import { GenerateAvatarSubmitButton } from './generate-avatar-submit-button';
 import {

@@ -1,4 +1,3 @@
-import { Footer } from '@aa/components/footer';
 import { MyAvatars } from '@aa/components/my-avatars';
 import {
   AuthPageContainer,

@@ -48,3 +48,7 @@ export interface PromptModel {
   gender: Gender;
   traits: Traits;
 }
+
+export interface CustomPrompt {
+  customPrompt: string;
+}

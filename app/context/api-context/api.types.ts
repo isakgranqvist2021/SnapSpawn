@@ -1,4 +1,4 @@
-import { AvatarModel } from '@aa/models';
+import { AvatarModel, CustomPrompt, PromptModel } from '@aa/models';
 import { Alert } from '@aa/types';
 import { Dispatch } from 'react';
 
@@ -37,7 +37,20 @@ export type ReducerAction =
   | CreditsReducerAction
   | AvatarsReducerAction;
 
+export interface ApiMethods {
+  addCredits: (credits: number) => Promise<void>;
+  generateAvatars: (payload: PromptModel) => Promise<AvatarModel[] | null>;
+  generateCustomPicture: (
+    payload: CustomPrompt,
+  ) => Promise<AvatarModel[] | null>;
+}
+
+export interface StaticMethods {
+  clearAlert: (id: string) => void;
+}
+
 export interface ApiContextType {
-  state: ApiContextState;
   dispatch: Dispatch<ReducerAction>;
+  methods: ApiMethods & StaticMethods;
+  state: ApiContextState;
 }
