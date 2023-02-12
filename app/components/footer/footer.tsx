@@ -1,7 +1,58 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-export function Footer() {
+interface ListLink {
+  href: string;
+  text: string;
+}
+
+interface List {
+  title: string;
+  links: ListLink[];
+}
+
+interface FooterProps {
+  lists?: List[];
+}
+
+export const footerLegalLinksList: List = {
+  title: 'Legal',
+  links: [{ href: '/cookie-policy', text: 'Cookie Policy' }],
+};
+
+const footerQuickLinkList = {
+  title: 'Quick Links',
+  links: [
+    { href: '/refill', text: 'Add Credits' },
+    { href: '/create', text: 'Generate Avatar' },
+    { href: '/account', text: 'Avatar Studio' },
+  ],
+};
+
+const defaultProps: FooterProps = {
+  lists: [footerQuickLinkList, footerLegalLinksList],
+};
+
+function renderLink(link: ListLink) {
+  const { href, text } = link;
+
+  return <Link href={href}>{text}</Link>;
+}
+
+function renderList(list: List) {
+  const { title, links } = list;
+
+  return (
+    <div key={title}>
+      <span className="footer-title">{title}</span>
+      {links.map(renderLink)}
+    </div>
+  );
+}
+
+export function Footer(props: FooterProps) {
+  const lists = props.lists ?? defaultProps.lists;
+
   return (
     <footer className="footer p-10 bg-neutral text-neutral-content">
       <div>
@@ -18,25 +69,8 @@ export function Footer() {
           Bringing your vision to life with AI Portraits.
         </p>
       </div>
-      <div>
-        <span className="footer-title">Quick Links</span>
-        <Link href="/refill" className="link link-hover">
-          Add Credits
-        </Link>
-        <Link href="/create" className="link link-hover">
-          Generate Avatar
-        </Link>
-        <Link href="/account" className="link link-hover">
-          Avatar Studio
-        </Link>
-      </div>
 
-      <div>
-        <span className="footer-title">Legal</span>
-        <Link href="/cookie-policy" className="link link-hover">
-          Cookie Policy
-        </Link>
-      </div>
+      {lists?.map(renderList)}
 
       <div>
         <span className="footer-title">Social</span>

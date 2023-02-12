@@ -1,15 +1,39 @@
 import { DefaultHead } from '@aa/components/default-head';
+import { Footer, footerLegalLinksList } from '@aa/components/footer';
 import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
-import { UserProvider, useUser } from '@auth0/nextjs-auth0/client';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 import React from 'react';
+
+function FreeCreditAlert() {
+  return (
+    <div className="alert alert-info shadow-lg">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          className="stroke-current flex-shrink-0 w-6 h-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <span>New software update available.</span>
+      </div>
+    </div>
+  );
+}
 
 function HeroSection() {
   const { user } = useUser();
 
   return (
-    <div className="hero min-h-screen">
+    <div className="hero grow py-10">
       <div className="hero-overlay bg-opacity-60"></div>
       <div className="hero-content text-center text-neutral-content">
         <div className="max-w-md">
@@ -30,15 +54,44 @@ function HeroSection() {
   );
 }
 
+function HomePageFooter() {
+  const { user } = useUser();
+
+  if (user) {
+    return <Footer />;
+  }
+
+  return (
+    <Footer
+      lists={[
+        {
+          title: 'Quick Links',
+          links: [
+            { href: '/api/auth/login', text: 'Login' },
+            { href: '/account', text: 'Avatar Studio' },
+          ],
+        },
+        footerLegalLinksList,
+      ]}
+    />
+  );
+}
+
 function Home() {
   return (
     <React.Fragment>
       <DefaultHead title="Home" />
 
       <MainContainer>
-        <Nav className="navbar bg-base-200 flex fixed z-30" />
+        <div className="min-h-screen flex flex-col">
+          <Nav className="navbar bg-base-200 flex fixed z-30" />
 
-        <HeroSection />
+          <FreeCreditAlert />
+
+          <HeroSection />
+
+          <HomePageFooter />
+        </div>
       </MainContainer>
     </React.Fragment>
   );
