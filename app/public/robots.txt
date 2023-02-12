@@ -1,5 +1,7 @@
-User-agent: Googlebot
 User-agent: AdsBot-Google
 Disallow: /auth/api/login
+
+User-agent: AdsBot-Google
+Disallow: /auth/*
 
 Sitemap: https://www.aiportraitstudio.com/sitemap.xml
