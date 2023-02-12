@@ -98,7 +98,7 @@ export function useGenerateAvatar() {
     }
 
     onGenerateAvatarsSuccess(data.avatars);
-  }, [onGenerateAvatarsError, onGenerateAvatarsSuccess, postFormData, state]);
+  }, [onGenerateAvatarsError, onGenerateAvatarsSuccess, postFormData]);
 
   return generateAvatars;
 }
