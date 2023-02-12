@@ -7,7 +7,7 @@ import React from 'react';
 
 function FreeCreditAlert() {
   return (
-    <div className="alert alert-info shadow-lg fixed z-30 rounded-none m-0">
+    <div className="alert alert-info shadow-lg rounded-none m-0">
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -32,8 +32,7 @@ function HeroSection() {
   const { user } = useUser();
 
   return (
-    <div className="hero grow py-10">
-      <div className="hero-overlay bg-opacity-60"></div>
+    <div className="hero grow">
       <div className="hero-content text-center text-neutral-content">
         <div className="max-w-md">
           <h1 className="mb-5 text-5xl font-bold">Ai Portrait Studio</h1>

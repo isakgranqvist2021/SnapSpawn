@@ -36,7 +36,11 @@ const defaultProps: FooterProps = {
 function renderLink(link: ListLink) {
   const { href, text } = link;
 
-  return <Link href={href}>{text}</Link>;
+  return (
+    <Link key={href} href={href}>
+      {text}
+    </Link>
+  );
 }
 
 function renderList(list: List) {
