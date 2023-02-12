@@ -8,7 +8,7 @@ import React from 'react';
 
 function FreeCreditAlert() {
   return (
-    <div className="alert alert-info shadow-lg">
+    <div className="alert alert-info shadow-lg fixed z-30 rounded-none m-0">
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +23,7 @@ function FreeCreditAlert() {
             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           ></path>
         </svg>
-        <span>New software update available.</span>
+        <span>All new users get 1 free credit.</span>
       </div>
     </div>
   );
@@ -84,8 +84,6 @@ function Home() {
 
       <MainContainer>
         <div className="min-h-screen flex flex-col">
-          <Nav className="navbar bg-base-200 flex fixed z-30" />
-
           <FreeCreditAlert />
 
           <HeroSection />
