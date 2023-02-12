@@ -1,93 +1,9 @@
 import { AvatarModel, CustomPrompt, PromptModel } from '@aa/models';
-import getStripe from '@aa/services/stripe';
-import { Dispatch } from 'react';
+import { Dispatch, useContext } from 'react';
 
-import { ApiMethods, ReducerAction } from './api.types';
-
-function getGenerateAvatars<T extends object>(
-  path: string,
-  dispatch: Dispatch<ReducerAction>,
-) {
-  return async (payload: T) => {
-    try {
-      dispatch({ type: 'avatars:set-is-loading', isLoading: true });
-
-      const res = await fetch(path, {
-        body: JSON.stringify(payload),
-        method: 'POST',
-      });
-
-      if (res.status !== 200) {
-        throw new Error('Invalid response');
-      }
-
-      const data: { avatars: AvatarModel[] } | undefined = await res.json();
-
-      if (!data || !Array.isArray(data.avatars)) {
-        throw new Error('Invalid response');
-      }
-
-      dispatch({ type: 'avatars:add', avatars: data.avatars });
-      dispatch({
-        type: 'credits:reduce',
-        reduceCreditsBy: data.avatars.length,
-      });
-      dispatch({
-        type: 'alerts:add',
-        alert: {
-          severity: 'success',
-          message: 'Avatars generated successfully!',
-        },
-      });
-      dispatch({ type: 'avatars:set-is-loading', isLoading: false });
-
-      return data.avatars;
-    } catch {
-      dispatch({
-        type: 'alerts:add',
-        alert: {
-          severity: 'error',
-          message: 'Something went wrong. Please try again later.',
-        },
-      });
-      dispatch({ type: 'avatars:set-is-loading', isLoading: false });
-
-      return null;
-    }
-  };
-}
-
-function getAddCredits(path: string, dispatch: Dispatch<ReducerAction>) {
-  return async (credits: number) => {
-    try {
-      dispatch({ type: 'credits:set-is-loading', isLoading: true });
-
-      const stripe = await getStripe();
-
-      if (!stripe) {
-        throw new Error('Stripe is not loaded');
-      }
-
-      const res = await fetch(path, {
-        body: JSON.stringify({ credits }),
-        method: 'POST',
-      }).then((res) => res.json());
-
-      await stripe.redirectToCheckout({
-        sessionId: res.id,
-      });
-    } catch {
-      dispatch({
-        type: 'alerts:add',
-        alert: {
-          severity: 'error',
-          message: 'Something went wrong. Please try again later.',
-        },
-      });
-      dispatch({ type: 'credits:set-is-loading', isLoading: false });
-    }
-  };
-}
+import { AppContext } from './api.context';
+import { ApiMethods, ReducerAction, StaticMethods } from './api.types';
+import { getAddCredits, getGenerateAvatars } from './api.utils';
 
 export function useRootApiMethods(
   dispatch: Dispatch<ReducerAction>,
@@ -106,3 +22,37 @@ export function useRootApiMethods(
 
   return { addCredits, generateAvatars, generateCustomPicture };
 }
+
+export function useRootStaticMethods(
+  dispatch: Dispatch<ReducerAction>,
+): StaticMethods {
+  const clearAlert = (id: string) => {
+    dispatch({ type: 'alerts:remove', id });
+  };
+
+  return { clearAlert };
+}
+
+export const useApiState = () => {
+  const { state } = useContext(AppContext);
+
+  return state;
+};
+
+export const useStaticMethods = (): StaticMethods => {
+  const { methods } = useContext(AppContext);
+
+  return {
+    clearAlert: methods.clearAlert,
+  };
+};
+
+export const useApiMethods = (): ApiMethods => {
+  const { methods } = useContext(AppContext);
+
+  return {
+    addCredits: methods.addCredits,
+    generateAvatars: methods.generateAvatars,
+    generateCustomPicture: methods.generateCustomPicture,
+  };
+};
