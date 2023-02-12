@@ -37,6 +37,13 @@ export const characteristics = [
   'vaporwave',
 ] as const;
 
+console.log({
+  traits: (traits as any).sort((a: any, b: any) => a.localeCompare(b)),
+  characteristics: (characteristics as any).sort((a: any, b: any) =>
+    a.localeCompare(b),
+  ),
+});
+
 export const eyeColors = ['blue', 'brown', 'green', 'hazel'] as const;
 
 export type Gender = (typeof genders)[number];
