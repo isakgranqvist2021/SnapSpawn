@@ -1,5 +1,6 @@
 import { useApiState } from '@aa/context/api-context';
 import { Traits, traits } from '@aa/models';
+import React from 'react';
 
 import {
   useGenerateAvatarDispatch,
@@ -43,9 +44,5 @@ export function PickTraits() {
     );
   };
 
-  return (
-    <div className="grid gap-2 grid-cols-3">
-      {traits.map(renderTraitButton)}
-    </div>
-  );
+  return <React.Fragment>{traits.map(renderTraitButton)}</React.Fragment>;
 }

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { memo } from 'react';
 
 import { StatsCards } from '../stats-cards';
+import { FormSection } from './form-section';
 import { GenerateAvatarSubmitButton } from './generate-avatar-submit-button';
 import {
   GenerateAvatarProvider,
@@ -36,18 +37,24 @@ function _GenerateAvatarsFormContent() {
     <form className="shadow p-5 max-w-4xl mx-auto rounded" onSubmit={onSubmit}>
       <UserCreditsText />
 
-      <div className="p-5">
+      <FormSection>
         <PickGender />
-      </div>
+      </FormSection>
+
       <hr />
-      <div className="p-5">
+
+      <FormSection>
         <PickTraits />
-      </div>
+      </FormSection>
+
       <hr />
-      <div className="p-5">
+
+      <FormSection>
         <PickCharacteristics />
-      </div>
+      </FormSection>
+
       <hr />
+
       <div className="p-5 gap-5 flex items-between justify-between">
         <Link
           className="link flex items-center gap-2 whitespace-nowrap"

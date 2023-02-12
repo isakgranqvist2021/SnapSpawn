@@ -1,5 +1,6 @@
 import { useApiState } from '@aa/context/api-context';
 import { Characteristic, characteristics } from '@aa/models';
+import React from 'react';
 
 import {
   useGenerateAvatarDispatch,
@@ -24,7 +25,7 @@ export function PickCharacteristics() {
 
     return (
       <div className="form-control" key={characteristic}>
-        <label className="label cursor-pointer">
+        <label className="label cursor-pointer gap-2">
           <span
             className={`label-text capitalize ${
               isChecked ? 'text-primary' : ''
@@ -46,8 +47,8 @@ export function PickCharacteristics() {
   };
 
   return (
-    <div className="grid gap-2 grid-cols-3">
+    <React.Fragment>
       {characteristics.map(renderCharacteristicButton)}
-    </div>
+    </React.Fragment>
   );
 }
