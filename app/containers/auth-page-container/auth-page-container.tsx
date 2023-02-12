@@ -1,4 +1,5 @@
 import { DefaultHead } from '@aa/components/default-head';
+import { Footer } from '@aa/components/footer';
 import { Nav } from '@aa/components/nav';
 import { PageSnackbar } from '@aa/components/page-snackbar';
 import { ApiProvider } from '@aa/context/api-context';
@@ -32,6 +33,8 @@ export function AuthPageContainer(props: AuthPageContainerProps) {
         <MainContainerLayout>
           <MainContainerContent>{children}</MainContainerContent>
         </MainContainerLayout>
+
+        <Footer />
 
         <PageSnackbar />
       </MainContainer>

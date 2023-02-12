@@ -89,7 +89,7 @@ const AvatarGenerationResult = () => {
 export function GenerateAvatarsForm() {
   return (
     <GenerateAvatarProvider>
-      <div className="p-5 flex flex-col gap-5">
+      <div className="p-5 flex flex-col gap-5 items-center justify-center h-full">
         <GenerateAvatarsFormContent />
         <AvatarGenerationResult />
       </div>
