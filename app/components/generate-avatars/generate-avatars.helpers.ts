@@ -74,7 +74,7 @@ export function useGenerateAvatar() {
       setIsLoading(false);
       addAlert('error', 'Something went wrong. Please try again.');
     }
-  }, [addAlert, addAvatars, reduceCreditsBy, setIsLoading, state]);
+  }, [addAlert, addAvatars, reduceCreditsBy, setIsLoading, setResult, state]);
 
   return generateAvatars;
 }
