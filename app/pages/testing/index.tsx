@@ -31,7 +31,7 @@ export default function Testing() {
   };
 
   return (
-    <div className="bg-base-200 w-screen h-screen">
+    <div className="bg-base-200 w-screen">
       <div className="flex flex-col gap-3 p-5 w-72">
         <textarea
           className="textarea border resize"

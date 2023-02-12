@@ -3,5 +3,5 @@ import { PropsWithChildren } from 'react';
 export function MainContainerLayout(props: PropsWithChildren) {
   const { children } = props;
 
-  return <div className="flex bg-white">{children}</div>;
+  return <div className="flex-grow-1 flex bg-white">{children}</div>;
 }

@@ -3,5 +3,9 @@ import { PropsWithChildren } from 'react';
 export function MainContainer(props: PropsWithChildren) {
   const { children } = props;
 
-  return <main className="h-screen flex flex-col bg-base-100">{children}</main>;
+  return (
+    <main className="min-h-screen	justify-between flex flex-col bg-base-100">
+      {children}
+    </main>
+  );
 }

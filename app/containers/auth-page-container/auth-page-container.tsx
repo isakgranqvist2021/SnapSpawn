@@ -26,6 +26,7 @@ export function AuthPageContainer(props: AuthPageContainerProps) {
   return (
     <ApiProvider avatars={avatars} credits={credits}>
       <DefaultHead title={title} />
+      <PageSnackbar />
 
       <MainContainer>
         <Nav />
@@ -35,8 +36,6 @@ export function AuthPageContainer(props: AuthPageContainerProps) {
         </MainContainerLayout>
 
         <Footer />
-
-        <PageSnackbar />
       </MainContainer>
     </ApiProvider>
   );

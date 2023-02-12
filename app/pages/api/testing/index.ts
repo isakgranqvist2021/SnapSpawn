@@ -31,7 +31,10 @@ export default async function handler(
   await createAvatars({
     email: 'contact@granqvist.dev',
     avatars: avatarIds,
-    prompt: createQueryUrlFromObject(req.body),
+    prompt: createQueryUrlFromObject({
+      createdBy: 'Admin',
+      testing: 'Testing',
+    }),
   });
 
   if (!urls) {
