@@ -82,13 +82,11 @@ function Home() {
       <DefaultHead title="Home" />
 
       <MainContainer>
-        <div className="min-h-screen flex flex-col">
-          <FreeCreditAlert />
+        <FreeCreditAlert />
 
-          <HeroSection />
+        <HeroSection />
 
-          <HomePageFooter />
-        </div>
+        <HomePageFooter />
       </MainContainer>
     </React.Fragment>
   );
