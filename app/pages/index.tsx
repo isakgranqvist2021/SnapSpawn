@@ -1,6 +1,5 @@
 import { DefaultHead } from '@aa/components/default-head';
 import { Footer, footerLegalLinksList } from '@aa/components/footer';
-import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
