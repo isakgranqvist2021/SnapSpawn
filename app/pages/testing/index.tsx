@@ -31,7 +31,7 @@ export default function Testing() {
   };
 
   return (
-    <div className="bg-base-200 w-screen h-screen overflow-x-hidden">
+    <div className="bg-base-200 w-screen h-screen">
       <div className="flex flex-col gap-3 p-5 w-72">
         <textarea
           className="textarea border resize"
@@ -50,7 +50,7 @@ export default function Testing() {
         </button>
       </div>
 
-      <div className="overflow-auto flex flex-wrap gap-3 px-5 pb-5">
+      <div className="flex flex-wrap gap-3 px-5 pb-5">
         {urls.map((url) => (
           <img key={url} src={url} alt="" />
         ))}
