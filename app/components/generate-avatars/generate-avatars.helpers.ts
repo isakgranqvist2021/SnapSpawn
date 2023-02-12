@@ -9,72 +9,96 @@ import {
 } from './generate-avatars.context';
 import { GenerateAvatarApiResponse } from './generate-avatars.types';
 
-function useGenerateAvatarActions() {
-  const apiDispatch = useApiDispatch();
-
-  const addAlert = (severity: AlertSeverity, message: string) => {
-    apiDispatch({ alert: { message, severity }, type: 'alerts:add' });
-  };
-
-  const setIsLoading = (isLoading: boolean) => {
-    apiDispatch({ isLoading, type: 'avatars:set-is-loading' });
-  };
-
-  const addAvatars = (avatars: AvatarModel[]) => {
-    apiDispatch({ avatars, type: 'avatars:add' });
-  };
-
-  const reduceCreditsBy = (reduceCreditsBy: number) => {
-    apiDispatch({ reduceCreditsBy, type: 'credits:reduce' });
-  };
-
-  return { addAlert, addAvatars, reduceCreditsBy, setIsLoading };
-}
-
 export function useGenerateAvatar() {
   const state = useGenerateAvatarState();
   const dispatch = useGenerateAvatarDispatch();
+  const apiDispatch = useApiDispatch();
 
-  const { addAlert, addAvatars, reduceCreditsBy, setIsLoading } =
-    useGenerateAvatarActions();
+  const setResult = useCallback(
+    (result: string[]) => {
+      dispatch({ result, type: 'set:result' });
+    },
+    [dispatch],
+  );
 
-  const setResult = (result: string[]) => {
-    dispatch({ result, type: 'set:result' });
-  };
+  const addAlert = useCallback(
+    (severity: AlertSeverity, message: string) => {
+      apiDispatch({ alert: { message, severity }, type: 'alerts:add' });
+    },
+    [apiDispatch],
+  );
 
-  const generateAvatars = useCallback(async () => {
-    try {
-      setIsLoading(true);
+  const setIsLoading = useCallback(
+    (isLoading: boolean) => {
+      apiDispatch({ isLoading, type: 'avatars:set-is-loading' });
+    },
+    [apiDispatch],
+  );
 
-      const res = await fetch('/api/create', {
-        body: JSON.stringify(state.form),
-        method: 'POST',
-      });
+  const addAvatars = useCallback(
+    (avatars: AvatarModel[]) => {
+      apiDispatch({ avatars, type: 'avatars:add' });
+    },
+    [apiDispatch],
+  );
 
-      if (res.status !== 200) {
-        setIsLoading(false);
-        addAlert('error', 'Something went wrong. Please try again.');
-        return;
-      }
+  const reduceCreditsBy = useCallback(
+    (reduceCreditsBy: number) => {
+      apiDispatch({ reduceCreditsBy, type: 'credits:reduce' });
+    },
+    [apiDispatch],
+  );
 
-      const data: GenerateAvatarApiResponse = await res.json();
-
-      if (!data || !Array.isArray(data.avatars)) {
-        setIsLoading(false);
-        addAlert('error', 'Something went wrong. Please try again.');
-        return;
-      }
-
-      setResult(data.avatars.map((avatar: AvatarModel) => avatar.url));
-      addAvatars(data.avatars);
-      reduceCreditsBy(data.avatars.length);
+  const onGenerateAvatarsSuccess = useCallback(
+    (avatars: AvatarModel[]) => {
+      setResult(avatars.map((avatar: AvatarModel) => avatar.url));
+      addAvatars(avatars);
+      reduceCreditsBy(avatars.length);
       addAlert('success', 'Avatars generated successfully!');
       setIsLoading(false);
-    } catch {
-      setIsLoading(false);
-      addAlert('error', 'Something went wrong. Please try again.');
+    },
+    [addAlert, addAvatars, reduceCreditsBy, setIsLoading, setResult],
+  );
+
+  const onGenerateAvatarsError = useCallback(() => {
+    setIsLoading(false);
+    addAlert('error', "Couldn't generate avatars");
+  }, [addAlert, setIsLoading]);
+
+  const postFormData = useCallback(async () => {
+    setIsLoading(true);
+
+    const res = state.customPrompt
+      ? await fetch('/api/create-custom-prompt', {
+          body: JSON.stringify({
+            customPrompt: state.customPrompt,
+          }),
+          method: 'POST',
+        })
+      : await fetch('/api/create', {
+          body: JSON.stringify(state.form),
+          method: 'POST',
+        });
+
+    if (res.status !== 200) {
+      return null;
     }
-  }, [addAlert, addAvatars, reduceCreditsBy, setIsLoading, setResult, state]);
+
+    const data: GenerateAvatarApiResponse = await res.json();
+
+    return data;
+  }, [setIsLoading, state]);
+
+  const generateAvatars = useCallback(async () => {
+    const data = await postFormData();
+
+    if (!data || !Array.isArray(data.avatars)) {
+      onGenerateAvatarsError();
+      return;
+    }
+
+    onGenerateAvatarsSuccess(data.avatars);
+  }, [onGenerateAvatarsError, onGenerateAvatarsSuccess, postFormData, state]);
 
   return generateAvatars;
 }

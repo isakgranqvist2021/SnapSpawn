@@ -26,6 +26,18 @@ export function reducer(
     case 'clear:result':
       return { ...state, result: null };
 
+    case 'toggle:custom-prompt':
+      return {
+        ...state,
+        customPrompt: state.customPrompt === null ? '' : null,
+      };
+
+    case 'set:custom-prompt':
+      return {
+        ...state,
+        customPrompt: action.customPrompt.length ? action.customPrompt : null,
+      };
+
     default:
       return state;
   }

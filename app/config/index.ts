@@ -19,7 +19,6 @@ const env = {
   GCP_PROJECT_ID: process.env.GCP_PROJECT_ID as string,
 
   OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY as string,
-  OPEN_AI_BASE_URL: process.env.OPEN_AI_BASE_URL as string,
 
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
 };
@@ -47,6 +46,5 @@ export const GCP_PRIVATE_KEY = env.GCP_PRIVATE_KEY;
 export const GCP_PROJECT_ID = env.GCP_PROJECT_ID;
 
 export const OPEN_AI_API_KEY = env.OPEN_AI_API_KEY;
-export const OPEN_AI_BASE_URL = env.OPEN_AI_BASE_URL;
 
 export const STRIPE_SECRET_KEY = env.STRIPE_SECRET_KEY;

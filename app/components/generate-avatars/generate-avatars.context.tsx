@@ -12,6 +12,7 @@ import { reducer } from './generate-avatars.reducer';
 import { ReducerAction } from './generate-avatars.types';
 
 export interface GenerateAvatarState {
+  customPrompt: string | null;
   form: PromptModel;
   result: string[] | null;
 }
@@ -22,6 +23,7 @@ interface GenerateAvatarContextType {
 }
 
 const INITIAL_STATE: GenerateAvatarState = {
+  customPrompt: null,
   form: DEFAULT_FORM_STATE,
   result: null,
 };

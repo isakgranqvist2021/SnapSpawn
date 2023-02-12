@@ -1,25 +1,22 @@
 import { Logger } from '@aa/services/logger';
-import { Session, handleAuth, handleCallback } from '@auth0/nextjs-auth0';
+import {
+  Session,
+  handleAuth,
+  handleCallback,
+  handleLogin,
+} from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { NextResponse } from 'next/server';
 
 function onError(req: NextApiRequest, res: NextApiResponse, error: Error) {
   Logger.log('error', error.message, { req, res, error });
 }
 
-async function afterCallback(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  session: Session,
-) {
-  Logger.log('info', 'afterCallback', { session });
-  return session;
-}
-
 async function callback(req: NextApiRequest, res: NextApiResponse) {
   try {
     await handleCallback(req, res, {
-      afterCallback,
+      afterCallback: (req, res, session) => {
+        return session;
+      },
     });
   } catch (err) {
     Logger.log('error', err);
@@ -32,7 +29,19 @@ async function callback(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
+async function login(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    await handleLogin(req, res, {
+      returnTo: '/account',
+    });
+  } catch (err) {
+    Logger.log('error', err);
+    return res.redirect('/api/auth/logout');
+  }
+}
+
 export default handleAuth({
   onError,
   callback,
+  login,
 });

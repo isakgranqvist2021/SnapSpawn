@@ -34,7 +34,7 @@ export function PickCharacteristics() {
             {characteristic}
           </span>
           <input
-            disabled={isLoading}
+            disabled={isLoading || state.customPrompt !== null}
             onChange={onChange}
             value={characteristic}
             type="radio"

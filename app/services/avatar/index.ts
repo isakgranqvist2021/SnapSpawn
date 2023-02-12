@@ -1,14 +1,11 @@
-import { OPEN_AI_API_KEY, OPEN_AI_BASE_URL } from '@aa/config';
+import { OPEN_AI_API_KEY } from '@aa/config';
+import { Size, avatarSizes } from '@aa/models';
+import { Configuration, CreateImageRequest, OpenAIApi } from 'openai';
 
 import { Logger } from '../logger';
 
-interface ApiResponse {
-  created: number;
-  data: { url: string }[];
-}
-
-declare const sizes: ['256x256', '512x512', '1024x1024'];
-type Size = (typeof sizes)[number];
+const configuration = new Configuration({ apiKey: OPEN_AI_API_KEY });
+const openai = new OpenAIApi(configuration);
 
 const maxN = 10;
 const minN = 1;
@@ -27,21 +24,27 @@ export async function generateAvatars(
       throw new Error(`n must be greater than ${minN}`);
     }
 
-    const requestInit: RequestInit = {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${OPEN_AI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ prompt, n, size }),
+    if (!avatarSizes.includes(size)) {
+      throw new Error(`size must be one of ${avatarSizes.join(', ')}`);
+    }
+
+    const options: CreateImageRequest = {
+      prompt,
+      n,
+      size,
     };
 
-    const response: ApiResponse = await fetch(
-      OPEN_AI_BASE_URL,
-      requestInit,
-    ).then((res) => res.json());
+    const res = await openai.createImage(options);
 
-    return response.data.map((obj) => obj.url);
+    const data = res.data.data;
+
+    if (!data) {
+      throw new Error('No data returned');
+    }
+
+    const urls = data.map((obj) => obj.url);
+
+    return urls.filter((url): url is string => typeof url === 'string');
   } catch (err) {
     Logger.log('error', err);
     return null;

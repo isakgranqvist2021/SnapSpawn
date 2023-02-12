@@ -32,10 +32,10 @@ function getPrompt(promptModel: PromptModel) {
   return parts.join(', ');
 }
 
-async function createAvatarModels(promptModel: PromptModel, email: string) {
+async function createAvatarModels(prompt: string, email: string) {
   try {
-    const openAiUrls = await generateAvatars(getPrompt(promptModel));
-    const query = createQueryUrlFromObject(promptModel);
+    const openAiUrls = await generateAvatars(prompt);
+    const query = createQueryUrlFromObject({ custom: 'custom' });
 
     const prepareAvatarModel = async (
       avatarId: string,
@@ -111,7 +111,10 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
       throw new Error('cannot generate avatar user is null');
     }
 
-    const avatarModels = await createAvatarModels(req.body, user.email);
+    const avatarModels = await createAvatarModels(
+      req.body.customPrompt,
+      user.email,
+    );
 
     if (!avatarModels) {
       throw new Error('cannot generate avatar avatarModels is null');

@@ -1,12 +1,13 @@
 import { useApiState } from '@aa/context/api-context';
 import Link from 'next/link';
-import { memo } from 'react';
+import React, { memo } from 'react';
 
 import { StatsCards } from '../stats-cards';
 import { FormSection } from './form-section';
 import { GenerateAvatarSubmitButton } from './generate-avatar-submit-button';
 import {
   GenerateAvatarProvider,
+  useGenerateAvatarDispatch,
   useGenerateAvatarState,
 } from './generate-avatars.context';
 import { useGenerateAvatar } from './generate-avatars.helpers';
@@ -22,6 +23,26 @@ function UserCreditsText() {
       You have <span className="text-secondary">{state.credits.data}</span>{' '}
       credits
     </h1>
+  );
+}
+
+function CustomPromptTextarea() {
+  const state = useGenerateAvatarState();
+  const dispatch = useGenerateAvatarDispatch();
+  const apiState = useApiState();
+
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    dispatch({ type: 'set:custom-prompt', customPrompt: e.target.value });
+  };
+
+  return (
+    <textarea
+      className="textarea textarea-bordered h-24 resize w-full"
+      disabled={apiState.avatars.isLoading}
+      onChange={onChange}
+      placeholder="Enter custom prompt here"
+      value={state.customPrompt ?? ''}
+    ></textarea>
   );
 }
 
@@ -51,6 +72,12 @@ function _GenerateAvatarsFormContent() {
 
       <FormSection>
         <PickCharacteristics />
+      </FormSection>
+
+      <div className="divider">or enter a custom prompt</div>
+
+      <FormSection>
+        <CustomPromptTextarea />
       </FormSection>
 
       <hr />

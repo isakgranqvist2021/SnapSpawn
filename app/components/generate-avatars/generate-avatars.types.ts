@@ -13,4 +13,6 @@ export type ReducerAction =
   | { gender: Gender; type: 'set:gender' }
   | { characteristics: Characteristic; type: 'set:characteristics' }
   | { type: 'set:result'; result: string[] }
-  | { type: 'clear:result' };
+  | { type: 'clear:result' }
+  | { type: 'toggle:custom-prompt' }
+  | { type: 'set:custom-prompt'; customPrompt: string };

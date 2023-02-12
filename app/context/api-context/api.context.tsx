@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useReducer,
+  useState,
 } from 'react';
 
 import { apiReducer } from './api.reducer';
