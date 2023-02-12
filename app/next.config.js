@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+  poweredByHeader: false,
   images: {
     domains: [
       'lh3.googleusercontent.com',

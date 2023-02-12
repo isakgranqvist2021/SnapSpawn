@@ -1,4 +1,4 @@
-import { Reducer, useReducer } from 'react';
+import { Reducer, useMemo, useReducer } from 'react';
 
 import { AppContext } from './api.context';
 import { useRootApiMethods, useRootStaticMethods } from './api.context.helpers';
@@ -25,5 +25,7 @@ export function ApiProvider(props: ApiProviderProps) {
   const methods = { ...apiMethods, ...staticMethods };
   const value = { state, methods };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  const _children = useMemo(() => children, [children]);
+
+  return <AppContext.Provider value={value}>{_children}</AppContext.Provider>;
 }

@@ -2,6 +2,15 @@ User-agent: AdsBot-Google
 Disallow: /auth/api/login
 
 User-agent: AdsBot-Google
-Disallow: /auth/*
+Disallow: /auth/api/logout
 
-Sitemap: https://www.aiportraitstudio.com/sitemap.xml
+User-agent: AdsBot-Google
+Disallow: /account
+
+User-agent: AdsBot-Google
+Disallow: /create
+
+User-agent: AdsBot-Google
+Disallow: /refill
+
+Sitemap: https://aiportraitstudio.com/sitemap.xml

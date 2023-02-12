@@ -58,15 +58,17 @@ export function AddCreditsForm() {
     useAddCreditsModal();
 
   return (
-    <form
-      className="shadow p-5 max-w-4xl m-auto rounded"
-      onSubmit={continueToCheckout}
-    >
+    <form className="max-w-fit" onSubmit={continueToCheckout}>
       <div className="pb-5">
         <h1 className="text-3xl leading-10">Add Credits</h1>
         <p className="max-w-prose">
           You can add credits to your account to generate more avatars. Credits
           will be added to your account after the payment has been completed.
+        </p>
+
+        <p className="max-w-prose text-primary">
+          Custom amounts will be available soon. For now, you can only add the 3
+          amounts below.
         </p>
       </div>
 

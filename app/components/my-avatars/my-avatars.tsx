@@ -71,13 +71,6 @@ export function MyAvatars() {
     <React.Fragment>
       <div className="pt-5 px-5 w-full">
         <StatsCards />
-
-        {avatars.isLoading && (
-          <div className="w-full px-5 pt-5 flex gap-3">
-            <Spinner />
-            <p>Generating avatar...</p>
-          </div>
-        )}
       </div>
 
       {avatars.data.length > 0 && (

@@ -1,5 +1,6 @@
 import { DefaultHead } from '@aa/components/default-head';
 import { Footer, footerLegalLinksList } from '@aa/components/footer';
+import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
@@ -42,7 +43,7 @@ function HeroSection() {
           </p>
           <Link
             href={user ? '/account' : '/api/auth/login'}
-            className="btn btn-accent"
+            className="btn btn-accent btn-lg"
           >
             {user ? 'Continue to your account' : 'Get started'}
           </Link>
@@ -81,7 +82,7 @@ function Home() {
       <DefaultHead title="Home" />
 
       <MainContainer>
-        <FreeCreditAlert />
+        <Nav />
 
         <HeroSection />
 

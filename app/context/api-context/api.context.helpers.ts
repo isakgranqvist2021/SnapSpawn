@@ -1,5 +1,5 @@
-import { AvatarModel, CustomPrompt, PromptModel } from '@aa/models';
-import { Dispatch, useContext } from 'react';
+import { CustomPrompt, PromptModel } from '@aa/models';
+import { Dispatch, useContext, useMemo } from 'react';
 
 import { AppContext } from './api.context';
 import { ApiMethods, ReducerAction, StaticMethods } from './api.types';
@@ -20,7 +20,10 @@ export function useRootApiMethods(
 
   const addCredits = getAddCredits('/api/checkout_sessions', dispatch);
 
-  return { addCredits, generateAvatars, generateCustomPicture };
+  return useMemo(
+    () => ({ addCredits, generateAvatars, generateCustomPicture }),
+    [addCredits, generateAvatars, generateCustomPicture],
+  );
 }
 
 export function useRootStaticMethods(
@@ -30,29 +33,30 @@ export function useRootStaticMethods(
     dispatch({ type: 'alerts:remove', id });
   };
 
-  return { clearAlert };
+  return useMemo(() => ({ clearAlert }), [clearAlert]);
 }
 
 export const useApiState = () => {
   const { state } = useContext(AppContext);
 
-  return state;
+  return useMemo(() => state, [state]);
 };
 
 export const useStaticMethods = (): StaticMethods => {
   const { methods } = useContext(AppContext);
 
-  return {
-    clearAlert: methods.clearAlert,
-  };
+  return useMemo(() => methods, [methods]);
 };
 
 export const useApiMethods = (): ApiMethods => {
   const { methods } = useContext(AppContext);
 
-  return {
-    addCredits: methods.addCredits,
-    generateAvatars: methods.generateAvatars,
-    generateCustomPicture: methods.generateCustomPicture,
-  };
+  return useMemo(
+    () => ({
+      addCredits: methods.addCredits,
+      generateAvatars: methods.generateAvatars,
+      generateCustomPicture: methods.generateCustomPicture,
+    }),
+    [methods],
+  );
 };

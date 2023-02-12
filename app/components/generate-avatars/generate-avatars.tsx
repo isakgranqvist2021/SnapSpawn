@@ -54,7 +54,7 @@ function _GenerateAvatarsFormContent() {
   };
 
   return (
-    <form className="shadow p-5 max-w-4xl mx-auto rounded" onSubmit={onSubmit}>
+    <form className="max-w-4xl" onSubmit={onSubmit}>
       <UserCreditsText />
 
       <FormSection>
@@ -81,14 +81,7 @@ function _GenerateAvatarsFormContent() {
 
       <hr />
 
-      <div className="p-5 gap-5 flex items-between justify-between">
-        <Link
-          className="link flex items-center gap-2 whitespace-nowrap"
-          href="/account"
-        >
-          Go Back
-        </Link>
-
+      <div className="p-5 flex justify-end">
         <GenerateAvatarSubmitButton />
       </div>
     </form>
@@ -122,8 +115,20 @@ const AvatarGenerationResult = () => {
 export function GenerateAvatarsForm() {
   return (
     <GenerateAvatarProvider>
-      <div className="p-5 flex flex-col gap-5 items-center justify-center">
+      <div className="p-5 flex flex-col gap-5 w-full">
+        <div className="text-sm breadcrumbs">
+          <ul>
+            <li>
+              <Link href="/account">My Avatars</Link>
+            </li>
+            <li>
+              <Link href="/create">Generate Avatar</Link>
+            </li>
+          </ul>
+        </div>
+
         <GenerateAvatarsFormContent />
+
         <AvatarGenerationResult />
       </div>
     </GenerateAvatarProvider>

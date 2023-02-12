@@ -22,7 +22,7 @@ export function DefaultHead(props: DefaultHeadProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="keywords"
-          content="AI technology, Portraits, Custom, Images, Personalized, Photos, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists"
+          content="AI technology, Portraits, Custom, Images, Personalized, Photos, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists, Dall-E, Stable Diffusion"
         />
         <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
         <link rel="icon" href="/favicon.ico" />
