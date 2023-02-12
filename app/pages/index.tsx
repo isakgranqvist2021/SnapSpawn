@@ -39,7 +39,8 @@ function HeroSection() {
           <h1 className="mb-5 text-5xl font-bold">Ai Portrait Studio</h1>
           <p className="mb-5">
             Create professional & stunning digital portraits with ease using Ai
-            Portrait Studio. AI-powered & user-friendly. Get started now!
+            Portrait Studio. AI-powered & user-friendly. Get started now! All
+            new users get 1 free credit.
           </p>
           <Link
             href={user ? '/account' : '/api/auth/login'}
