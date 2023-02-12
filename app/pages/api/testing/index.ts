@@ -20,7 +20,7 @@ export default async function handler(
 
   req.body = JSON.parse(req.body);
 
-  const urls = await generateAvatars(req.body.prompt, '1024x1024', 3);
+  const urls = await generateAvatars(req.body.prompt, '1024x1024', 1);
 
   if (!urls) {
     return res.status(500).send('Internal Server Error');

@@ -7,6 +7,7 @@ const nextConfig = {
       'storage.googleapis.com',
       's.gravatar.com',
       'oaidalleapiprodscus.blob.core.windows.net',
+      'cdn.discordapp.com',
     ],
   },
   reactStrictMode: true,
