@@ -71,7 +71,7 @@ steps:
         '--region',
         'europe-west1',
         '--max-instances',
-        '30',
+        '500',
         '--min-instances',
         '1',
         '--memory',
