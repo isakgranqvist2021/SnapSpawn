@@ -1,5 +1,13 @@
 import 'dotenv/config';
-import { createReadStream, readdirSync } from 'fs';
+import {
+  createReadStream,
+  createWriteStream,
+  mkdirSync,
+  readdirSync,
+  statSync,
+} from 'fs';
+import https from 'https';
+import sizeOf from 'image-size';
 import { Configuration, OpenAIApi } from 'openai';
 import path from 'path';
 
@@ -25,30 +33,86 @@ async function textGenerator(prompt: string) {
 }
 
 async function createImageVariant(path: string) {
-  const file: any = createReadStream(path);
-  const res = await openai.createImageVariation(file, 1, '1024x1024');
+  try {
+    const file: any = createReadStream(path);
 
-  return res.data.data[0].url;
+    const size = sizeOf(path);
+
+    const res = await openai.createImageVariation(
+      file,
+      1,
+      `${size.width}x${size.height}`,
+    );
+
+    return res.data.data[0].url;
+  } catch (e) {
+    console.error(e);
+  }
 }
 
-async function main() {
-  const files = readdirSync(path.resolve('assets'));
+async function downloadImageFromUrl(
+  url: string,
+  dest: string,
+  filename: string,
+) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      const ext = res.headers['content-type']?.split('/')[1];
 
-  const promises = await Promise.all(
+      if (!ext) {
+        reject(new Error('Invalid content type'));
+      }
+
+      if (res.statusCode === 200) {
+        res
+          .pipe(createWriteStream(path.join(dest, `${filename}.${ext}`)))
+          .on('error', reject)
+          .once('close', () => resolve(path.join(dest, `${filename}.${ext}`)));
+      } else {
+        res.resume();
+        reject(
+          new Error(`Request Failed With a Status Code: ${res.statusCode}`),
+        );
+      }
+    });
+  });
+}
+
+async function readFilesFromAssets() {
+  const files = readdirSync(path.resolve('../marketing-assets'))
+    .filter((file) => file.endsWith('.jpg') || file.endsWith('.png'))
+    .slice(0, 1);
+
+
+  const urls = await Promise.all(
     files.map(async (file) => {
       const url = await createImageVariant(
-        path.join(path.resolve('assets'), file),
+        path.join(path.resolve('../marketing-assets'), file),
       );
 
       return url;
     }),
   );
 
-  promises.forEach((url) => {
-    console.log(url);
-  });
 
-  // textGenerator('How would you go about tuning OpenAI Dall-E?');
+  const stringUrls = urls.filter((url): url is string => url !== undefined);
+  const outputPath = `${Date.now().toString()}_${stringUrls.length.toString()}`;
+  const outputDir = path.resolve(outputPath);
+  const dest = path.join('../marketing-assets', outputPath);
+
+  mkdirSync(outputDir);
+
+  mkdirSync(dest);
+
+  await Promise.all(
+    stringUrls.map(async (url, i) => {
+      return downloadImageFromUrl(url, dest, `file-${i}`);
+    }),
+  );
+}
+
+async function main() {
+  await readFilesFromAssets();
 }
 
 main();

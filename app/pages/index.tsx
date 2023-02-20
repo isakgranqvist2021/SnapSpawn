@@ -1,52 +1,29 @@
 import { DefaultHead } from '@aa/components/default-head';
-import { Footer, footerLegalLinksList } from '@aa/components/footer';
 import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 import React from 'react';
 
-function FreeCreditAlert() {
-  return (
-    <div className="alert alert-info shadow-lg rounded-none m-0">
-      <div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          className="stroke-current flex-shrink-0 w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <span>All new users get 1 free credit.</span>
-      </div>
-    </div>
-  );
-}
-
 function HeroSection() {
-  const { user } = useUser();
-
   return (
-    <div className="hero grow">
-      <div className="hero-content text-center text-neutral-content">
-        <div className="max-w-md">
-          <h1 className="mb-5 text-5xl font-bold">Ai Portrait Studio</h1>
-          <p className="mb-5">
-            Create professional & stunning digital portraits with ease using Ai
-            Portrait Studio. AI-powered & user-friendly. Get started now! All
-            new users get 1 free credit.
+    <div className="hero bg-base-200">
+      <div className="hero-content flex-col lg:flex-row-reverse lg:justify-center lg:items-center lg:gap-20">
+        <img
+          alt="Hero image"
+          src="/images/pexels-tim-mossholder-3345876.jpg"
+          className="max-w-sm rounded-lg shadow-2xl"
+        />
+        <div className="lg:mt-0 mt-4 flex flex-col lg:items-start items-center">
+          <h1 className="lg:text-6xl text-4xl font-bold lg:text-left text-center">
+            AI Portrait Studio
+          </h1>
+          <p className="py-6 max-w-prose lg:text-left text-center">
+            Create captivating images with ease. Our powerful tool lets you
+            generate custom or pre-defined options. Unleash your creativity
+            today!
           </p>
-          <Link
-            href={user ? '/account' : '/api/auth/login'}
-            className="btn btn-accent btn-lg"
-          >
-            {user ? 'Continue to your account' : 'Get started'}
+          <Link href="/api/auth/login" className="btn btn-primary lg:mx-0">
+            Get Started
           </Link>
         </div>
       </div>
@@ -54,26 +31,194 @@ function HeroSection() {
   );
 }
 
-function HomePageFooter() {
-  const { user } = useUser();
-
-  if (user) {
-    return <Footer />;
-  }
-
+function WhoIsItForSection() {
   return (
-    <Footer
-      lists={[
-        {
-          title: 'Quick Links',
-          links: [
-            { href: '/api/auth/login', text: 'Login' },
-            { href: '/account', text: 'Avatar Studio' },
-          ],
-        },
-        footerLegalLinksList,
-      ]}
-    />
+    <div className="container mx-auto p-20">
+      <h3 className="text-center mb-10 lg:text-6xl text-4xl">
+        <span className="text-primary">Generate</span> awesome avatars
+      </h3>
+      <div className="flex gap-10 justify-center flex-wrap">
+        <div className="avatar">
+          <div className="w-24 rounded-full">
+            <img alt="Avatar example" src="/images/2bf0c3c5001.webp" />
+          </div>
+        </div>
+        <div className="avatar">
+          <div className="w-24 rounded-full">
+            <img alt="Avatar example" src="/images/7ccd9cdaced.webp" />
+          </div>
+        </div>
+        <div className="avatar">
+          <div className="w-24 rounded-full">
+            <img alt="Avatar example" src="/images/657cb18aa14.webp" />
+          </div>
+        </div>
+        <div className="avatar">
+          <div className="w-24 rounded-full">
+            <img alt="Avatar example" src="/images/a6f45290f2b.webp" />
+          </div>
+        </div>
+        <div className="avatar">
+          <div className="w-24 rounded-full">
+            <img alt="Avatar example" src="/images/eb73e28e1b0.webp" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BenefitsSection() {
+  return (
+    <div className="bg-base-200 p-20">
+      <div className="mx-auto hero-content flex-col lg:flex-row lg:justify-center lg:items-center lg:gap-20">
+        <img
+          alt="Creativity image"
+          src="/images/pexels-photo-355948.jpeg"
+          className="max-w-sm rounded-lg shadow-2xl"
+        />
+        <div className="lg:mt-0 mt-4">
+          <h1 className="text-2xl lg:text-5xl font-bold lg:text-left text-center">
+            Custom Prompts
+          </h1>
+          <p className="py-6 max-w-prose lg:text-left text-center">
+            Ready to bring your ideas to life? With our web app, you can ask
+            DALL-E to create anything you can imagine. From whimsical creatures
+            to stylish furniture, the possibilities are endless.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HowItWorksSection() {
+  return (
+    <div>
+      <div className="container flex flex-col mx-auto p-20 gap-10 items-center">
+        <h3 className="text-center lg:text-6xl text-4xl">
+          <span className="text-primary">Why</span> should I use it?
+        </h3>
+        <div className="flex gap-10 justify-center flex-wrap">
+          <div className="avatar">
+            <div className="w-24 rounded-full">
+              <img alt="Cash image" src="/images/pexels-pixabay-47344.jpg" />
+            </div>
+          </div>
+          <div className="avatar">
+            <div className="w-24 rounded-full">
+              <img
+                alt="Color wheel"
+                src="/images/pexels-alexander-grey-1146851.jpg"
+              />
+            </div>
+          </div>
+          <div className="avatar">
+            <div className="w-24 rounded-full">
+              <img alt="Cool ball" src="/images/pexels-pixabay-302743.jpg" />
+            </div>
+          </div>
+          <div className="avatar">
+            <div className="w-24 rounded-full">
+              <img
+                alt="Bored person"
+                src="/images/pexels-cottonbro-studio-4114855.jpg"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <p className="text-center flex items-center gap-5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-green-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+            Free credit to get you started on your journey
+          </p>
+          <p className="text-center flex items-center gap-5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-green-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+            Pre defined options to ensure solid outcomes
+          </p>
+          <p className="text-center flex items-center gap-5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-green-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+            Completely custom prompts to suit your needs
+          </p>
+          <p className="text-center flex items-center gap-5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-red-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+            {"Boring and unoriginal images that look like everyone else's"}
+          </p>
+        </div>
+
+        <Link href="/api/auth/login" className="btn">
+          Get started
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function CallToActionFooterSection() {
+  return (
+    <div className="bg-base-200">
+      <div className="mx-auto p-20 flex justify-center lg:justify-around container gap-10 items-center mx-auto flex-wrap">
+        <h4 className="lg:text-left text-center lg:text-6xl text-4xl">
+          Are you ready?
+        </h4>
+        <Link href="/api/auth/login" className="btn btn-primary">
+          Get started
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -83,11 +228,17 @@ function Home() {
       <DefaultHead title="Home" />
 
       <MainContainer>
-        <Nav />
+        <Nav className="navbar bg-base-100 flex" />
 
         <HeroSection />
 
-        <HomePageFooter />
+        <WhoIsItForSection />
+
+        <BenefitsSection />
+
+        <HowItWorksSection />
+
+        <CallToActionFooterSection />
       </MainContainer>
     </React.Fragment>
   );
