@@ -7,11 +7,11 @@ import React from 'react';
 function HeroSection() {
   return (
     <div className="hero bg-base-200">
-      <div className="hero-content flex-col lg:flex-row-reverse lg:justify-center lg:items-center lg:gap-20">
+      <div className="hero-content flex-col lg:flex-row-reverse lg:justify-center lg:items-center lg:gap-20 lg:p-20 p-6">
         <img
           alt="Hero image"
           src="/images/pexels-tim-mossholder-3345876.jpg"
-          className="max-w-sm rounded-lg shadow-2xl"
+          className="max-w-sm rounded-lg shadow-2xl max-w-full"
         />
         <div className="lg:mt-0 mt-4 flex flex-col lg:items-start items-center">
           <h1 className="lg:text-6xl text-4xl font-bold lg:text-left text-center">
@@ -33,7 +33,7 @@ function HeroSection() {
 
 function WhoIsItForSection() {
   return (
-    <div className="container mx-auto p-20">
+    <div className="container mx-auto lg:p-20 p-6">
       <h3 className="text-center mb-10 lg:text-6xl text-4xl">
         <span className="text-primary">Generate</span> awesome avatars
       </h3>
@@ -70,12 +70,13 @@ function WhoIsItForSection() {
 
 function BenefitsSection() {
   return (
-    <div className="bg-base-200 p-20">
+    <div className="bg-base-200 lg:p-20 px-8 py-20">
       <div className="mx-auto hero-content flex-col lg:flex-row lg:justify-center lg:items-center lg:gap-20">
         <img
+          width={300}
           alt="Creativity image"
-          src="/images/pexels-photo-355948.jpeg"
-          className="max-w-sm rounded-lg shadow-2xl"
+          src="/images/pexels-led-supermarket-577514.jpg"
+          className="max-w-sm rounded-lg shadow-2xl max-w-full"
         />
         <div className="lg:mt-0 mt-4">
           <h1 className="text-2xl lg:text-5xl font-bold lg:text-left text-center">
@@ -95,7 +96,7 @@ function BenefitsSection() {
 function HowItWorksSection() {
   return (
     <div>
-      <div className="container flex flex-col mx-auto p-20 gap-10 items-center">
+      <div className="container flex flex-col mx-auto lg:p-20 p-6 gap-10 items-center">
         <h3 className="text-center lg:text-6xl text-4xl">
           <span className="text-primary">Why</span> should I use it?
         </h3>
@@ -129,7 +130,7 @@ function HowItWorksSection() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <p className="text-center flex items-center gap-5">
+          <p className="text-center flex items-center gap-5 text-xs lg:text-base">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -146,7 +147,7 @@ function HowItWorksSection() {
             </svg>
             Free credit to get you started on your journey
           </p>
-          <p className="text-center flex items-center gap-5">
+          <p className="text-center flex items-center gap-5 text-xs lg:text-base">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -163,7 +164,7 @@ function HowItWorksSection() {
             </svg>
             Pre defined options to ensure solid outcomes
           </p>
-          <p className="text-center flex items-center gap-5">
+          <p className="text-center flex items-center gap-5 text-xs lg:text-base">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -180,7 +181,7 @@ function HowItWorksSection() {
             </svg>
             Completely custom prompts to suit your needs
           </p>
-          <p className="text-center flex items-center gap-5">
+          <p className="text-center flex items-center gap-5 text-xs lg:text-base">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -195,7 +196,7 @@ function HowItWorksSection() {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-            {"Boring and unoriginal images that look like everyone else's"}
+            Boring and unoriginal images
           </p>
         </div>
 
@@ -210,7 +211,7 @@ function HowItWorksSection() {
 function CallToActionFooterSection() {
   return (
     <div className="bg-base-200">
-      <div className="mx-auto p-20 flex justify-center lg:justify-around container gap-10 items-center mx-auto flex-wrap">
+      <div className="mx-auto lg:p-20 px-6 py-20 flex justify-center lg:justify-around container gap-10 items-center mx-auto flex-wrap">
         <h4 className="lg:text-left text-center lg:text-6xl text-4xl">
           Are you ready?
         </h4>
