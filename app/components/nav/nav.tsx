@@ -12,7 +12,7 @@ function UserProfileImage() {
     return (
       <div
         tabIndex={0}
-        className="w-10 h-10 rounded-full bg-neutral flex justify-center items-center avatar btn-ghost btn p-0 line-height-0 min-h-0 text-white hover:bg-neutral-focus tooltip"
+        className="w-10 h-10 rounded-full bg-neutral flex justify-center items-center avatar btn-ghost btn p-0 line-height-0 min-h-0 hover:bg-neutral-focus tooltip"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +58,7 @@ function NavDropDown() {
       <UserProfileImage />
 
       <ul
-        className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+        className="mt-3 p-2 shadow menu menu-compact dropdown-content text-primary bg-base-100 rounded-box w-52"
         tabIndex={0}
       >
         <li>

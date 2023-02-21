@@ -1,12 +1,14 @@
 import { DefaultHead } from '@aa/components/default-head';
+import { Footer, footerLegalLinksList } from '@aa/components/footer';
 import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 import React from 'react';
 
 function HeroSection() {
   return (
-    <div className="hero bg-base-200">
+    <div className="hero bg-base-200 mt-16">
       <div className="hero-content flex-col lg:flex-row-reverse lg:justify-center lg:items-center lg:gap-20 lg:p-20 p-6">
         <img
           alt="Hero image"
@@ -14,7 +16,7 @@ function HeroSection() {
           className="max-w-sm rounded-lg shadow-2xl max-w-full"
         />
         <div className="lg:mt-0 mt-4 flex flex-col lg:items-start items-center">
-          <h1 className="lg:text-6xl text-4xl font-bold lg:text-left text-center">
+          <h1 className="lg:text-6xl text-4xl font-black lg:text-left text-center">
             AI Portrait Studio
           </h1>
           <p className="py-6 max-w-prose lg:text-left text-center">
@@ -34,8 +36,8 @@ function HeroSection() {
 function WhoIsItForSection() {
   return (
     <div className="container mx-auto lg:p-20 p-6">
-      <h3 className="text-center mb-10 lg:text-6xl text-4xl">
-        <span className="text-primary">Generate</span> awesome avatars
+      <h3 className="text-center mb-10 lg:text-6xl text-4xl font-extrabold">
+        Generate awesome avatars
       </h3>
       <div className="flex gap-10 justify-center flex-wrap">
         <div className="avatar">
@@ -97,8 +99,8 @@ function HowItWorksSection() {
   return (
     <div>
       <div className="container flex flex-col mx-auto lg:p-20 p-6 gap-10 items-center">
-        <h3 className="text-center lg:text-6xl text-4xl">
-          <span className="text-primary">Why</span> should I use it?
+        <h3 className="text-center font-semibold lg:text-6xl text-4xl">
+          Why should I use it?
         </h3>
         <div className="flex gap-10 justify-center flex-wrap">
           <div className="avatar">
@@ -200,8 +202,22 @@ function HowItWorksSection() {
           </p>
         </div>
 
-        <Link href="/api/auth/login" className="btn">
-          Get started
+        <Link href="/api/auth/login" className="btn gap-3">
+          And many more
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+            />
+          </svg>
         </Link>
       </div>
     </div>
@@ -212,7 +228,7 @@ function CallToActionFooterSection() {
   return (
     <div className="bg-base-200">
       <div className="mx-auto lg:p-20 px-6 py-20 flex justify-center lg:justify-around container gap-10 items-center mx-auto flex-wrap">
-        <h4 className="lg:text-left text-center lg:text-6xl text-4xl">
+        <h4 className="lg:text-left font-medium text-center lg:text-6xl text-4xl">
           Are you ready?
         </h4>
         <Link href="/api/auth/login" className="btn btn-primary">
@@ -223,13 +239,69 @@ function CallToActionFooterSection() {
   );
 }
 
+function HomePageFooter() {
+  const { user } = useUser();
+
+  if (user) {
+    return <Footer />;
+  }
+
+  return (
+    <Footer
+      lists={[
+        {
+          title: 'Quick Links',
+          links: [
+            { href: '/api/auth/login', text: 'Login' },
+            { href: '/account', text: 'Avatar Studio' },
+          ],
+        },
+        footerLegalLinksList,
+      ]}
+    />
+  );
+}
+
+function ToggleTheme() {
+  const onToggleTheme = () => {
+    const defaultTheme = 'light';
+    const secondaryTheme = 'dracula';
+
+    const theme = document.documentElement.getAttribute('data-theme');
+    const nextTheme = theme === secondaryTheme ? defaultTheme : secondaryTheme;
+    document.documentElement.setAttribute('data-theme', nextTheme);
+  };
+
+  return (
+    <button
+      onClick={onToggleTheme}
+      className="btn btn-circle btn-accent fixed bottom-5 right-5"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+        className="w-6 h-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M15 11.25l1.5 1.5.75-.75V8.758l2.276-.61a3 3 0 10-3.675-3.675l-.61 2.277H12l-.75.75 1.5 1.5M15 11.25l-8.47 8.47c-.34.34-.8.53-1.28.53s-.94.19-1.28.53l-.97.97-.75-.75.97-.97c.34-.34.53-.8.53-1.28s.19-.94.53-1.28L12.75 9M15 11.25L12.75 9"
+        />
+      </svg>
+    </button>
+  );
+}
+
 function Home() {
   return (
     <React.Fragment>
       <DefaultHead title="Home" />
 
       <MainContainer>
-        <Nav className="navbar bg-base-100 flex" />
+        <Nav className="navbar bg-neutral text-neutral-content flex fixed z-10" />
 
         <HeroSection />
 
@@ -240,6 +312,10 @@ function Home() {
         <HowItWorksSection />
 
         <CallToActionFooterSection />
+
+        <HomePageFooter />
+
+        <ToggleTheme />
       </MainContainer>
     </React.Fragment>
   );
