@@ -6,11 +6,11 @@ import { Logger } from '@aa/services/logger';
 import { getSession } from '@auth0/nextjs-auth0';
 import { GetServerSidePropsContext } from 'next';
 
-export async function prepareAvatarModel(
+async function prepareAvatarModel(
   avatarDocument: AvatarDocument,
 ): Promise<AvatarModel | null> {
   try {
-    const { _id, avatar, createdAt, prompt } = avatarDocument;
+    const { _id, avatar, createdAt, prompt, promptOptions } = avatarDocument;
 
     const url = await getSignedUrl(avatar);
 
@@ -18,6 +18,7 @@ export async function prepareAvatarModel(
       createdAt: new Date(createdAt).getTime(),
       id: _id.toHexString(),
       prompt,
+      promptOptions,
       url,
     };
   } catch {

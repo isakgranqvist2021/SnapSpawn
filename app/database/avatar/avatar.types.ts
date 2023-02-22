@@ -1,6 +1,6 @@
 import mongodb from 'mongodb';
 
-export type PromptOptions = Record<string, string> | null;
+export type PromptOptions = Record<string, any> | null;
 
 export interface AvatarDocument {
   _id: mongodb.BSON.ObjectId;
