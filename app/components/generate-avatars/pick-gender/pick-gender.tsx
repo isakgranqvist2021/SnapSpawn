@@ -31,7 +31,7 @@ export function PickGender() {
             onChange={onChange}
             value={gender}
             type="radio"
-            disabled={isLoading || state.customPrompt !== null}
+            disabled={isLoading}
             className="radio"
             checked={state.form.gender === gender}
           />

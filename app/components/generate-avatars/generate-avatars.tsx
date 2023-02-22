@@ -1,5 +1,4 @@
 import { useApiState } from '@aa/context/api-context';
-import Link from 'next/link';
 import React, { memo } from 'react';
 
 import { FormSection } from './form-section';
@@ -18,12 +17,22 @@ function UserCreditsText() {
   const state = useApiState();
 
   return (
-    <h1 className="text-3xl">
+    <h1 className="text-3xl mt-3">
       You have <span className="text-secondary">{state.credits.data}</span>{' '}
       credits
     </h1>
   );
 }
+
+const predefinedPrompts = [
+  'earth reviving after human extinction',
+  'Freeform ferrofluids, beautiful dark chaos',
+  'a home built in a huge Soap bubble',
+  'photo of an extremely cute alien fish',
+  'a photo of a person who is a cat',
+  'a photo of a person who is a dog',
+  'a photo of a person who is a cat and a dog',
+];
 
 function CustomPromptTextarea() {
   const state = useGenerateAvatarState();
@@ -35,28 +44,46 @@ function CustomPromptTextarea() {
   };
 
   return (
-    <textarea
-      className="textarea textarea-bordered h-24 resize w-full"
-      disabled={apiState.avatars.isLoading}
-      onChange={onChange}
-      placeholder="Enter custom prompt here"
-      value={state.customPrompt ?? ''}
-    ></textarea>
+    <div className="flex flex-col items-center gap-3">
+      <textarea
+        className="textarea textarea-bordered h-24 resize w-full w-96"
+        disabled={apiState.avatars.isLoading}
+        onChange={onChange}
+        placeholder="Enter custom prompt here"
+        value={state.customPrompt ?? ''}
+      ></textarea>
+
+      <div className="flex gap-3 flex-wrap items-center max-w-4xl justify-center">
+        {predefinedPrompts.map((prompt) => {
+          const pickPredefinedPrompt = () => {
+            if (apiState.avatars.isLoading) return;
+
+            dispatch({ type: 'set:custom-prompt', customPrompt: prompt });
+          };
+
+          return (
+            <div
+              key={prompt}
+              className={[
+                'badge badge-md hover:text-white',
+                apiState.avatars.isLoading
+                  ? 'opacity-50'
+                  : 'hover:bg-primary cursor-pointer',
+              ].join(' ')}
+              onClick={pickPredefinedPrompt}
+            >
+              {prompt}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
 function _GenerateAvatarsFormContent() {
-  const generateAvatars = useGenerateAvatar();
-
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    generateAvatars();
-  };
-
   return (
-    <form className="max-w-4xl" onSubmit={onSubmit}>
-      <UserCreditsText />
-
+    <React.Fragment>
       <FormSection>
         <PickGender />
       </FormSection>
@@ -73,18 +100,24 @@ function _GenerateAvatarsFormContent() {
         <PickCharacteristics />
       </FormSection>
 
-      <div className="divider">or enter a custom prompt</div>
+      <div className="p-5 flex justify-center">
+        <GenerateAvatarSubmitButton text="Generate Avatar" />
+      </div>
+    </React.Fragment>
+  );
+}
 
+function CustomPromptForm() {
+  return (
+    <div className="flex flex-col items-center w-full">
       <FormSection>
         <CustomPromptTextarea />
       </FormSection>
 
-      <hr />
-
-      <div className="p-5 flex justify-between">
-        <GenerateAvatarSubmitButton />
+      <div className="p-5 flex justify-ceneter">
+        <GenerateAvatarSubmitButton text="Generate Custom Picture" />
       </div>
-    </form>
+    </div>
   );
 }
 
@@ -106,31 +139,69 @@ const AvatarGenerationResult = () => {
   }
 
   return (
-    <div className="flex flex-wrap gap-5 px-5 justify-center">
+    <div className="flex flex-wrap gap-5 px-5 pb-5 justify-center">
       {state.result.map(renderAvatar)}
     </div>
   );
 };
 
+function Form(props: { mode: 'generate' | 'custom' }) {
+  const { mode } = props;
+
+  const generateAvatars = useGenerateAvatar();
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    generateAvatars();
+  };
+
+  return (
+    <form className="max-w-4xl" onSubmit={onSubmit}>
+      {mode === 'generate' ? (
+        <GenerateAvatarsFormContent />
+      ) : (
+        <CustomPromptForm />
+      )}
+    </form>
+  );
+}
+
 export function GenerateAvatarsForm() {
+  const [mode, setMode] = React.useState<'custom' | 'generate'>('generate');
+
+  const setModeAsCustom = () => setMode('custom');
+  const setModeAsGenerate = () => setMode('generate');
+
   return (
     <GenerateAvatarProvider>
-      <div className="p-5 flex flex-col gap-5 w-full">
-        <div className="text-sm breadcrumbs">
-          <ul>
-            <li>
-              <Link href="/account">My Avatars</Link>
-            </li>
-            <li>
-              <Link href="/create">Generate Avatar</Link>
-            </li>
-          </ul>
+      <div className="p-5 flex flex-col gap-5 w-full items-center">
+        <div className="tabs">
+          <a
+            onClick={setModeAsGenerate}
+            className={[
+              'tab tab-lg tab-lifted',
+              mode === 'generate' ? 'tab-active' : '',
+            ].join(' ')}
+          >
+            Generate
+          </a>
+          <a
+            onClick={setModeAsCustom}
+            className={[
+              'tab tab-lg tab-lifted',
+              mode === 'custom' ? 'tab-active' : '',
+            ].join(' ')}
+          >
+            Custom
+          </a>
         </div>
 
-        <GenerateAvatarsFormContent />
+        <UserCreditsText />
 
-        <AvatarGenerationResult />
+        <Form mode={mode} />
       </div>
+
+      <AvatarGenerationResult />
     </GenerateAvatarProvider>
   );
 }

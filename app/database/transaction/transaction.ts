@@ -29,8 +29,6 @@ export async function createTransaction(options: CreateTransactionOptions) {
 
     const result = await collection.insertOne(document);
 
-    console.log(result);
-
     return result;
   } catch (err) {
     Logger.log('error', err);

@@ -35,7 +35,7 @@ export function PickTraits() {
             onChange={onChange}
             value={trait}
             type="radio"
-            disabled={isLoading || state.customPrompt !== null}
+            disabled={isLoading}
             className="radio"
             checked={state.form.traits === trait}
           />
