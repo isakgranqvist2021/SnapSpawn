@@ -42,10 +42,10 @@ function AvatarCard(props: AvatarModel) {
       <figure>
         <Image
           alt="Ai generated avatar"
-          height={256}
+          height={1024}
           loading="lazy"
           src={url}
-          width={256}
+          width={1024}
         />
       </figure>
       <div className="card-body items-center">
