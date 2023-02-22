@@ -12,7 +12,7 @@ const minN = 1;
 
 export async function generateAvatars(
   prompt: string,
-  size: Size = '256x256',
+  size: Size = '1024x1024',
   n = 1,
 ) {
   try {
