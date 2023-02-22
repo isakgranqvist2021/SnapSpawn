@@ -81,7 +81,7 @@ function _GenerateAvatarsFormContent() {
 
       <hr />
 
-      <div className="p-5 flex justify-end">
+      <div className="p-5 flex justify-between">
         <GenerateAvatarSubmitButton />
       </div>
     </form>

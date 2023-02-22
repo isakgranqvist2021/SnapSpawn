@@ -2,7 +2,6 @@ import { PromptOptions, createAvatars } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
 import { getUser, reduceUserCredits } from '@aa/database/user';
 import { AvatarModel } from '@aa/models';
-import { PromptModel } from '@aa/models/prompt.model';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
@@ -21,7 +20,11 @@ function getPrompt(promptOptions: PromptOptions) {
   ];
 
   if (promptOptions) {
-    parts.push(...Object.values(promptOptions));
+    const values = Object.values(promptOptions).filter(
+      (value) => value !== "'rather not say'",
+    );
+
+    parts.push(...values);
   }
 
   return parts.join(', ');

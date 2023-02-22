@@ -47,7 +47,7 @@ export async function createUser(options: CreateUserOptions) {
 
     const document: CreateUserDocument = {
       email,
-      credits: 1,
+      credits: 20,
       createdAt: Date.now(),
     };
 

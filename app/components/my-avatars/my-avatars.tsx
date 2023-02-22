@@ -18,13 +18,9 @@ function formatTimestampWithIntl(timestamp: number) {
 }
 
 function AvatarCard(props: AvatarModel) {
-  const { url, createdAt, prompt } = props;
+  const { url, createdAt, prompt, promptOptions } = props;
 
-  const pills = prompt.split('&').map((pair) => {
-    const [_, value] = pair.split('=');
-
-    return value;
-  });
+  const pills = Object.values(promptOptions ?? {});
 
   const renderPill = (pill: string, index: number) => {
     return (
@@ -48,12 +44,13 @@ function AvatarCard(props: AvatarModel) {
           width={1024}
         />
       </figure>
-      {/* <div className="card-body items-center">
+      <div className="card-body items-center">
         <h2 className="card-title">{formatTimestampWithIntl(createdAt)}</h2>
+        <p className="text-center mb-2">{prompt}</p>
         <div className="card-actions justify-center">
           {pills.map(renderPill)}
         </div>
-      </div> */}
+      </div>
     </a>
   );
 }
@@ -63,13 +60,9 @@ function renderAvatar(avatar: AvatarModel) {
 }
 
 function AvatarTableRow(props: AvatarModel) {
-  const { url, createdAt, promptOptions } = props;
+  const { url, createdAt, prompt, promptOptions } = props;
 
-  // const pills = prompt.split('&').map((pair) => {
-  //   const [_, value] = pair.split('=');
-
-  //   return value;
-  // });
+  const pills = Object.values(promptOptions ?? {});
 
   const renderPill = (pill: string, index: number) => {
     return (
@@ -95,9 +88,12 @@ function AvatarTableRow(props: AvatarModel) {
           {formatTimestampWithIntl(createdAt)}
         </span>
       </td>
-      {/* <td>
-        <div className="flex gap-3">{pills.map(renderPill)}</div>
-      </td> */}
+      <td>
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-3">{pills.map(renderPill)}</div>
+          <p className="max-w-prose">{prompt}</p>
+        </div>
+      </td>
       <td>
         <a className="btn btn-ghost btn-xs" href={url}>
           Download
