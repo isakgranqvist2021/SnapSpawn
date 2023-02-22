@@ -48,12 +48,12 @@ function AvatarCard(props: AvatarModel) {
           width={1024}
         />
       </figure>
-      <div className="card-body items-center">
+      {/* <div className="card-body items-center">
         <h2 className="card-title">{formatTimestampWithIntl(createdAt)}</h2>
         <div className="card-actions justify-center">
           {pills.map(renderPill)}
         </div>
-      </div>
+      </div> */}
     </a>
   );
 }
