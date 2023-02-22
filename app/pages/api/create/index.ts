@@ -1,20 +1,16 @@
-import { createAvatars } from '@aa/database/avatar';
+import { PromptOptions, createAvatars } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
 import { getUser, reduceUserCredits } from '@aa/database/user';
-import { AvatarModel, creditsMap } from '@aa/models';
+import { AvatarModel } from '@aa/models';
 import { PromptModel } from '@aa/models/prompt.model';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
-import { createQueryUrlFromObject } from '@aa/utils';
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-function getPrompt(promptModel: PromptModel) {
-  const { characteristics, gender, traits } = promptModel;
-
+function getPrompt(promptOptions: PromptOptions) {
   const parts = [
-    `A ${characteristics}`,
     'circle shaped',
     'close up',
     'medium light',
@@ -22,20 +18,19 @@ function getPrompt(promptModel: PromptModel) {
     'digital social media profile avatar',
     'colourful lighting',
     'vector art',
-    `wearing ${traits}`,
   ];
 
-  if (gender !== 'rather not say') {
-    parts.push(gender);
+  if (promptOptions) {
+    parts.push(...Object.values(promptOptions));
   }
 
   return parts.join(', ');
 }
 
-async function createAvatarModels(promptModel: PromptModel, email: string) {
+async function createAvatarModels(promptOptions: PromptOptions, email: string) {
   try {
-    const openAiUrls = await generateAvatars(getPrompt(promptModel));
-    const query = createQueryUrlFromObject(promptModel);
+    const prompt = getPrompt(promptOptions);
+    const openAiUrls = await generateAvatars(prompt);
 
     const prepareAvatarModel = async (
       avatarId: string,
@@ -45,7 +40,8 @@ async function createAvatarModels(promptModel: PromptModel, email: string) {
       return {
         createdAt: Date.now(),
         id: avatarId,
-        prompt: query,
+        prompt,
+        promptOptions,
         url,
       };
     };
@@ -56,7 +52,12 @@ async function createAvatarModels(promptModel: PromptModel, email: string) {
 
     const avatarIds = await uploadAvatar(openAiUrls);
 
-    await createAvatars({ email, avatars: avatarIds, prompt: query });
+    await createAvatars({
+      avatars: avatarIds,
+      email,
+      prompt,
+      promptOptions,
+    });
 
     const newAvatars = await Promise.all(avatarIds.map(prepareAvatarModel));
 

@@ -63,13 +63,13 @@ function renderAvatar(avatar: AvatarModel) {
 }
 
 function AvatarTableRow(props: AvatarModel) {
-  const { url, createdAt, prompt } = props;
+  const { url, createdAt, promptOptions } = props;
 
-  const pills = prompt.split('&').map((pair) => {
-    const [_, value] = pair.split('=');
+  // const pills = prompt.split('&').map((pair) => {
+  //   const [_, value] = pair.split('=');
 
-    return value;
-  });
+  //   return value;
+  // });
 
   const renderPill = (pill: string, index: number) => {
     return (
@@ -95,9 +95,9 @@ function AvatarTableRow(props: AvatarModel) {
           {formatTimestampWithIntl(createdAt)}
         </span>
       </td>
-      <td>
+      {/* <td>
         <div className="flex gap-3">{pills.map(renderPill)}</div>
-      </td>
+      </td> */}
       <td>
         <a className="btn btn-ghost btn-xs" href={url}>
           Download

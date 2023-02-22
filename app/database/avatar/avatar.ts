@@ -33,6 +33,7 @@ export async function getAvatars(options: GetAvatarsOptions) {
         createdAt: avatarDocument.createdAt,
         email: avatarDocument.email,
         prompt: avatarDocument.prompt,
+        promptOptions: avatarDocument.promptOptions,
       };
 
       return document;
@@ -45,7 +46,7 @@ export async function getAvatars(options: GetAvatarsOptions) {
 
 export async function createAvatars(options: CreateAvatarsOptions) {
   try {
-    const { avatars, email, prompt } = options;
+    const { avatars, email, prompt, promptOptions } = options;
 
     const collection = await getCollection<CreateAvatarDocument>(
       AVATARS_COLLECTION_NAME,
@@ -61,6 +62,7 @@ export async function createAvatars(options: CreateAvatarsOptions) {
         createdAt: Date.now(),
         email,
         prompt,
+        promptOptions,
       };
 
       return document;

@@ -6,36 +6,12 @@ import { PromptModel } from '@aa/models/prompt.model';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
-import { createQueryUrlFromObject } from '@aa/utils';
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
-
-function getPrompt(promptModel: PromptModel) {
-  const { characteristics, gender, traits } = promptModel;
-
-  const parts = [
-    `A ${characteristics}`,
-    'circle shaped',
-    'close up',
-    'medium light',
-    'fictional',
-    'digital social media profile avatar',
-    'colourful lighting',
-    'vector art',
-    `wearing ${traits}`,
-  ];
-
-  if (gender !== 'rather not say') {
-    parts.push(gender);
-  }
-
-  return parts.join(', ');
-}
 
 async function createAvatarModels(prompt: string, email: string) {
   try {
     const openAiUrls = await generateAvatars(prompt);
-    const query = createQueryUrlFromObject({ custom: 'custom' });
 
     const prepareAvatarModel = async (
       avatarId: string,
@@ -45,8 +21,9 @@ async function createAvatarModels(prompt: string, email: string) {
       return {
         createdAt: Date.now(),
         id: avatarId,
-        prompt: query,
+        promptOptions: null,
         url,
+        prompt,
       };
     };
 
@@ -56,7 +33,12 @@ async function createAvatarModels(prompt: string, email: string) {
 
     const avatarIds = await uploadAvatar(openAiUrls);
 
-    await createAvatars({ email, avatars: avatarIds, prompt: query });
+    await createAvatars({
+      email,
+      avatars: avatarIds,
+      promptOptions: null,
+      prompt,
+    });
 
     const newAvatars = await Promise.all(avatarIds.map(prepareAvatarModel));
 

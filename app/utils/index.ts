@@ -59,11 +59,3 @@ export async function loadServerSideProps(ctx: GetServerSidePropsContext) {
 
   return { props: { credits: user.credits, avatars } };
 }
-
-export function createQueryUrlFromObject<T extends object>(obj: T) {
-  const query = Object.keys(obj)
-    .map((key) => `${key}=${obj[key as keyof T]}`)
-    .join('&');
-
-  return query;
-}
