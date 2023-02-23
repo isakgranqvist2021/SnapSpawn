@@ -21,7 +21,7 @@ async function createAvatarModels(prompt: string, email: string) {
       return {
         createdAt: Date.now(),
         id: avatarId,
-        promptOptions: null,
+        promptOptions: { custom: "custom" },
         url,
         prompt,
       };
@@ -36,7 +36,7 @@ async function createAvatarModels(prompt: string, email: string) {
     await createAvatars({
       email,
       avatars: avatarIds,
-      promptOptions: null,
+      promptOptions: { custom: "custom" },
       prompt,
     });
 
