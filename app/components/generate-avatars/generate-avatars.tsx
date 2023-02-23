@@ -1,4 +1,5 @@
 import { useApiState } from '@aa/context/api-context';
+import { Size, avatarSizes } from '@aa/models';
 import React, { memo } from 'react';
 
 import { FormSection } from './form-section';
@@ -81,6 +82,55 @@ function CustomPromptTextarea() {
   );
 }
 
+function PickMetaData() {
+  const state = useGenerateAvatarState();
+  const dispatch = useGenerateAvatarDispatch();
+
+  const setN = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    dispatch({ type: 'set:n', n: parseInt(e.target.value) });
+  };
+
+  const setSize = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    dispatch({ type: 'set:size', size: e.target.value as Size });
+  };
+
+  return (
+    <React.Fragment>
+      <div className="form-control w-full max-w-xs">
+        <label className="label">
+          <span className="label-text">How many to generate</span>
+        </label>
+        <select
+          defaultValue={state.n}
+          onChange={setN}
+          className="select select-bordered w-full max-w-xs"
+        >
+          <option value={1}>1</option>
+          <option value={2}>2</option>
+          <option value={3}>3</option>
+        </select>
+      </div>
+
+      <div className="form-control w-full max-w-xs">
+        <label className="label">
+          <span className="label-text">Size</span>
+        </label>
+        <select
+          defaultValue={state.size}
+          onChange={setSize}
+          className="select select-bordered w-full max-w-xs"
+        >
+          {avatarSizes.map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
+        </select>
+      </div>
+    </React.Fragment>
+  );
+}
+
 function _GenerateAvatarsFormContent() {
   return (
     <React.Fragment>
@@ -100,7 +150,8 @@ function _GenerateAvatarsFormContent() {
         <PickCharacteristics />
       </FormSection>
 
-      <div className="p-5 flex justify-center">
+      <div className="p-5 flex gap-5 flex-wrap justify-center items-end">
+        <PickMetaData />
         <GenerateAvatarSubmitButton text="Generate Avatar" />
       </div>
     </React.Fragment>
@@ -109,12 +160,13 @@ function _GenerateAvatarsFormContent() {
 
 function CustomPromptForm() {
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex flex-col">
       <FormSection>
         <CustomPromptTextarea />
       </FormSection>
 
-      <div className="p-5 flex justify-ceneter">
+      <div className="p-5 flex gap-5 flex-wrap justify-center">
+        <PickMetaData />
         <GenerateAvatarSubmitButton text="Generate Custom Picture" />
       </div>
     </div>
@@ -197,6 +249,14 @@ export function GenerateAvatarsForm() {
         </div>
 
         <UserCreditsText />
+
+        <a
+          className="link link-primary"
+          target="_blank"
+          href="/The-DALL·E-2-prompt-book-v1.02.pdf"
+        >
+          The Dall-E prompt Book
+        </a>
 
         <Form mode={mode} />
       </div>

@@ -1,4 +1,4 @@
-import { PromptModel } from '@aa/models';
+import { PromptModel, Size } from '@aa/models';
 import {
   PropsWithChildren,
   Reducer,
@@ -14,7 +14,9 @@ import { ReducerAction } from './generate-avatars.types';
 export interface GenerateAvatarState {
   customPrompt: string | null;
   form: PromptModel;
+  n: number;
   result: string[] | null;
+  size: Size;
 }
 
 interface GenerateAvatarContextType {
@@ -25,7 +27,9 @@ interface GenerateAvatarContextType {
 const INITIAL_STATE: GenerateAvatarState = {
   customPrompt: null,
   form: DEFAULT_FORM_STATE,
+  n: 1,
   result: null,
+  size: '256x256',
 };
 
 export const GenerateAvatarContext = createContext<GenerateAvatarContextType>({

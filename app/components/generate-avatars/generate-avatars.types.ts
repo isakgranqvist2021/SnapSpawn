@@ -1,4 +1,4 @@
-import { AvatarModel, Characteristic, Gender, Traits } from '@aa/models';
+import { AvatarModel, Characteristic, Gender, Size, Traits } from '@aa/models';
 
 export type GenerateAvatarApiResponse =
   | {
@@ -15,4 +15,6 @@ export type ReducerAction =
   | { type: 'set:result'; result: string[] }
   | { type: 'clear:result' }
   | { type: 'toggle:custom-prompt' }
-  | { type: 'set:custom-prompt'; customPrompt: string };
+  | { type: 'set:custom-prompt'; customPrompt: string }
+  | { type: 'set:size'; size: Size }
+  | { type: 'set:n'; n: number };

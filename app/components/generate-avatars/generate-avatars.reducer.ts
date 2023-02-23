@@ -1,5 +1,3 @@
-import { PromptModel } from '@aa/models';
-
 import { GenerateAvatarState } from './generate-avatars.context';
 import { ReducerAction } from './generate-avatars.types';
 
@@ -37,6 +35,12 @@ export function reducer(
         ...state,
         customPrompt: action.customPrompt.length ? action.customPrompt : null,
       };
+
+    case 'set:size':
+      return { ...state, size: action.size };
+
+    case 'set:n':
+      return { ...state, n: action.n };
 
     default:
       return state;

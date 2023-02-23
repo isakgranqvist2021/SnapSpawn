@@ -14,14 +14,23 @@ export function useGenerateAvatar() {
 
   return useCallback(async () => {
     const res = await (state.customPrompt
-      ? apiMethods.generateCustomPicture({
-          customPrompt: state.customPrompt,
-        })
-      : apiMethods.generateAvatars(state.form));
+      ? apiMethods.generateCustomPicture(
+          state.customPrompt,
+          state.size,
+          state.n,
+        )
+      : apiMethods.generateAvatars(state.form, state.size, state.n));
 
     if (res) {
       const urls = res.map((avatar: AvatarModel) => avatar.url);
       dispatch({ result: urls, type: 'set:result' });
     }
-  }, [apiMethods, dispatch, state.form, state.customPrompt]);
+  }, [
+    apiMethods,
+    dispatch,
+    state.form,
+    state.customPrompt,
+    state.size,
+    state.n,
+  ]);
 }

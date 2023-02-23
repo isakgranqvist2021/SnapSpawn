@@ -1,7 +1,7 @@
 import { PromptOptions, createAvatars } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
 import { getUser, reduceUserCredits } from '@aa/database/user';
-import { AvatarModel } from '@aa/models';
+import { AvatarModel, Size, avatarSizes } from '@aa/models';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
@@ -30,10 +30,15 @@ function getPrompt(promptOptions: PromptOptions) {
   return parts.join(', ');
 }
 
-async function createAvatarModels(promptOptions: PromptOptions, email: string) {
+async function createAvatarModels(
+  promptOptions: PromptOptions,
+  email: string,
+  size: Size,
+  n: number,
+) {
   try {
     const prompt = getPrompt(promptOptions);
-    const openAiUrls = await generateAvatars(prompt);
+    const openAiUrls = await generateAvatars(prompt, size, n);
 
     const prepareAvatarModel = async (
       avatarId: string,
@@ -115,7 +120,20 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
       throw new Error('cannot generate avatar user is null');
     }
 
-    const avatarModels = await createAvatarModels(req.body, user.email);
+    if (req.body.n > 5) {
+      throw new Error('cannot generate more than 5 avatars at a time');
+    }
+
+    if (!avatarSizes.includes(req.body.size)) {
+      throw new Error('cannot generate avatar with invalid size');
+    }
+
+    const avatarModels = await createAvatarModels(
+      req.body.options,
+      user.email,
+      req.body.size,
+      req.body.n,
+    );
 
     if (!avatarModels) {
       throw new Error('cannot generate avatar avatarModels is null');
@@ -127,5 +145,4 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
     return res.status(500).send({ avatars: null });
   }
 }
-
 export default withApiAuthRequired(create);

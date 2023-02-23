@@ -1,4 +1,4 @@
-import { AvatarModel, CustomPrompt, PromptModel } from '@aa/models';
+import { AvatarModel, CustomPrompt, PromptModel, Size } from '@aa/models';
 import { Alert } from '@aa/types';
 
 interface ApiState<T> {
@@ -37,9 +37,15 @@ export type ReducerAction =
 
 export interface ApiMethods {
   addCredits: (payload: number) => Promise<void>;
-  generateAvatars: (payload: PromptModel) => Promise<AvatarModel[] | null>;
+  generateAvatars: (
+    payload: PromptModel,
+    size: Size,
+    n: number,
+  ) => Promise<AvatarModel[] | null>;
   generateCustomPicture: (
-    payload: CustomPrompt,
+    payload: string,
+    size: Size,
+    n: number,
   ) => Promise<AvatarModel[] | null>;
 }
 

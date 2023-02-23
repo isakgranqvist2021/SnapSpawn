@@ -22,6 +22,12 @@ function AvatarCard(props: AvatarModel) {
 
   const pills = Object.values(promptOptions ?? {});
 
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  const toggleCard = () => {
+    setIsFlipped((isFlipped) => !isFlipped);
+  };
+
   const renderPill = (pill: string, index: number) => {
     return (
       <div className="badge badge-md capitalize" key={`${url}-${index}`}>
@@ -31,27 +37,61 @@ function AvatarCard(props: AvatarModel) {
   };
 
   return (
-    <a
-      href={url}
-      className="card bg-base-100 shadow-xl hover:shadow-2xl ease-linear duration-100"
+    <div
+      onClick={!isFlipped ? toggleCard : undefined}
+      className="bg-base-100 shadow-xl hover:shadow-2xl ease-linear duration-100 cursor-pointer rounded overflow-auto"
     >
-      <figure>
-        <Image
-          alt="Ai generated avatar"
-          height={1024}
-          loading="lazy"
-          src={url}
-          width={1024}
-        />
-      </figure>
-      <div className="card-body items-center">
-        <h2 className="card-title">{formatTimestampWithIntl(createdAt)}</h2>
-        <p className="text-center mb-2">{prompt}</p>
-        <div className="card-actions justify-center">
-          {pills.map(renderPill)}
+      {!isFlipped && (
+        <figure className="rounded">
+          <Image
+            className="rounded"
+            alt="Ai generated avatar"
+            height={1024}
+            loading="lazy"
+            src={url}
+            width={1024}
+          />
+        </figure>
+      )}
+      {isFlipped && (
+        <div className="flex flex-col gap-2">
+          <div className="sticky top-0 bg-base-100 shadow-md py-3 px-5">
+            <a
+              className="hover:underline link-secondary w-fit flex items-center gap-2"
+              onClick={toggleCard}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+                />
+              </svg>
+              Show image
+            </a>
+
+            <h2 className="text-xl">{formatTimestampWithIntl(createdAt)}</h2>
+          </div>
+
+          <div className="py-3 px-5 flex flex-col gap-2">
+            <p className="text-base">{prompt}</p>
+
+            <div className="flex gap-3 flex-wrap">{pills.map(renderPill)}</div>
+
+            <a className="hover:underline link-primary w-fit" href={url}>
+              Download image
+            </a>
+          </div>
         </div>
-      </div>
-    </a>
+      )}
+    </div>
   );
 }
 
@@ -59,86 +99,10 @@ function renderAvatar(avatar: AvatarModel) {
   return <AvatarCard {...avatar} key={avatar.url} />;
 }
 
-function AvatarTableRow(props: AvatarModel) {
-  const { url, createdAt, prompt, promptOptions } = props;
-
-  const pills = Object.values(promptOptions ?? {});
-
-  const renderPill = (pill: string, index: number) => {
-    return (
-      <div className="badge badge-md capitalize" key={`${url}-${index}`}>
-        {pill}
-      </div>
-    );
-  };
-
-  return (
-    <tr>
-      <td>
-        <div className="flex items-center space-x-3">
-          <div className="avatar">
-            <div className="mask mask-squircle w-12 h-12">
-              <Image width={32} height={32} src={url} alt="Avatar" />
-            </div>
-          </div>
-        </div>
-      </td>
-      <td>
-        <span className="text-gray-600">
-          {formatTimestampWithIntl(createdAt)}
-        </span>
-      </td>
-      <td>
-        <div className="flex flex-col gap-1">
-          <div className="flex gap-3">{pills.map(renderPill)}</div>
-          <p className="max-w-prose">{prompt}</p>
-        </div>
-      </td>
-      <td>
-        <a className="btn btn-ghost btn-xs" href={url}>
-          Download
-        </a>
-      </td>
-    </tr>
-  );
-}
-
-function AvatarTable() {
-  const apiState = useApiState();
-
-  const { avatars } = apiState;
-
-  return (
-    <div className="overflow-x-auto w-full">
-      <table className="table w-full">
-        <thead>
-          <tr>
-            <th>Avatar</th>
-            <th>Date</th>
-            <th>Prompt</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {avatars.data.map((avatar) => (
-            <AvatarTableRow {...avatar} key={avatar.url} />
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
 export function MyAvatars() {
   const apiState = useApiState();
 
   const { avatars } = apiState;
-
-  const [mode, setMode] = useState('card');
-
-  const switchMode = () => {
-    setMode((mode) => (mode === 'card' ? 'list' : 'card'));
-  };
 
   return (
     <React.Fragment>
@@ -146,29 +110,10 @@ export function MyAvatars() {
         <div className="w-full">
           <StatsCards />
         </div>
-
-        <label className="lg:flex hidden cursor-pointer label flex flex-row-reverse gap-5">
-          <span className="label-text whitespace-nowrap">
-            Toggle layout mode
-          </span>
-          <input
-            onChange={switchMode}
-            type="checkbox"
-            className="toggle toggle-primary"
-            checked={mode === 'card'}
-          />
-        </label>
       </div>
-
-      {avatars.data.length > 0 && mode === 'card' ? (
-        <div className="w-full p-5 my-avatars">
-          {avatars.data.map(renderAvatar)}
-        </div>
-      ) : (
-        <div className="w-full p-5 ">
-          <AvatarTable />
-        </div>
-      )}
+      <div className="w-full p-5 my-avatars">
+        {avatars.data.map(renderAvatar)}
+      </div>
     </React.Fragment>
   );
 }

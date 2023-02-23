@@ -1,19 +1,19 @@
-import { AvatarModel } from '@aa/models';
+import { AvatarModel, Size } from '@aa/models';
 import getStripe from '@aa/services/stripe';
 import { Dispatch } from 'react';
 
 import { ReducerAction } from './api.types';
 
-export function getGenerateAvatars<T extends object>(
+export function getGenerateAvatars<T>(
   path: string,
   dispatch: Dispatch<ReducerAction>,
 ) {
-  return async (payload: T) => {
+  return async (payload: T, size: Size, n: number) => {
     try {
       dispatch({ type: 'avatars:set-is-loading', isLoading: true });
 
       const res = await fetch(path, {
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ options: payload, size, n }),
         method: 'POST',
       });
 

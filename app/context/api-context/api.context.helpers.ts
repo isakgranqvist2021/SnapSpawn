@@ -13,7 +13,7 @@ export function useRootApiMethods(
     dispatch,
   );
 
-  const generateCustomPicture = getGenerateAvatars<CustomPrompt>(
+  const generateCustomPicture = getGenerateAvatars<string>(
     '/api/create-custom-prompt',
     dispatch,
   );

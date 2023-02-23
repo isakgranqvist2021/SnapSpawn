@@ -1,7 +1,7 @@
 import { createAvatars } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
 import { getUser, reduceUserCredits } from '@aa/database/user';
-import { AvatarModel, creditsMap } from '@aa/models';
+import { AvatarModel, Size, avatarSizes, creditsMap } from '@aa/models';
 import { PromptModel } from '@aa/models/prompt.model';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
@@ -9,9 +9,14 @@ import { Logger } from '@aa/services/logger';
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-async function createAvatarModels(prompt: string, email: string) {
+async function createAvatarModels(
+  prompt: string,
+  email: string,
+  size: Size,
+  n: number,
+) {
   try {
-    const openAiUrls = await generateAvatars(prompt);
+    const openAiUrls = await generateAvatars(prompt, size, n);
 
     const prepareAvatarModel = async (
       avatarId: string,
@@ -21,7 +26,7 @@ async function createAvatarModels(prompt: string, email: string) {
       return {
         createdAt: Date.now(),
         id: avatarId,
-        promptOptions: { custom: "custom" },
+        promptOptions: { custom: 'custom' },
         url,
         prompt,
       };
@@ -36,7 +41,7 @@ async function createAvatarModels(prompt: string, email: string) {
     await createAvatars({
       email,
       avatars: avatarIds,
-      promptOptions: { custom: "custom" },
+      promptOptions: { custom: 'custom' },
       prompt,
     });
 
@@ -93,9 +98,19 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
       throw new Error('cannot generate avatar user is null');
     }
 
+    if (req.body.n > 5) {
+      throw new Error('cannot generate more than 5 avatars at a time');
+    }
+
+    if (!avatarSizes.includes(req.body.size)) {
+      throw new Error('cannot generate avatar with invalid size');
+    }
+
     const avatarModels = await createAvatarModels(
-      req.body.customPrompt,
+      req.body.options,
       user.email,
+      req.body.size,
+      req.body.n,
     );
 
     if (!avatarModels) {
