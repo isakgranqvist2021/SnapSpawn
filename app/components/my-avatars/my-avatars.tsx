@@ -39,22 +39,21 @@ function AvatarCard(props: AvatarModel) {
   return (
     <div
       onClick={!isFlipped ? toggleCard : undefined}
-      className="bg-base-100 shadow-xl hover:shadow-2xl ease-linear duration-100 cursor-pointer rounded overflow-auto"
+      className="bg-base-100 shadow-xl hover:shadow-2xl ease-linear duration-100 cursor-pointer"
     >
       {!isFlipped && (
-        <figure className="rounded">
-          <Image
-            className="rounded"
-            alt="Ai generated avatar"
-            height={1024}
-            loading="lazy"
-            src={url}
-            width={1024}
-          />
-        </figure>
+        <img
+          style={{ maxWidth: 256 }}
+          alt="Ai generated avatar"
+          loading="lazy"
+          src={url}
+        />
       )}
       {isFlipped && (
-        <div className="flex flex-col gap-2">
+        <div
+          className="flex flex-col gap-2 overflow-hidden"
+          style={{ maxHeight: 256 }}
+        >
           <div className="sticky top-0 bg-base-100 shadow-md py-3 px-5">
             <a
               className="hover:underline link-secondary w-fit flex items-center gap-2"
@@ -80,7 +79,7 @@ function AvatarCard(props: AvatarModel) {
             <h2 className="text-xl">{formatTimestampWithIntl(createdAt)}</h2>
           </div>
 
-          <div className="py-3 px-5 flex flex-col gap-2">
+          <div className="py-3 px-5 flex flex-col gap-2 overflow-auto">
             <p className="text-base">{prompt}</p>
 
             <div className="flex gap-3 flex-wrap">{pills.map(renderPill)}</div>
