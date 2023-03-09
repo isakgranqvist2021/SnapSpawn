@@ -9,11 +9,12 @@ import {
 
 import { DEFAULT_FORM_STATE } from './generate-avatars.constants';
 import { reducer } from './generate-avatars.reducer';
-import { ReducerAction } from './generate-avatars.types';
+import { GenerateAvatarMode, ReducerAction } from './generate-avatars.types';
 
 export interface GenerateAvatarState {
   customPrompt: string | null;
   form: PromptModel;
+  mode: GenerateAvatarMode;
   n: number;
   result: string[] | null;
   size: Size;
@@ -27,6 +28,7 @@ interface GenerateAvatarContextType {
 const INITIAL_STATE: GenerateAvatarState = {
   customPrompt: null,
   form: DEFAULT_FORM_STATE,
+  mode: 'generate',
   n: 1,
   result: null,
   size: '256x256',

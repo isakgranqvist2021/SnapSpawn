@@ -42,6 +42,9 @@ export function reducer(
     case 'set:n':
       return { ...state, n: action.n };
 
+    case 'set:mode':
+      return { ...state, mode: action.mode };
+
     default:
       return state;
   }

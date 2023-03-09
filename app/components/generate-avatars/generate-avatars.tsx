@@ -138,13 +138,13 @@ function _GenerateAvatarsFormContent() {
         <PickGender />
       </FormSection>
 
-      <hr />
+      <div className="divider">Pick Accessory</div>
 
       <FormSection>
         <PickTraits />
       </FormSection>
 
-      <hr />
+      <div className="divider">Pick Theme</div>
 
       <FormSection>
         <PickCharacteristics />
@@ -197,8 +197,8 @@ const AvatarGenerationResult = () => {
   );
 };
 
-function Form(props: { mode: 'generate' | 'custom' }) {
-  const { mode } = props;
+function Form() {
+  const { mode } = useGenerateAvatarState();
 
   const generateAvatars = useGenerateAvatar();
 
@@ -218,35 +218,47 @@ function Form(props: { mode: 'generate' | 'custom' }) {
   );
 }
 
+function TabHeader() {
+  const { mode } = useGenerateAvatarState();
+  const dispatch = useGenerateAvatarDispatch();
+
+  const setModeAsCustom = () => {
+    dispatch({ type: 'set:mode', mode: 'custom' });
+  };
+
+  const setModeAsGenerate = () => {
+    dispatch({ type: 'set:mode', mode: 'generate' });
+  };
+
+  return (
+    <div className="tabs">
+      <a
+        onClick={setModeAsGenerate}
+        className={[
+          'tab tab-lg tab-lifted',
+          mode === 'generate' ? 'tab-active' : '',
+        ].join(' ')}
+      >
+        Generate
+      </a>
+      <a
+        onClick={setModeAsCustom}
+        className={[
+          'tab tab-lg tab-lifted',
+          mode === 'custom' ? 'tab-active' : '',
+        ].join(' ')}
+      >
+        Custom
+      </a>
+    </div>
+  );
+}
+
 export function GenerateAvatarsForm() {
-  const [mode, setMode] = React.useState<'custom' | 'generate'>('generate');
-
-  const setModeAsCustom = () => setMode('custom');
-  const setModeAsGenerate = () => setMode('generate');
-
   return (
     <GenerateAvatarProvider>
       <div className="p-5 flex flex-col gap-5 w-full items-center">
-        <div className="tabs">
-          <a
-            onClick={setModeAsGenerate}
-            className={[
-              'tab tab-lg tab-lifted',
-              mode === 'generate' ? 'tab-active' : '',
-            ].join(' ')}
-          >
-            Generate
-          </a>
-          <a
-            onClick={setModeAsCustom}
-            className={[
-              'tab tab-lg tab-lifted',
-              mode === 'custom' ? 'tab-active' : '',
-            ].join(' ')}
-          >
-            Custom
-          </a>
-        </div>
+        <TabHeader />
 
         <UserCreditsText />
 
@@ -258,7 +270,7 @@ export function GenerateAvatarsForm() {
           The Dall-E prompt Book
         </a>
 
-        <Form mode={mode} />
+        <Form />
       </div>
 
       <AvatarGenerationResult />

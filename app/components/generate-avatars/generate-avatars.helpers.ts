@@ -13,13 +13,17 @@ export function useGenerateAvatar() {
   const apiMethods = useApiMethods();
 
   return useCallback(async () => {
-    const res = await (state.customPrompt
-      ? apiMethods.generateCustomPicture(
-          state.customPrompt,
-          state.size,
-          state.n,
-        )
-      : apiMethods.generateAvatars(state.form, state.size, state.n));
+    let res: AvatarModel[] | null = null;
+
+    if (state.mode === 'custom') {
+      res = await apiMethods.generateCustomPicture(
+        state.customPrompt!,
+        state.size,
+        state.n,
+      );
+    } else {
+      res = await apiMethods.generateAvatars(state.form, state.size, state.n);
+    }
 
     if (res) {
       const urls = res.map((avatar: AvatarModel) => avatar.url);

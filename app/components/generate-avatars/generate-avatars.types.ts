@@ -6,6 +6,8 @@ export type GenerateAvatarApiResponse =
     }
   | undefined;
 
+export type GenerateAvatarMode = 'custom' | 'generate';
+
 export type ReducerAction =
   | { isLoading: boolean; type: 'set:isLoading' }
   | { age: number; type: 'set:age' }
@@ -17,4 +19,5 @@ export type ReducerAction =
   | { type: 'toggle:custom-prompt' }
   | { type: 'set:custom-prompt'; customPrompt: string }
   | { type: 'set:size'; size: Size }
-  | { type: 'set:n'; n: number };
+  | { type: 'set:n'; n: number }
+  | { type: 'set:mode'; mode: GenerateAvatarMode };
