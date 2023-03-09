@@ -73,7 +73,7 @@ steps:
         '--max-instances',
         '500',
         '--min-instances',
-        '1',
+        '0',
         '--memory',
         '1Gi',
         '--cpu',
