@@ -32,9 +32,10 @@ export function useGenerateAvatar() {
   }, [
     apiMethods,
     dispatch,
-    state.form,
     state.customPrompt,
-    state.size,
+    state.form,
+    state.mode,
     state.n,
+    state.size,
   ]);
 }
