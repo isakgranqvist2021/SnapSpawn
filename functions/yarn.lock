@@ -629,10 +629,10 @@ sparse-bitfield@^3.0.3:
   dependencies:
     memory-pager "^1.0.2"
 
-stripe@^11.9.1:
-  version "11.9.1"
-  resolved "https://registry.yarnpkg.com/stripe/-/stripe-11.9.1.tgz#32e3f36cebe3a3fca0ce541221463624e5bc8b24"
-  integrity sha512-obmTRAUC1UKlb3pOlF1tBA31Zo+FBMjnG69aGGTAeq35NlzffxjMjVgh3a55f9jK98FhHkIvY5z0W1FfQymNlQ==
+stripe@^12.4.0:
+  version "12.4.0"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-12.4.0.tgz#44ebb32891d90b2ae1d63b00b7c59c9d28777a09"
+  integrity sha512-QjZRzKi3wf8TsuJf/fd6/ejfPgwNptDIzFogRWaRzP3oMJnSD73I2YxR0Eje5zfrU8FmddYWZYawoUejqN+o1w==
   dependencies:
     "@types/node" ">=8.1.0"
     qs "^6.11.0"
