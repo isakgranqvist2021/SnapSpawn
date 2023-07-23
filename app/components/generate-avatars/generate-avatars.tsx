@@ -1,5 +1,6 @@
 import { useApiState } from '@aa/context/api-context';
 import { Size, avatarSizes } from '@aa/models';
+import Link from 'next/link';
 import React, { memo } from 'react';
 
 import { FormSection } from './form-section';
@@ -17,8 +18,19 @@ import { PickTraits } from './pick-traits';
 function UserCreditsText() {
   const state = useApiState();
 
+  if (!state.credits.data) {
+    return (
+      <h1 className="text-3xl mt-3 text-center">
+        You have <span className="text-secondary">0</span> credits
+        <Link className="ml-2 text-secondary" href="/refill">
+          add some now!
+        </Link>
+      </h1>
+    );
+  }
+
   return (
-    <h1 className="text-3xl mt-3">
+    <h1 className="text-3xl mt-3 text-center">
       You have <span className="text-secondary">{state.credits.data}</span>{' '}
       credits
     </h1>

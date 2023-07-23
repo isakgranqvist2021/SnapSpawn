@@ -1,10 +1,10 @@
 import { useApiState } from '@aa/context/api-context';
 import { AvatarModel } from '@aa/models';
-import Image from 'next/image';
 import React from 'react';
 import { useState } from 'react';
 
-import { StatsCards } from '../stats-cards';
+import { EmptyState } from '../empty-state';
+import { AvatarsStatsCard, CreditsStatsCard } from '../stats-cards';
 
 function formatTimestampWithIntl(timestamp: number) {
   const date = new Date(timestamp);
@@ -49,6 +49,7 @@ function AvatarCard(props: AvatarModel) {
           src={url}
         />
       )}
+
       {isFlipped && (
         <div
           className="flex flex-col gap-2 overflow-hidden"
@@ -98,21 +99,53 @@ function renderAvatar(avatar: AvatarModel) {
   return <AvatarCard {...avatar} key={avatar.url} />;
 }
 
+const creditsEmptyState = (
+  <EmptyState
+    message="You have no credits yet. Add some now!"
+    buttonHref="/refill"
+    buttonText="Add Credits"
+  />
+);
+
+const avatarsEmptyState = (
+  <EmptyState
+    message="You have no photos yet. Generate one now!"
+    buttonHref="/create"
+    buttonText="Generate Photo"
+  />
+);
+
+function Avatars() {
+  const { avatars } = useApiState();
+
+  if (!avatars.data.length) {
+    return avatarsEmptyState;
+  }
+
+  return (
+    <div className="w-full p-5 my-avatars">
+      {avatars.data.map(renderAvatar)}
+    </div>
+  );
+}
+
 export function MyAvatars() {
   const apiState = useApiState();
 
-  const { avatars } = apiState;
-
   return (
-    <React.Fragment>
+    <div className="flex flex-col gap-5 w-full">
       <div className="pt-5 px-5 flex justify-between w-full lg:flex-nowrap flex-wrap gap-5">
         <div className="w-full">
-          <StatsCards />
+          <div className="stats shadow items-center items-center flex md:items-start md:inline-grid">
+            <AvatarsStatsCard />
+            <CreditsStatsCard />
+          </div>
         </div>
       </div>
-      <div className="w-full p-5 my-avatars">
-        {avatars.data.map(renderAvatar)}
-      </div>
-    </React.Fragment>
+
+      {apiState.credits.data === 0 && creditsEmptyState}
+
+      <Avatars />
+    </div>
   );
 }

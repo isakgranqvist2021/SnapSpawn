@@ -1,4 +1,4 @@
-import { CustomPrompt, PromptModel } from '@aa/models';
+import { PromptModel } from '@aa/models';
 import { Dispatch, useContext, useMemo } from 'react';
 
 import { AppContext } from './api.context';

@@ -65,11 +65,6 @@ export function AddCreditsForm() {
           You can add credits to your account to generate more avatars. Credits
           will be added to your account after the payment has been completed.
         </p>
-
-        <p className="max-w-prose text-primary">
-          Custom amounts will be available soon. For now, you can only add the 3
-          amounts below.
-        </p>
       </div>
 
       <hr />

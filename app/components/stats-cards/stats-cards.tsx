@@ -1,13 +1,7 @@
 import { useApiState } from '@aa/context/api-context';
 import Link from 'next/link';
 
-interface StatsCardsProps {
-  hideActions?: boolean;
-}
-
-export function CreditsStatsCard(props: StatsCardsProps) {
-  const { hideActions } = props;
-
+export function CreditsStatsCard() {
   const apiState = useApiState();
 
   const { credits } = apiState;
@@ -33,20 +27,16 @@ export function CreditsStatsCard(props: StatsCardsProps) {
 
       <div className="stat-title">Total Credits</div>
       <div className="stat-value">{credits.data}</div>
-      {!hideActions && (
-        <div className="stat-actions">
-          <Link href="/refill" className="btn btn-sm">
-            Add Credits
-          </Link>
-        </div>
-      )}
+      <div className="stat-actions">
+        <Link href="/refill" className="btn btn-sm">
+          Add Credits
+        </Link>
+      </div>
     </div>
   );
 }
 
-export function AvatarsStatsCard(props: StatsCardsProps) {
-  const { hideActions } = props;
-
+export function AvatarsStatsCard() {
   const apiState = useApiState();
 
   const { avatars } = apiState;
@@ -72,22 +62,11 @@ export function AvatarsStatsCard(props: StatsCardsProps) {
 
       <div className="stat-title">Total Photos</div>
       <div className="stat-value">{avatars.data.length}</div>
-      {!hideActions && (
-        <div className="stat-actions">
-          <Link className="btn btn-sm btn-accent" href="/create">
-            New Photo
-          </Link>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function StatsCards(props: StatsCardsProps) {
-  return (
-    <div className="stats shadow items-center items-center flex md:items-start md:inline-grid">
-      <AvatarsStatsCard {...props} />
-      <CreditsStatsCard {...props} />
+      <div className="stat-actions">
+        <Link className="btn btn-sm btn-accent" href="/create">
+          New Photo
+        </Link>
+      </div>
     </div>
   );
 }
