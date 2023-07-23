@@ -70,12 +70,12 @@ export function AvatarsStatsCard(props: StatsCardsProps) {
         </svg>
       </div>
 
-      <div className="stat-title">Total Avatars</div>
+      <div className="stat-title">Total Photos</div>
       <div className="stat-value">{avatars.data.length}</div>
       {!hideActions && (
         <div className="stat-actions">
           <Link className="btn btn-sm btn-accent" href="/create">
-            New Avatar
+            New Photo
           </Link>
         </div>
       )}

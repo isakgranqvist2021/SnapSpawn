@@ -239,7 +239,7 @@ function TabHeader() {
           mode === 'generate' ? 'tab-active' : '',
         ].join(' ')}
       >
-        Generate
+        Pre Defined Prompts
       </a>
       <a
         onClick={setModeAsCustom}
@@ -248,7 +248,7 @@ function TabHeader() {
           mode === 'custom' ? 'tab-active' : '',
         ].join(' ')}
       >
-        Custom
+        Custom Prompt
       </a>
     </div>
   );
