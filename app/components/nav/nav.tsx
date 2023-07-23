@@ -61,19 +61,19 @@ function NavDropDown() {
         className="mt-3 p-2 shadow menu menu-compact dropdown-content text-primary bg-base-100 rounded-box w-52"
         tabIndex={0}
       >
-        <li>
+        <li className="text-base-content">
           <NavDropdownLink href="/account">Avatar Studio</NavDropdownLink>
         </li>
 
-        <li>
+        <li className="text-base-content">
           <NavDropdownLink href="/create">Generate Avatar</NavDropdownLink>
         </li>
 
-        <li>
+        <li className="text-base-content">
           <NavDropdownLink href="/refill">Add Credits</NavDropdownLink>
         </li>
 
-        <li>
+        <li className="text-base-content">
           {user ? (
             <NavDropdownLink href="/api/auth/logout">Logout</NavDropdownLink>
           ) : (

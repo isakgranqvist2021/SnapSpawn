@@ -20,9 +20,11 @@ function HeroSection() {
             AI Portrait Studio
           </h1>
           <p className="py-6 max-w-prose lg:text-left text-center">
-            Create captivating images with ease. Our powerful tool lets you
-            generate custom or pre-defined options. Unleash your creativity
-            today!
+            Generate captivating photos with ease. Our powerful tool lets you
+            generate photos with{' '}
+            <span className="text-secondary">custom prompts</span> or
+            pre-defined options. Unleash your creativity today! Our model is
+            based on <span className="text-secondary">DALL-E</span>.
           </p>
           <Link href="/api/auth/login" className="btn btn-primary lg:mx-0">
             Get Started
