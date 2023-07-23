@@ -147,7 +147,7 @@ function HowItWorksSection() {
                 d="M4.5 12.75l6 6 9-13.5"
               />
             </svg>
-            20 free credits to get you started on your journey
+            Free credit to get you started on your journey
           </p>
           <p className="text-center flex items-center gap-5 text-xs lg:text-base">
             <svg
