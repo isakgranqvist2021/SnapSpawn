@@ -95,11 +95,18 @@ function CustomPromptTextarea() {
 }
 
 function PickMetaData() {
+  const apiState = useApiState();
   const state = useGenerateAvatarState();
   const dispatch = useGenerateAvatarDispatch();
 
   const setN = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch({ type: 'set:n', n: parseInt(e.target.value) });
+    const n = parseInt(e.target.value);
+
+    if (n > apiState.credits.data) {
+      return;
+    }
+
+    dispatch({ type: 'set:n', n });
   };
 
   const setSize = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -118,8 +125,8 @@ function PickMetaData() {
           className="select select-bordered w-full max-w-xs"
         >
           <option value={1}>1</option>
-          <option value={2}>2</option>
-          <option value={3}>3</option>
+          {apiState.credits.data >= 2 && <option value={2}>2</option>}
+          {apiState.credits.data >= 3 && <option value={3}>3</option>}
         </select>
       </div>
 

@@ -1,4 +1,3 @@
-import { Logger } from '@aa/services/logger';
 import 'dotenv/config';
 
 const env = {
