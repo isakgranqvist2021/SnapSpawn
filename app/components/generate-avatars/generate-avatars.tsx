@@ -100,18 +100,16 @@ function PickMetaData() {
   const dispatch = useGenerateAvatarDispatch();
 
   const setN = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const n = parseInt(e.target.value);
-
-    if (n > apiState.credits.data) {
-      return;
-    }
-
-    dispatch({ type: 'set:n', n });
+    dispatch({ type: 'set:n', n: parseInt(e.target.value) });
   };
 
   const setSize = (e: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch({ type: 'set:size', size: e.target.value as Size });
   };
+
+  if (apiState.credits.data === 0) {
+    return null;
+  }
 
   return (
     <React.Fragment>
