@@ -66,10 +66,6 @@ function NavDropDown() {
         </li>
 
         <li className="text-base-content">
-          <NavDropdownLink href="/create">Generate Avatar</NavDropdownLink>
-        </li>
-
-        <li className="text-base-content">
           <NavDropdownLink href="/refill">Add Credits</NavDropdownLink>
         </li>
 

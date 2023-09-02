@@ -24,7 +24,6 @@ const footerQuickLinkList = {
   title: 'Quick Links',
   links: [
     { href: '/refill', text: 'Add Credits' },
-    { href: '/create', text: 'Generate Avatar' },
     { href: '/account', text: 'Avatar Studio' },
   ],
 };

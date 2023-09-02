@@ -4,7 +4,6 @@ import React from 'react';
 import { useState } from 'react';
 
 import { EmptyState } from '../empty-state';
-import { AvatarsStatsCard, CreditsStatsCard } from '../stats-cards';
 
 function formatTimestampWithIntl(timestamp: number) {
   const date = new Date(timestamp);
@@ -17,6 +16,7 @@ function formatTimestampWithIntl(timestamp: number) {
   }).format(date);
 }
 
+/*
 function AvatarCard(props: AvatarModel) {
   const { url, createdAt, prompt, promptOptions } = props;
 
@@ -56,27 +56,6 @@ function AvatarCard(props: AvatarModel) {
           style={{ maxHeight: 256 }}
         >
           <div className="sticky top-0 bg-base-100 shadow-md py-3 px-5">
-            <a
-              className="hover:underline link-secondary w-fit flex items-center gap-2"
-              onClick={toggleCard}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
-                />
-              </svg>
-              Show image
-            </a>
-
             <h2 className="text-xl">{formatTimestampWithIntl(createdAt)}</h2>
           </div>
 
@@ -92,6 +71,55 @@ function AvatarCard(props: AvatarModel) {
         </div>
       )}
     </div>
+  );
+}
+*/
+
+function AvatarCard(props: AvatarModel) {
+  const { url, createdAt, prompt, promptOptions } = props;
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const closeFullscreen = () => {
+    setIsFullscreen(false);
+  };
+
+  const openFullscreen = () => {
+    setIsFullscreen(true);
+  };
+
+  if (isFullscreen) {
+    return (
+      <div>
+        <div
+          onClick={closeFullscreen}
+          className="z-10 fixed inset-0"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          }}
+        ></div>
+
+        <div className="fixed inset-8 z-20 bg-white flex items-center justify-center">
+          <img
+            className="object-fit max-h-full max-w-full"
+            alt="Ai generated avatar"
+            loading="lazy"
+            src={url}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      className="cursor-pointer"
+      onClick={openFullscreen}
+      style={{ maxWidth: 256 }}
+      alt="Ai generated avatar"
+      loading="lazy"
+      src={url}
+    />
   );
 }
 
@@ -110,7 +138,6 @@ const creditsEmptyState = (
 const avatarsEmptyState = (
   <EmptyState
     message="You have no photos yet. Generate one now!"
-    buttonHref="/create"
     buttonText="Generate Photo"
   />
 );
@@ -123,7 +150,7 @@ function Avatars() {
   }
 
   return (
-    <div className="w-full p-5 my-avatars">
+    <div className="w-full p-5 flex flex-wrap justify-center">
       {avatars.data.map(renderAvatar)}
     </div>
   );
@@ -134,15 +161,6 @@ export function MyAvatars() {
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      <div className="pt-5 px-5 flex justify-between w-full lg:flex-nowrap flex-wrap gap-5">
-        <div className="w-full">
-          <div className="stats shadow items-center items-center flex md:items-start md:inline-grid">
-            <AvatarsStatsCard />
-            <CreditsStatsCard />
-          </div>
-        </div>
-      </div>
-
       {apiState.credits.data === 0 && creditsEmptyState}
 
       <Avatars />

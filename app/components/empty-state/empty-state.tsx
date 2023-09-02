@@ -3,7 +3,7 @@ import Link from 'next/link';
 interface EmptyStateProps {
   message: string;
   buttonText: string;
-  buttonHref: string;
+  buttonHref?: string;
 }
 
 export function EmptyState(props: EmptyStateProps) {
@@ -12,9 +12,12 @@ export function EmptyState(props: EmptyStateProps) {
   return (
     <div className="text-center p-5 bg-base-200 w-full flex flex-col gap-5 items-center h-60 justify-center">
       <h3 className="text-3xl">{message}</h3>
-      <Link className="btn btn-primary" href={buttonHref}>
-        {buttonText}
-      </Link>
+
+      {buttonHref && (
+        <Link className="btn btn-primary" href={buttonHref}>
+          {buttonText}
+        </Link>
+      )}
     </div>
   );
 }

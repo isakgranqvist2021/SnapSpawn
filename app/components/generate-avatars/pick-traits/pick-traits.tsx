@@ -22,7 +22,7 @@ export function PickTraits() {
 
   const renderTraitButton = (trait: Traits) => {
     return (
-      <div className="form-control" key={trait}>
+      <div key={trait}>
         <label className="label cursor-pointer flex gap-2">
           <span
             className={`label-text capitalize ${

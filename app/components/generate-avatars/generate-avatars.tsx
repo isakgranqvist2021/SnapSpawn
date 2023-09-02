@@ -68,11 +68,30 @@ function CustomPromptTextarea() {
 
       <div className="flex gap-3 flex-wrap items-center max-w-4xl justify-center">
         {predefinedPrompts.map((prompt) => {
+          const isSelected = prompt === state.customPrompt;
+
           const pickPredefinedPrompt = () => {
             if (apiState.avatars.isLoading) return;
 
             dispatch({ type: 'set:custom-prompt', customPrompt: prompt });
           };
+
+          if (isSelected) {
+            return (
+              <div
+                key={prompt}
+                className={[
+                  'badge badge-md text-white',
+                  apiState.avatars.isLoading
+                    ? 'opacity-50'
+                    : 'bg-primary cursor-pointer',
+                ].join(' ')}
+                onClick={pickPredefinedPrompt}
+              >
+                {prompt}
+              </div>
+            );
+          }
 
           return (
             <div
@@ -91,60 +110,6 @@ function CustomPromptTextarea() {
         })}
       </div>
     </div>
-  );
-}
-
-function PickMetaData() {
-  const apiState = useApiState();
-  const state = useGenerateAvatarState();
-  const dispatch = useGenerateAvatarDispatch();
-
-  const setN = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch({ type: 'set:n', n: parseInt(e.target.value) });
-  };
-
-  const setSize = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch({ type: 'set:size', size: e.target.value as Size });
-  };
-
-  if (apiState.credits.data === 0) {
-    return null;
-  }
-
-  return (
-    <React.Fragment>
-      <div className="form-control w-full max-w-xs">
-        <label className="label">
-          <span className="label-text">How many to generate</span>
-        </label>
-        <select
-          defaultValue={state.n}
-          onChange={setN}
-          className="select select-bordered w-full max-w-xs"
-        >
-          <option value={1}>1</option>
-          {apiState.credits.data >= 2 && <option value={2}>2</option>}
-          {apiState.credits.data >= 3 && <option value={3}>3</option>}
-        </select>
-      </div>
-
-      <div className="form-control w-full max-w-xs">
-        <label className="label">
-          <span className="label-text">Size</span>
-        </label>
-        <select
-          defaultValue={state.size}
-          onChange={setSize}
-          className="select select-bordered w-full max-w-xs"
-        >
-          {avatarSizes.map((size) => (
-            <option key={size} value={size}>
-              {size}
-            </option>
-          ))}
-        </select>
-      </div>
-    </React.Fragment>
   );
 }
 
@@ -167,52 +132,24 @@ function _GenerateAvatarsFormContent() {
         <PickCharacteristics />
       </FormSection>
 
-      <div className="p-5 flex gap-5 flex-wrap justify-center items-end">
-        <PickMetaData />
-        <GenerateAvatarSubmitButton text="Generate Avatar" />
-      </div>
+      <GenerateAvatarSubmitButton text="Generate Avatar" />
     </React.Fragment>
   );
 }
 
 function CustomPromptForm() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col items-center">
       <FormSection>
         <CustomPromptTextarea />
       </FormSection>
 
-      <div className="p-5 flex gap-5 flex-wrap justify-center">
-        <PickMetaData />
-        <GenerateAvatarSubmitButton text="Generate Custom Picture" />
-      </div>
+      <GenerateAvatarSubmitButton text="Generate Custom Picture" />
     </div>
   );
 }
 
 const GenerateAvatarsFormContent = memo(_GenerateAvatarsFormContent);
-
-function renderAvatar(avatar: string, index: number) {
-  return (
-    <div key={index}>
-      <img src={avatar} alt="avatar" />
-    </div>
-  );
-}
-
-const AvatarGenerationResult = () => {
-  const state = useGenerateAvatarState();
-
-  if (!state.result) {
-    return null;
-  }
-
-  return (
-    <div className="flex flex-wrap gap-5 px-5 pb-5 justify-center">
-      {state.result.map(renderAvatar)}
-    </div>
-  );
-};
 
 function Form() {
   const { mode } = useGenerateAvatarState();
@@ -225,7 +162,7 @@ function Form() {
   };
 
   return (
-    <form className="max-w-4xl" onSubmit={onSubmit}>
+    <form className="max-w-4xl flex flex-col items-center" onSubmit={onSubmit}>
       {mode === 'generate' ? (
         <GenerateAvatarsFormContent />
       ) : (
@@ -248,25 +185,25 @@ function TabHeader() {
   };
 
   return (
-    <div className="tabs">
-      <a
+    <div className="flex gap-3">
+      <button
+        className={
+          mode === 'generate'
+            ? 'btn btn-sm btn-outline w-56'
+            : 'btn btn-sm w-56'
+        }
         onClick={setModeAsGenerate}
-        className={[
-          'tab tab-lg tab-lifted',
-          mode === 'generate' ? 'tab-active' : '',
-        ].join(' ')}
       >
         Pre Defined Prompts
-      </a>
-      <a
+      </button>
+      <button
+        className={
+          mode === 'custom' ? 'btn btn-sm btn-outline w-56' : 'btn btn-sm w-56'
+        }
         onClick={setModeAsCustom}
-        className={[
-          'tab tab-lg tab-lifted',
-          mode === 'custom' ? 'tab-active' : '',
-        ].join(' ')}
       >
         Custom Prompt
-      </a>
+      </button>
     </div>
   );
 }
@@ -289,8 +226,6 @@ export function GenerateAvatarsForm() {
 
         <Form />
       </div>
-
-      <AvatarGenerationResult />
     </GenerateAvatarProvider>
   );
 }

@@ -31,7 +31,7 @@ const INITIAL_STATE: GenerateAvatarState = {
   mode: 'generate',
   n: 1,
   result: null,
-  size: '256x256',
+  size: '1024x1024',
 };
 
 export const GenerateAvatarContext = createContext<GenerateAvatarContextType>({

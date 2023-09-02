@@ -1,5 +1,6 @@
 import { useApiState } from '@aa/context/api-context';
 import { Gender, genders } from '@aa/models';
+import React from 'react';
 
 import {
   useGenerateAvatarDispatch,
@@ -18,7 +19,7 @@ export function PickGender() {
 
   const renderGenderRadioButton = (gender: Gender) => {
     return (
-      <div className="form-control" key={gender}>
+      <div key={gender}>
         <label className="label cursor-pointer flex gap-4">
           <span
             className={`label-text capitalize ${
@@ -41,8 +42,6 @@ export function PickGender() {
   };
 
   return (
-    <div className="flex gap-2 flex-wrap">
-      {genders.map(renderGenderRadioButton)}
-    </div>
+    <React.Fragment>{genders.map(renderGenderRadioButton)}</React.Fragment>
   );
 }

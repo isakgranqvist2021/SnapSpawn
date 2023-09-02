@@ -27,7 +27,7 @@ export function GenerateAvatarSubmitButton(
 
   return (
     <button
-      className="btn btn-secondary relative"
+      className="btn btn-secondary relative mx-auto"
       disabled={isLoading}
       type="submit"
     >
