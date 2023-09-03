@@ -3,20 +3,18 @@ import { MainContainer } from '@aa/containers/main-container';
 import Link from 'next/link';
 import { Fragment } from 'react';
 
-export default function Rejected() {
+export default function Error() {
   return (
     <Fragment>
-      <DefaultHead title="Payment Rejected" />
+      <DefaultHead title="Error" />
 
       <MainContainer>
         <div className="flex flex-col gap-3 items-center mt-10">
-          <h1 className="text-xl text-red-600">
-            Your payment has been rejected
-          </h1>
+          <h1 className="text-xl text-green-600">Error</h1>
           <p className="text-center max-w-prose">
-            We apologize for the inconvenience, but the payment has not gone
-            through. Kindly review the payment information and attempt the
-            payment again.
+            Oops! The page you are looking for could not be found. It may have
+            been moved, renamed, or deleted. Please try checking the URL or
+            using the search function to find what you are looking for.
           </p>
 
           <Link className="btn btn-error" href="/account">

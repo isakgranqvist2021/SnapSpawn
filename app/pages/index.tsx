@@ -4,7 +4,7 @@ import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
-import React from 'react';
+import { Fragment } from 'react';
 
 function HeroSection() {
   return (
@@ -249,7 +249,7 @@ function HomePageFooter() {
 
 function Home() {
   return (
-    <React.Fragment>
+    <Fragment>
       <DefaultHead title="Home" />
 
       <MainContainer>
@@ -267,7 +267,7 @@ function Home() {
 
         <HomePageFooter />
       </MainContainer>
-    </React.Fragment>
+    </Fragment>
   );
 }
 

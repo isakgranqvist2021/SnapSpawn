@@ -1,4 +1,5 @@
-import { AvatarModel, PromptModel, Size } from '@aa/models';
+import { AvatarModel, Size } from '@aa/models/avatar';
+import { PromptModel } from '@aa/models/prompt';
 import getStripe from '@aa/services/stripe';
 import { Alert } from '@aa/types';
 import { Dispatch, Reducer, createContext, useReducer } from 'react';
@@ -9,13 +10,13 @@ interface ApiState<T> {
   isLoading: boolean;
 }
 
-interface ApiContextState {
+interface AppContextState {
   alerts: Alert[];
   avatars: ApiState<AvatarModel[]>;
   credits: ApiState<number>;
 }
 
-interface ApiProviderProps {
+interface AppProviderProps {
   avatars: AvatarModel[];
   children: React.ReactNode;
   credits: number;
@@ -38,7 +39,7 @@ type ReducerAction =
   | CreditsReducerAction
   | AvatarsReducerAction;
 
-interface ApiContextType {
+interface AppContextType {
   methods: {
     clearAlert: (id: string) => void;
     addCredits: (payload: number) => Promise<void>;
@@ -53,10 +54,10 @@ interface ApiContextType {
       n: number,
     ) => Promise<AvatarModel[] | null>;
   };
-  state: ApiContextState;
+  state: AppContextState;
 }
 
-export const AppContext = createContext<ApiContextType>({
+export const AppContext = createContext<AppContextType>({
   methods: {
     addCredits: async (credits: number) => {},
     clearAlert: (id: string) => {},
@@ -73,9 +74,9 @@ export const AppContext = createContext<ApiContextType>({
 });
 
 function creditsReducer(
-  state: ApiContextState,
+  state: AppContextState,
   action: ReducerAction,
-): ApiContextState {
+): AppContextState {
   switch (action.type) {
     case 'credits:reduce':
       return {
@@ -98,9 +99,9 @@ function creditsReducer(
 }
 
 function avatarsReducer(
-  state: ApiContextState,
+  state: AppContextState,
   action: ReducerAction,
-): ApiContextState {
+): AppContextState {
   switch (action.type) {
     case 'avatars:add':
       return {
@@ -126,9 +127,9 @@ function avatarsReducer(
 }
 
 function alertsReducer(
-  state: ApiContextState,
+  state: AppContextState,
   action: ReducerAction,
-): ApiContextState {
+): AppContextState {
   switch (action.type) {
     case 'alerts:add':
       return {
@@ -148,9 +149,9 @@ function alertsReducer(
 }
 
 function apiReducer(
-  state: ApiContextState,
+  state: AppContextState,
   action: ReducerAction,
-): ApiContextState {
+): AppContextState {
   if (action.type.startsWith('credits:')) {
     return creditsReducer(state, action);
   }
@@ -251,16 +252,16 @@ function getAddCredits(path: string, dispatch: Dispatch<ReducerAction>) {
   };
 }
 
-export function ApiProvider(props: ApiProviderProps) {
+export function AppProvider(props: AppProviderProps) {
   const { avatars, children, credits } = props;
 
-  const initialState: ApiContextState = {
+  const initialState: AppContextState = {
     alerts: [],
     avatars: { data: avatars, isLoading: false },
     credits: { data: credits, isLoading: false },
   };
 
-  const [state, dispatch] = useReducer<Reducer<ApiContextState, ReducerAction>>(
+  const [state, dispatch] = useReducer<Reducer<AppContextState, ReducerAction>>(
     apiReducer,
     initialState,
   );
