@@ -8,7 +8,7 @@ import { EmptyState } from '../empty-state';
 function formatTimestampWithIntl(timestamp: number) {
   const date = new Date(timestamp);
 
-  const locale = globalThis.navigator?.language ?? 'sv-SE';
+  const locale = globalThis.navigator?.language ?? 'en-US';
 
   return new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium',
@@ -16,67 +16,8 @@ function formatTimestampWithIntl(timestamp: number) {
   }).format(date);
 }
 
-/*
 function AvatarCard(props: AvatarModel) {
-  const { url, createdAt, prompt, promptOptions } = props;
-
-  const pills = Object.values(promptOptions ?? {});
-
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  const toggleCard = () => {
-    setIsFlipped((isFlipped) => !isFlipped);
-  };
-
-  const renderPill = (pill: string, index: number) => {
-    return (
-      <div className="badge badge-md capitalize" key={`${url}-${index}`}>
-        {pill}
-      </div>
-    );
-  };
-
-  return (
-    <div
-      onClick={!isFlipped ? toggleCard : undefined}
-      className="bg-base-100 shadow-xl hover:shadow-2xl ease-linear duration-100 cursor-pointer"
-    >
-      {!isFlipped && (
-        <img
-          style={{ maxWidth: 256 }}
-          alt="Ai generated avatar"
-          loading="lazy"
-          src={url}
-        />
-      )}
-
-      {isFlipped && (
-        <div
-          className="flex flex-col gap-2 overflow-hidden"
-          style={{ maxHeight: 256 }}
-        >
-          <div className="sticky top-0 bg-base-100 shadow-md py-3 px-5">
-            <h2 className="text-xl">{formatTimestampWithIntl(createdAt)}</h2>
-          </div>
-
-          <div className="py-3 px-5 flex flex-col gap-2 overflow-auto">
-            <p className="text-base">{prompt}</p>
-
-            <div className="flex gap-3 flex-wrap">{pills.map(renderPill)}</div>
-
-            <a className="hover:underline link-primary w-fit" href={url}>
-              Download image
-            </a>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-*/
-
-function AvatarCard(props: AvatarModel) {
-  const { url, createdAt, prompt, promptOptions } = props;
+  const { url, createdAt, prompt } = props;
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -88,9 +29,43 @@ function AvatarCard(props: AvatarModel) {
     setIsFullscreen(true);
   };
 
+  React.useEffect(() => {
+    const onKeyDownHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeFullscreen();
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDownHandler);
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDownHandler);
+    };
+  }, []);
+
   if (isFullscreen) {
     return (
       <div>
+        <button
+          onClick={closeFullscreen}
+          className="btn btn-circle fixed top-10 right-10 z-30"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
         <div
           onClick={closeFullscreen}
           className="z-10 fixed inset-0"
@@ -99,26 +74,47 @@ function AvatarCard(props: AvatarModel) {
           }}
         ></div>
 
-        <div className="fixed inset-8 z-20 bg-white flex items-center justify-center">
-          <img
-            className="object-fit max-h-full max-w-full"
-            alt="Ai generated avatar"
-            loading="lazy"
-            src={url}
-          />
+        <div className="fixed inset-8 z-20 p-5 bg-white flex flex-col items-center">
+          <div className="h-4/6 flex flex-col items-center gap-3">
+            <img
+              className="object-fit max-h-full"
+              alt="Ai generated avatar"
+              loading="lazy"
+              src={url}
+            />
+
+            <div className="max-w-prose text-center flex flex-col gap-2">
+              <p className="text-secondary">
+                {formatTimestampWithIntl(createdAt)}
+              </p>
+              <p>{prompt}</p>
+            </div>
+
+            <a
+              className="link link-primary"
+              href={url}
+              target="_blank"
+              download
+            >
+              Download
+            </a>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <img
-      className="cursor-pointer"
+    <div
+      style={{
+        backgroundImage: `url(${url})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minWidth: 256,
+        minHeight: 256,
+      }}
+      className="cursor-pointer object-cover"
       onClick={openFullscreen}
-      style={{ maxWidth: 256 }}
-      alt="Ai generated avatar"
-      loading="lazy"
-      src={url}
     />
   );
 }
@@ -150,7 +146,14 @@ function Avatars() {
   }
 
   return (
-    <div className="w-full p-5 flex flex-wrap justify-center">
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(256px, 1fr))',
+        gap: '1rem',
+        padding: '1rem',
+      }}
+    >
       {avatars.data.map(renderAvatar)}
     </div>
   );

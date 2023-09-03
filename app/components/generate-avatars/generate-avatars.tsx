@@ -44,7 +44,6 @@ const predefinedPrompts = [
   'photo of an extremely cute alien fish',
   'a photo of a person who is a cat',
   'a photo of a person who is a dog',
-  'a photo of a person who is a cat and a dog',
 ];
 
 function CustomPromptTextarea() {
@@ -185,21 +184,17 @@ function TabHeader() {
   };
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-3 flex-wrap justify-center">
       <button
         className={
-          mode === 'generate'
-            ? 'btn btn-sm btn-outline w-56'
-            : 'btn btn-sm w-56'
+          mode === 'generate' ? 'btn btn-sm btn-outline' : 'btn btn-sm'
         }
         onClick={setModeAsGenerate}
       >
         Pre Defined Prompts
       </button>
       <button
-        className={
-          mode === 'custom' ? 'btn btn-sm btn-outline w-56' : 'btn btn-sm w-56'
-        }
+        className={mode === 'custom' ? 'btn btn-sm btn-outline' : 'btn btn-sm'}
         onClick={setModeAsCustom}
       >
         Custom Prompt
@@ -211,11 +206,7 @@ function TabHeader() {
 export function GenerateAvatarsForm() {
   return (
     <GenerateAvatarProvider>
-      <div className="p-5 flex flex-col gap-5 w-full items-center">
-        <TabHeader />
-
-        <UserCreditsText />
-
+      <div className="px-5 pb-5 pt-10 flex flex-col gap-5 w-full items-center">
         <a
           className="link link-primary"
           target="_blank"
@@ -223,6 +214,10 @@ export function GenerateAvatarsForm() {
         >
           The Dall-E prompt Book
         </a>
+
+        <UserCreditsText />
+
+        <TabHeader />
 
         <Form />
       </div>
