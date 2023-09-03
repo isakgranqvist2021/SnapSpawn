@@ -1,10 +1,9 @@
-import { useApiState } from '@aa/context/api-context';
+import { AppContext } from '@aa/context';
 import Link from 'next/link';
+import { useContext } from 'react';
 
 export function CreditsStatsCard() {
-  const apiState = useApiState();
-
-  const { credits } = apiState;
+  const { state } = useContext(AppContext);
 
   return (
     <div className="stat">
@@ -26,7 +25,7 @@ export function CreditsStatsCard() {
       </div>
 
       <div className="stat-title">Total Credits</div>
-      <div className="stat-value">{credits.data}</div>
+      <div className="stat-value">{state.credits.data}</div>
       <div className="stat-actions">
         <Link href="/refill" className="btn btn-sm">
           Add Credits
@@ -37,9 +36,7 @@ export function CreditsStatsCard() {
 }
 
 export function AvatarsStatsCard() {
-  const apiState = useApiState();
-
-  const { avatars } = apiState;
+  const { state } = useContext(AppContext);
 
   return (
     <div className="stat">
@@ -61,7 +58,7 @@ export function AvatarsStatsCard() {
       </div>
 
       <div className="stat-title">Total Photos</div>
-      <div className="stat-value">{avatars.data.length}</div>
+      <div className="stat-value">{state.avatars.data.length}</div>
       <div className="stat-actions">
         <Link className="btn btn-sm btn-accent" href="/create">
           New Photo

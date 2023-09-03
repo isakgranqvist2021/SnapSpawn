@@ -1,0 +1,299 @@
+import { AvatarModel, PromptModel, Size } from '@aa/models';
+import getStripe from '@aa/services/stripe';
+import { Alert } from '@aa/types';
+import { Dispatch, Reducer, createContext, useReducer } from 'react';
+import { uid } from 'uid';
+
+interface ApiState<T> {
+  data: T;
+  isLoading: boolean;
+}
+
+interface ApiContextState {
+  alerts: Alert[];
+  avatars: ApiState<AvatarModel[]>;
+  credits: ApiState<number>;
+}
+
+interface ApiProviderProps {
+  avatars: AvatarModel[];
+  children: React.ReactNode;
+  credits: number;
+}
+
+type AlertReducerAction =
+  | { type: 'alerts:add'; alert: Omit<Alert, 'id'> }
+  | { type: 'alerts:remove'; id: string };
+
+type CreditsReducerAction =
+  | { type: 'credits:reduce'; reduceCreditsBy: number }
+  | { type: 'credits:set-is-loading'; isLoading: boolean };
+
+type AvatarsReducerAction =
+  | { type: 'avatars:add'; avatars: AvatarModel[] }
+  | { type: 'avatars:set-is-loading'; isLoading: boolean };
+
+type ReducerAction =
+  | AlertReducerAction
+  | CreditsReducerAction
+  | AvatarsReducerAction;
+
+interface ApiContextType {
+  methods: {
+    clearAlert: (id: string) => void;
+    addCredits: (payload: number) => Promise<void>;
+    generateAvatars: (
+      payload: PromptModel,
+      size: Size,
+      n: number,
+    ) => Promise<AvatarModel[] | null>;
+    generateCustomPicture: (
+      payload: string,
+      size: Size,
+      n: number,
+    ) => Promise<AvatarModel[] | null>;
+  };
+  state: ApiContextState;
+}
+
+export const AppContext = createContext<ApiContextType>({
+  methods: {
+    addCredits: async (credits: number) => {},
+    clearAlert: (id: string) => {},
+    generateAvatars: async (payload: PromptModel, size: Size, n: number) =>
+      null,
+    generateCustomPicture: async (payload: string, size: Size, n: number) =>
+      null,
+  },
+  state: {
+    alerts: [],
+    avatars: { data: [], isLoading: false },
+    credits: { data: 0, isLoading: false },
+  },
+});
+
+function creditsReducer(
+  state: ApiContextState,
+  action: ReducerAction,
+): ApiContextState {
+  switch (action.type) {
+    case 'credits:reduce':
+      return {
+        ...state,
+        credits: {
+          ...state.credits,
+          data: state.credits.data - action.reduceCreditsBy,
+        },
+      };
+
+    case 'credits:set-is-loading':
+      return {
+        ...state,
+        credits: { ...state.credits, isLoading: action.isLoading },
+      };
+
+    default:
+      return state;
+  }
+}
+
+function avatarsReducer(
+  state: ApiContextState,
+  action: ReducerAction,
+): ApiContextState {
+  switch (action.type) {
+    case 'avatars:add':
+      return {
+        ...state,
+        avatars: {
+          ...state.avatars,
+          data: [...action.avatars, ...state.avatars.data],
+        },
+      };
+
+    case 'avatars:set-is-loading':
+      return {
+        ...state,
+        avatars: {
+          ...state.avatars,
+          isLoading: action.isLoading,
+        },
+      };
+
+    default:
+      return state;
+  }
+}
+
+function alertsReducer(
+  state: ApiContextState,
+  action: ReducerAction,
+): ApiContextState {
+  switch (action.type) {
+    case 'alerts:add':
+      return {
+        ...state,
+        alerts: [...state.alerts, { ...action.alert, id: uid() }],
+      };
+
+    case 'alerts:remove':
+      const alerts = [...state.alerts];
+      const index = alerts.findIndex((alert) => alert.id === action.id);
+      alerts.splice(index, 1);
+      return { ...state, alerts };
+
+    default:
+      return state;
+  }
+}
+
+function apiReducer(
+  state: ApiContextState,
+  action: ReducerAction,
+): ApiContextState {
+  if (action.type.startsWith('credits:')) {
+    return creditsReducer(state, action);
+  }
+
+  if (action.type.startsWith('avatars:')) {
+    return avatarsReducer(state, action);
+  }
+
+  if (action.type.startsWith('alerts:')) {
+    return alertsReducer(state, action);
+  }
+
+  return state;
+}
+
+function getGenerateAvatars<T>(
+  path: string,
+  dispatch: Dispatch<ReducerAction>,
+) {
+  return async (payload: T, size: Size, n: number) => {
+    try {
+      dispatch({ type: 'avatars:set-is-loading', isLoading: true });
+
+      const res = await fetch(path, {
+        body: JSON.stringify({ options: payload, size, n }),
+        method: 'POST',
+      });
+
+      if (res.status !== 200) {
+        throw new Error('Invalid response');
+      }
+
+      const data: { avatars: AvatarModel[] } | undefined = await res.json();
+
+      if (!data || !Array.isArray(data.avatars)) {
+        throw new Error('Invalid response');
+      }
+
+      dispatch({ type: 'avatars:add', avatars: data.avatars });
+      dispatch({
+        type: 'credits:reduce',
+        reduceCreditsBy: data.avatars.length,
+      });
+      dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'success',
+          message: 'Avatars generated successfully!',
+        },
+      });
+      dispatch({ type: 'avatars:set-is-loading', isLoading: false });
+
+      return data.avatars;
+    } catch {
+      dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'error',
+          message: 'Something went wrong. Please try again later.',
+        },
+      });
+      dispatch({ type: 'avatars:set-is-loading', isLoading: false });
+
+      return null;
+    }
+  };
+}
+
+function getAddCredits(path: string, dispatch: Dispatch<ReducerAction>) {
+  return async (payload: number) => {
+    try {
+      dispatch({ type: 'credits:set-is-loading', isLoading: true });
+
+      const stripe = await getStripe();
+
+      if (!stripe) {
+        throw new Error('Stripe is not loaded');
+      }
+
+      const res = await fetch(path, {
+        body: JSON.stringify({ credits: payload }),
+        method: 'POST',
+      }).then((res) => res.json());
+
+      await stripe.redirectToCheckout({
+        sessionId: res.id,
+      });
+    } catch {
+      dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'error',
+          message: 'Something went wrong. Please try again later.',
+        },
+      });
+      dispatch({ type: 'credits:set-is-loading', isLoading: false });
+    }
+  };
+}
+
+export function ApiProvider(props: ApiProviderProps) {
+  const { avatars, children, credits } = props;
+
+  const initialState: ApiContextState = {
+    alerts: [],
+    avatars: { data: avatars, isLoading: false },
+    credits: { data: credits, isLoading: false },
+  };
+
+  const [state, dispatch] = useReducer<Reducer<ApiContextState, ReducerAction>>(
+    apiReducer,
+    initialState,
+  );
+
+  const clearAlert = (id: string) => {
+    dispatch({ type: 'alerts:remove', id });
+  };
+
+  const generateAvatars = getGenerateAvatars<PromptModel>(
+    '/api/create',
+    dispatch,
+  );
+
+  const generateCustomPicture = getGenerateAvatars<string>(
+    '/api/create-custom-prompt',
+    dispatch,
+  );
+
+  const addCredits = getAddCredits('/api/checkout_sessions', dispatch);
+
+  return (
+    <AppContext.Provider
+      value={{
+        state,
+        methods: {
+          addCredits,
+          clearAlert,
+          generateAvatars,
+          generateCustomPicture,
+        },
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
+}

@@ -1,6 +1,6 @@
-import { useApiState } from '@aa/context/api-context';
+import { AppContext, ContentSidebarContext } from '@aa/context';
 import { AvatarModel } from '@aa/models';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useState } from 'react';
 
 import { EmptyState } from '../empty-state';
@@ -123,14 +123,6 @@ function renderAvatar(avatar: AvatarModel) {
   return <AvatarCard {...avatar} key={avatar.url} />;
 }
 
-const creditsEmptyState = (
-  <EmptyState
-    message="You have no credits yet. Add some now!"
-    buttonHref="/refill"
-    buttonText="Add Credits"
-  />
-);
-
 const avatarsEmptyState = (
   <EmptyState
     message="You have no photos yet. Generate one now!"
@@ -139,9 +131,9 @@ const avatarsEmptyState = (
 );
 
 function Avatars() {
-  const { avatars } = useApiState();
+  const { state } = useContext(AppContext);
 
-  if (!avatars.data.length) {
+  if (!state.avatars.data.length) {
     return avatarsEmptyState;
   }
 
@@ -151,20 +143,43 @@ function Avatars() {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(256px, 1fr))',
         gap: '1rem',
-        padding: '1rem',
       }}
     >
-      {avatars.data.map(renderAvatar)}
+      {state.avatars.data.map(renderAvatar)}
     </div>
   );
 }
 
-export function MyAvatars() {
-  const apiState = useApiState();
+function OpenContentSidebarButton() {
+  const { setIsOpen } = useContext(ContentSidebarContext);
+
+  const openSidebar = () => setIsOpen(true);
 
   return (
-    <div className="flex flex-col gap-5 w-full">
-      {apiState.credits.data === 0 && creditsEmptyState}
+    <button className="mr-auto btn btn-secondary" onClick={openSidebar}>
+      Generate avatar
+    </button>
+  );
+}
+
+const creditsEmptyState = (
+  <EmptyState
+    message="You have no credits yet. Add some now!"
+    buttonHref="/refill"
+    buttonText="Add Credits"
+  />
+);
+
+export function MyAvatars() {
+  const { state } = useContext(AppContext);
+
+  return (
+    <div className="flex flex-col gap-5 w-full p-5">
+      {state.credits.data === 0 ? (
+        creditsEmptyState
+      ) : (
+        <OpenContentSidebarButton />
+      )}
 
       <Avatars />
     </div>

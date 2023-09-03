@@ -1,6 +1,6 @@
-import { useApiState, useStaticMethods } from '@aa/context/api-context';
+import { AppContext } from '@aa/context';
 import { Alert } from '@aa/types';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 function PageSnackbarAlert(props: Alert) {
   const { message, severity } = props;
@@ -37,17 +37,17 @@ function PageSnackbarAlert(props: Alert) {
 function PageSnackbarToast(props: Alert) {
   const { id } = props;
 
-  const staticMethods = useStaticMethods();
+  const { methods } = useContext(AppContext);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      staticMethods.clearAlert(id);
+      methods.clearAlert(id);
     }, 5000);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [staticMethods, id]);
+  }, [methods, id]);
 
   return (
     <div className="toast z-20">
@@ -61,11 +61,9 @@ function renderPageSnackbarToast(alert: Alert, index: number) {
 }
 
 export function PageSnackbar() {
-  const apiState = useApiState();
+  const { state } = useContext(AppContext);
 
   return (
-    <React.Fragment>
-      {apiState.alerts.map(renderPageSnackbarToast)}
-    </React.Fragment>
+    <React.Fragment>{state.alerts.map(renderPageSnackbarToast)}</React.Fragment>
   );
 }

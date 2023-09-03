@@ -1,15 +1,14 @@
-import { useApiMethods, useApiState } from '@aa/context/api-context';
-import { useState } from 'react';
+import { AppContext } from '@aa/context';
+import { useContext, useState } from 'react';
 
 export function useAddCreditsModal() {
-  const [credits, setCredits] = useState(10);
+  const { state, methods } = useContext(AppContext);
 
-  const apiState = useApiState();
-  const apiMethods = useApiMethods();
+  const [credits, setCredits] = useState(10);
 
   const continueToCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await apiMethods.addCredits(credits);
+    await methods.addCredits(credits);
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,7 +16,7 @@ export function useAddCreditsModal() {
   };
 
   return {
-    isLoading: apiState.credits.isLoading,
+    isLoading: state.credits.isLoading,
     continueToCheckout,
     credits,
     onChange,
