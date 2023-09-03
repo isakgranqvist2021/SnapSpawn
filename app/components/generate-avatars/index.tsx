@@ -144,12 +144,16 @@ function GenerateAvatarProvider(props: PropsWithChildren) {
 function useGenerateAvatar() {
   const { methods } = useContext(AppContext);
 
+  const { setIsOpen } = useContext(ContentSidebarContext);
+
   const {
     dispatch,
     state: { customPrompt, form, mode, n, size },
   } = useContext(GenerateAvatarContext);
 
   return useCallback(async () => {
+    setIsOpen(false);
+
     let res: AvatarModel[] | null = null;
 
     if (mode === 'custom') {
@@ -162,7 +166,7 @@ function useGenerateAvatar() {
       const urls = res.map((avatar: AvatarModel) => avatar.url);
       dispatch({ result: urls, type: 'set:result' });
     }
-  }, [methods, dispatch, customPrompt, form, mode, n, size]);
+  }, [methods, dispatch, customPrompt, form, mode, n, size, setIsOpen]);
 }
 
 function FormSection(props: PropsWithChildren) {
@@ -178,22 +182,6 @@ function FormSection(props: PropsWithChildren) {
     >
       {children}
     </div>
-  );
-}
-
-function CloseContentSidebarButton() {
-  const { setIsOpen } = useContext(ContentSidebarContext);
-
-  const closeContentSidebar = () => setIsOpen(false);
-
-  return (
-    <button
-      onClick={closeContentSidebar}
-      type="button"
-      className="btn btn-outline btn-warning"
-    >
-      Cancel
-    </button>
   );
 }
 
@@ -336,10 +324,12 @@ function GenerateAvatarSubmitButton(props: { text: string }) {
   const credits = state.credits.data;
   const isLoading = state.avatars.isLoading;
 
+  const generateAvatars = useGenerateAvatar();
+
   if (credits === 0) {
     return (
       <Link href="/refill" className="btn btn-secondary">
-        You have no credits left. Add some now!
+        0 Credits. Add some now!
       </Link>
     );
   }
@@ -348,6 +338,7 @@ function GenerateAvatarSubmitButton(props: { text: string }) {
     <button
       className="btn btn-secondary relative"
       disabled={isLoading}
+      onClick={generateAvatars}
       type="submit"
     >
       {isLoading && (
@@ -366,7 +357,7 @@ function UserCreditsText() {
 
   if (!state.credits.data) {
     return (
-      <h1 className="text-3xl mt-3 text-center">
+      <h1 className="text-2xl mt-3 text-center">
         You have <span className="text-secondary">0</span> credits
         <Link className="ml-2 text-secondary" href="/refill">
           add some now!
@@ -376,7 +367,7 @@ function UserCreditsText() {
   }
 
   return (
-    <h1 className="text-3xl">
+    <h1 className="text-2xl text-center">
       You have <span className="text-secondary">{state.credits.data}</span>{' '}
       credits
     </h1>
@@ -413,22 +404,17 @@ function GenerateFromPreDefinedOptionsForm() {
         <PickGender />
       </FormSection>
 
-      <div className="divider">Pick Accessory</div>
+      <div className="divider my-0">Pick Accessory</div>
 
       <FormSection>
         <PickTraits />
       </FormSection>
 
-      <div className="divider">Pick Theme</div>
+      <div className="divider my-0">Pick Theme</div>
 
       <FormSection>
         <PickCharacteristics />
       </FormSection>
-
-      <div className="flex gap-3">
-        <CloseContentSidebarButton />
-        <GenerateAvatarSubmitButton text="Generate Avatar" />
-      </div>
     </React.Fragment>
   );
 }
@@ -437,11 +423,26 @@ function CustomPromptForm() {
   return (
     <div className="flex flex-col gap-5">
       <CustomPromptTextarea />
+    </div>
+  );
+}
 
-      <div className="flex gap-3">
-        <CloseContentSidebarButton />
-        <GenerateAvatarSubmitButton text="Generate Custom Picture" />
-      </div>
+function FormFooter() {
+  const { setIsOpen } = useContext(ContentSidebarContext);
+
+  const closeContentSidebar = () => setIsOpen(false);
+
+  return (
+    <div className="flex gap-3 p-5 justify-center bg-base-200">
+      <button
+        onClick={closeContentSidebar}
+        type="button"
+        className="btn btn-outline btn-error"
+      >
+        Cancel
+      </button>
+
+      <GenerateAvatarSubmitButton text="Generate" />
     </div>
   );
 }
@@ -506,35 +507,42 @@ function TabHeader() {
 function GenerateAvatarsFormContent() {
   const { isOpen } = useContext(ContentSidebarContext);
 
-  const formContent = (
-    <React.Fragment>
-      <a
-        className="link link-primary"
-        target="_blank"
-        href="/The-DALL·E-2-prompt-book-v1.02.pdf"
-      >
-        The Dall-E prompt Book
-      </a>
+  const getDrawerClassName = () => {
+    const className = [
+      'fixed top-0 left-0 bg-base-100 h-screen flex flex-col justify-between overflow-hidden ease-in-out transition-all duration-200',
+    ];
 
-      <UserCreditsText />
+    if (isOpen) {
+      className.push('w-96');
+    } else {
+      className.push('w-0');
+    }
 
-      <TabHeader />
-
-      <Form />
-    </React.Fragment>
-  );
-
-  if (!isOpen) {
-    return (
-      <div className="duration-200 transition-opacity ease-in fixed left-0 top-0 bg-base-100 h-full w-96 overflow-auto px-2 py-10 flex flex-col gap-5 opacity-0 pointer-events-none">
-        {formContent}
-      </div>
-    );
-  }
+    return className.join(' ');
+  };
 
   return (
-    <div className="duration-200 transition-opacity ease-in fixed left-0 top-0 bg-base-100 h-full w-96 overflow-auto px-2 py-10 flex flex-col gap-5">
-      {formContent}
+    <div>
+      <div className={getDrawerClassName()}>
+        <div className="flex flex-col gap-5 overflow-auto p-5 w-96">
+          <a
+            className="link link-primary"
+            target="_blank"
+            rel="noreferrer"
+            href="/The-DALL·E-2-prompt-book-v1.02.pdf"
+          >
+            The Dall-E prompt Book
+          </a>
+
+          <UserCreditsText />
+
+          <TabHeader />
+
+          <Form />
+        </div>
+
+        <FormFooter />
+      </div>
     </div>
   );
 }

@@ -3,56 +3,6 @@ import React from 'react';
 
 import { useAddCreditsModal } from './add-credits.helpers';
 
-interface CreditRadioButtonProps {
-  credits: number;
-  isLoading: boolean;
-  label: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value: number;
-}
-
-interface AddCreditsSubmitButtonProps {
-  isLoading: boolean;
-}
-
-function CreditRadioButton(props: CreditRadioButtonProps) {
-  const { credits, isLoading, label, onChange, value } = props;
-
-  return (
-    <div className="form-control">
-      <label htmlFor={value.toString()} className="label cursor-pointer">
-        <span className="label-text">{label}</span>
-        <input
-          checked={credits === 10}
-          className="radio"
-          disabled={isLoading}
-          id={value.toString()}
-          name="credits"
-          onChange={onChange}
-          type="radio"
-          value={value.toString()}
-        />
-      </label>
-    </div>
-  );
-}
-
-function AddCreditsSubmitButton(props: AddCreditsSubmitButtonProps) {
-  const { isLoading } = props;
-
-  return (
-    <button disabled={isLoading} type="submit" className="btn btn-primary">
-      {isLoading && (
-        <div className="absolute z-10">
-          <Spinner color="stroke-white" />
-        </div>
-      )}
-
-      <span className={isLoading ? 'opacity-0' : ''}>Continue to checkout</span>
-    </button>
-  );
-}
-
 export function AddCreditsForm() {
   const { continueToCheckout, credits, isLoading, onChange } =
     useAddCreditsModal();
@@ -70,35 +20,69 @@ export function AddCreditsForm() {
       <hr />
 
       <div className="p-5">
-        <CreditRadioButton
-          credits={credits}
-          isLoading={isLoading}
-          label="10 credits for €1"
-          value={10}
-          onChange={onChange}
-        />
+        <div className="form-control">
+          <label htmlFor="10" className="label cursor-pointer">
+            <span className="label-text">10 credits for €1</span>
+            <input
+              checked={credits === 10}
+              className="radio"
+              disabled={isLoading}
+              id="10"
+              name="credits"
+              onChange={onChange}
+              type="radio"
+              value={10}
+            />
+          </label>
+        </div>
 
-        <CreditRadioButton
-          credits={credits}
-          isLoading={isLoading}
-          label="50 credits for €4.5"
-          value={50}
-          onChange={onChange}
-        />
+        <div className="form-control">
+          <label htmlFor="50" className="label cursor-pointer">
+            <span className="label-text">50 credits for €4.5</span>
+            <input
+              checked={credits === 50}
+              className="radio"
+              disabled={isLoading}
+              id="50"
+              name="credits"
+              onChange={onChange}
+              type="radio"
+              value={50}
+            />
+          </label>
+        </div>
 
-        <CreditRadioButton
-          credits={credits}
-          isLoading={isLoading}
-          label="100 credits for €8"
-          value={100}
-          onChange={onChange}
-        />
+        <div className="form-control">
+          <label htmlFor="100" className="label cursor-pointer">
+            <span className="label-text">100 credits for €8</span>
+            <input
+              checked={credits === 100}
+              className="radio"
+              disabled={isLoading}
+              id="100"
+              name="credits"
+              onChange={onChange}
+              type="radio"
+              value={100}
+            />
+          </label>
+        </div>
       </div>
 
       <hr />
 
       <div className="py-5 flex justify-end">
-        <AddCreditsSubmitButton isLoading={isLoading} />
+        <button disabled={isLoading} type="submit" className="btn btn-primary">
+          {isLoading && (
+            <div className="absolute z-10">
+              <Spinner color="stroke-white" />
+            </div>
+          )}
+
+          <span className={isLoading ? 'opacity-0' : ''}>
+            Continue to checkout
+          </span>
+        </button>
       </div>
     </form>
   );

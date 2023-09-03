@@ -4,6 +4,7 @@ import React, { useContext } from 'react';
 import { useState } from 'react';
 
 import { EmptyState } from '../empty-state';
+import { Spinner } from '../spinner';
 
 function formatTimestampWithIntl(timestamp: number) {
   const date = new Date(timestamp);
@@ -58,9 +59,9 @@ function AvatarCard(props: AvatarModel) {
             stroke="currentColor"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
@@ -74,7 +75,7 @@ function AvatarCard(props: AvatarModel) {
           }}
         ></div>
 
-        <div className="fixed inset-8 z-20 p-5 bg-white flex flex-col items-center">
+        <div className="fixed inset-8 z-20 p-5 bg-base-200 flex flex-col items-center">
           <div className="h-4/6 flex flex-col items-center gap-3">
             <img
               className="object-fit max-h-full"
@@ -84,10 +85,11 @@ function AvatarCard(props: AvatarModel) {
             />
 
             <div className="max-w-prose text-center flex flex-col gap-2">
-              <p className="text-secondary">
+              <p className="content-base-300">
                 {formatTimestampWithIntl(createdAt)}
               </p>
-              <p>{prompt}</p>
+
+              <p className="content-base-200">{prompt}</p>
             </div>
 
             <a
@@ -95,6 +97,7 @@ function AvatarCard(props: AvatarModel) {
               href={url}
               target="_blank"
               download
+              rel="noreferrer"
             >
               Download
             </a>
@@ -145,18 +148,36 @@ function Avatars() {
         gap: '1rem',
       }}
     >
+      {state.avatars.isLoading && (
+        <div
+          style={{
+            minWidth: 256,
+            minHeight: 256,
+          }}
+          className="flex flex-col gap-2 justify-center items-center"
+        >
+          <Spinner />
+          <p>Generating avatar...</p>
+        </div>
+      )}
+
       {state.avatars.data.map(renderAvatar)}
     </div>
   );
 }
 
 function OpenContentSidebarButton() {
+  const { state } = useContext(AppContext);
   const { setIsOpen } = useContext(ContentSidebarContext);
 
   const openSidebar = () => setIsOpen(true);
 
   return (
-    <button className="mr-auto btn btn-secondary" onClick={openSidebar}>
+    <button
+      disabled={state.avatars.isLoading}
+      className="mr-auto btn btn-secondary"
+      onClick={openSidebar}
+    >
       Generate avatar
     </button>
   );

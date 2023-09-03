@@ -8,6 +8,7 @@ export function useAddCreditsModal() {
 
   const continueToCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     await methods.addCredits(credits);
   };
 

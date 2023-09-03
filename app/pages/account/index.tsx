@@ -13,9 +13,9 @@ export default function Account(props: DefaultProps) {
   return (
     <AuthPageContainer title="Account" {...props}>
       <ContentSidebarProvider>
-        <GenerateAvatarsForm />
-
         <MyAvatars />
+
+        <GenerateAvatarsForm />
       </ContentSidebarProvider>
     </AuthPageContainer>
   );
