@@ -199,7 +199,7 @@ function getGenerateAvatars<T>(
         type: 'alerts:add',
         alert: {
           severity: 'success',
-          message: 'Avatars generated successfully!',
+          message: 'Avatar generated successfully!',
         },
       });
       dispatch({ type: 'avatars:set-is-loading', isLoading: false });
