@@ -94,6 +94,7 @@ function AvatarCard(props: AvatarModel) {
               className="link link-primary"
               href={url}
               target="_blank"
+              rel="noreferrer"
               download
             >
               Download
