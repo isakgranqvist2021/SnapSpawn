@@ -1,5 +1,5 @@
 import { Logger } from '@aa/services/logger';
-import mongodb from 'mongodb';
+import mongodb, { ObjectId } from 'mongodb';
 
 import { getCollection } from './database';
 
@@ -16,10 +16,6 @@ export interface AvatarDocument {
 
 export type CreateAvatarDocument = Omit<AvatarDocument, '_id'>;
 
-export interface GetAvatarsOptions {
-  email: string;
-}
-
 export interface CreateAvatarsOptions {
   avatars: string[];
   email: string;
@@ -29,7 +25,7 @@ export interface CreateAvatarsOptions {
 
 export const AVATARS_COLLECTION_NAME = 'avatars';
 
-export async function getAvatars(options: GetAvatarsOptions) {
+export async function getAvatars(options: { email: string }) {
   try {
     const { email } = options;
 
@@ -58,6 +54,40 @@ export async function getAvatars(options: GetAvatarsOptions) {
 
       return document;
     });
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
+}
+
+export async function getAvatar(options: { id: string }) {
+  try {
+    const { id } = options;
+
+    const collection = await getCollection<AvatarDocument>(
+      AVATARS_COLLECTION_NAME,
+    );
+
+    if (!collection) {
+      return null;
+    }
+
+    const result = await collection.findOne({ _id: new ObjectId(id) });
+
+    if (!result) {
+      return null;
+    }
+
+    const document: AvatarDocument = {
+      _id: result._id,
+      avatar: result.avatar,
+      createdAt: result.createdAt,
+      email: result.email,
+      prompt: result.prompt,
+      promptOptions: result.promptOptions,
+    };
+
+    return document;
   } catch (err) {
     Logger.log('error', err);
     return null;

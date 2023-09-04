@@ -146,6 +146,8 @@ function useGenerateAvatar() {
   } = useContext(GenerateAvatarContext);
 
   return useCallback(async () => {
+    window.scrollTo(0, 0);
+
     setIsOpen(false);
 
     let res: AvatarModel[] | null = null;

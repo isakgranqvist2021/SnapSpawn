@@ -1,34 +1,13 @@
 import { PromptOptions, createAvatars } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
-import { getUser, reduceUserCredits } from '@aa/database/user';
+import { reduceUserCredits } from '@aa/database/user';
 import { AvatarModel, Size, avatarSizes } from '@aa/models/avatar';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
-import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
+import { getPrompt, getUserAndValidateCredits } from '@aa/utils';
+import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
-
-function getPrompt(promptOptions: PromptOptions) {
-  const parts = [
-    'circle shaped',
-    'close up',
-    'medium light',
-    'fictional',
-    'digital social media profile avatar',
-    'colourful lighting',
-    'vector art',
-  ];
-
-  if (promptOptions) {
-    const values = Object.values(promptOptions).filter(
-      (value) => value !== "'rather not say'",
-    );
-
-    parts.push(...values);
-  }
-
-  return parts.join(', ');
-}
 
 async function createAvatarModels(
   promptOptions: PromptOptions,
@@ -38,36 +17,53 @@ async function createAvatarModels(
 ) {
   try {
     const prompt = getPrompt(promptOptions);
+
+    /*
+     * Generate avatars from OpenAI API
+     */
     const openAiUrls = await generateAvatars(prompt, size, n);
-
-    const prepareAvatarModel = async (
-      avatarId: string,
-    ): Promise<AvatarModel> => {
-      const url = await getSignedUrl(avatarId);
-
-      return {
-        createdAt: Date.now(),
-        id: avatarId,
-        prompt,
-        promptOptions,
-        url,
-      };
-    };
-
     if (!openAiUrls) {
       throw new Error("couldn't generate avatars");
     }
 
+    /*
+     * Upload avatars to GCP
+     */
     const avatarIds = await uploadAvatar(openAiUrls);
+    if (!avatarIds.length) {
+      throw new Error("couldn't upload avatars");
+    }
 
-    await createAvatars({
+    /*
+     * Create avatars in MongoDB
+     */
+    const createdAvatars = await createAvatars({
       avatars: avatarIds,
       email,
       prompt,
       promptOptions,
     });
+    if (!createdAvatars) {
+      throw new Error("couldn't create avatars");
+    }
 
-    const newAvatars = await Promise.all(avatarIds.map(prepareAvatarModel));
+    /*
+     * Get signed URLs for avatars and map to AvatarModel
+     */
+    const insertedKeys = Object.values(createdAvatars.insertedIds);
+    const newAvatars = await Promise.all(
+      avatarIds.map(async (avatarId, i): Promise<AvatarModel> => {
+        const url = await getSignedUrl(avatarId);
+
+        return {
+          createdAt: Date.now(),
+          id: insertedKeys[i].toString(),
+          prompt,
+          promptOptions,
+          url,
+        };
+      }),
+    );
 
     if (newAvatars.length > 0) {
       await reduceUserCredits({ email, credits: openAiUrls.length });
@@ -75,29 +71,6 @@ async function createAvatarModels(
     }
 
     return newAvatars;
-  } catch (err) {
-    Logger.log('error', err);
-    return null;
-  }
-}
-
-async function getUserAndValidateCredits(session?: Session | null) {
-  try {
-    if (!session?.user.email) {
-      throw new Error('cannot generate avatar while logged out');
-    }
-
-    const user = await getUser({ email: session.user.email });
-
-    if (!user) {
-      throw new Error('cannot generate avatar for non-existent user');
-    }
-
-    if (user.credits <= 0) {
-      throw new Error('cannot generate avatar without credits');
-    }
-
-    return user;
   } catch (err) {
     Logger.log('error', err);
     return null;
@@ -145,4 +118,5 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
     return res.status(500).send({ avatars: null });
   }
 }
+
 export default withApiAuthRequired(create);

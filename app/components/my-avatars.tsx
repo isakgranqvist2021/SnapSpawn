@@ -18,7 +18,9 @@ function formatTimestampWithIntl(timestamp: number) {
 }
 
 function AvatarCard(props: AvatarModel) {
-  const { url, createdAt, prompt } = props;
+  const { id, url, createdAt, prompt } = props;
+
+  const { state, methods } = useContext(AppContext);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -28,6 +30,14 @@ function AvatarCard(props: AvatarModel) {
 
   const openFullscreen = () => {
     setIsFullscreen(true);
+  };
+
+  const generateVariant = async () => {
+    closeFullscreen();
+
+    methods.createVariant(id, '1024x1024', 1);
+
+    window.scrollTo(0, 0);
   };
 
   useEffect(() => {
@@ -93,15 +103,25 @@ function AvatarCard(props: AvatarModel) {
                 <p className="content-base-200">{prompt}</p>
               </div>
 
-              <a
-                className="link link-primary"
-                href={url}
-                target="_blank"
-                rel="noreferrer"
-                download
-              >
-                Download
-              </a>
+              <div className="flex items-center gap-5">
+                <a
+                  className="link link-secondary"
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  download
+                >
+                  Download
+                </a>
+
+                <button
+                  onClick={generateVariant}
+                  className="btn btn-primary"
+                  disabled={!state.credits.data || state.avatars.isLoading}
+                >
+                  Generate variant
+                </button>
+              </div>
             </div>
           </div>
         </div>

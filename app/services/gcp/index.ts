@@ -6,6 +6,7 @@ import {
   GCP_PROJECT_ID,
 } from '@aa/config';
 import { Storage } from '@google-cloud/storage';
+import { Readable } from 'stream';
 import { uid } from 'uid';
 
 import { getImageFromUrl } from '../avatar';

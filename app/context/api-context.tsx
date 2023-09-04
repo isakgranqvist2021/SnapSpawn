@@ -53,6 +53,11 @@ interface AppContextType {
       size: Size,
       n: number,
     ) => Promise<AvatarModel[] | null>;
+    createVariant: (
+      payload: string,
+      size: Size,
+      n: number,
+    ) => Promise<AvatarModel[] | null>;
   };
   state: AppContextState;
 }
@@ -65,6 +70,7 @@ export const AppContext = createContext<AppContextType>({
       null,
     generateCustomPicture: async (payload: string, size: Size, n: number) =>
       null,
+    createVariant: async (payload: string, size: Size, n: number) => null,
   },
   state: {
     alerts: [],
@@ -221,7 +227,7 @@ function getGenerateAvatars<T>(
 }
 
 function getAddCredits(path: string, dispatch: Dispatch<ReducerAction>) {
-  return async (payload: number) => {
+  return async (credits: number) => {
     try {
       dispatch({ type: 'credits:set-is-loading', isLoading: true });
 
@@ -232,7 +238,7 @@ function getAddCredits(path: string, dispatch: Dispatch<ReducerAction>) {
       }
 
       const res = await fetch(path, {
-        body: JSON.stringify({ credits: payload }),
+        body: JSON.stringify({ credits }),
         method: 'POST',
       }).then((res) => res.json());
 
@@ -248,6 +254,56 @@ function getAddCredits(path: string, dispatch: Dispatch<ReducerAction>) {
         },
       });
       dispatch({ type: 'credits:set-is-loading', isLoading: false });
+    }
+  };
+}
+
+function getCreateVariant(path: string, dispatch: Dispatch<ReducerAction>) {
+  return async (id: string, size: Size, n: number) => {
+    try {
+      dispatch({ type: 'avatars:set-is-loading', isLoading: true });
+
+      const res = await fetch(path, {
+        body: JSON.stringify({ id, size, n }),
+        method: 'POST',
+      });
+
+      if (res.status !== 200) {
+        throw new Error('Invalid response');
+      }
+
+      const data: { avatars: AvatarModel[] } | undefined = await res.json();
+
+      if (!data || !Array.isArray(data.avatars)) {
+        throw new Error('Invalid response');
+      }
+
+      dispatch({ type: 'avatars:add', avatars: data.avatars });
+      dispatch({
+        type: 'credits:reduce',
+        reduceCreditsBy: data.avatars.length,
+      });
+      dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'success',
+          message: 'Variant generated successfully!',
+        },
+      });
+      dispatch({ type: 'avatars:set-is-loading', isLoading: false });
+
+      return data.avatars;
+    } catch {
+      dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'error',
+          message: 'Something went wrong. Please try again later.',
+        },
+      });
+      dispatch({ type: 'avatars:set-is-loading', isLoading: false });
+
+      return null;
     }
   };
 }
@@ -282,6 +338,8 @@ export function AppProvider(props: AppProviderProps) {
 
   const addCredits = getAddCredits('/api/checkout_sessions', dispatch);
 
+  const createVariant = getCreateVariant('/api/create-variant', dispatch);
+
   return (
     <AppContext.Provider
       value={{
@@ -289,6 +347,7 @@ export function AppProvider(props: AppProviderProps) {
         methods: {
           addCredits,
           clearAlert,
+          createVariant,
           generateAvatars,
           generateCustomPicture,
         },
