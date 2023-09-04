@@ -98,7 +98,6 @@ function AvatarCard(props: AvatarModel) {
               target="_blank"
               rel="noreferrer"
               download
-              rel="noreferrer"
             >
               Download
             </a>
