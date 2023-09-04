@@ -1,11 +1,11 @@
 import { DefaultHead } from '@aa/components/default-head';
 import { MainContainer } from '@aa/containers/main-container';
 import Link from 'next/link';
-import React from 'react';
+import { Fragment } from 'react';
 
 export default function Accepted() {
   return (
-    <React.Fragment>
+    <Fragment>
       <DefaultHead title="Payment Accepted" />
 
       <MainContainer>
@@ -24,6 +24,6 @@ export default function Accepted() {
           </Link>
         </div>
       </MainContainer>
-    </React.Fragment>
+    </Fragment>
   );
 }

@@ -1,6 +1,6 @@
 import { AvatarDocument, getAvatars } from '@aa/database/avatar';
 import { createUser, getUser } from '@aa/database/user';
-import { AvatarModel } from '@aa/models';
+import { AvatarModel } from '@aa/models/avatar';
 import { getSignedUrl } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { getSession } from '@auth0/nextjs-auth0';
