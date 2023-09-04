@@ -6,6 +6,7 @@ export type Size = (typeof avatarSizes)[number];
 export interface AvatarModel {
   createdAt: number;
   id: string;
+  parentId: string | null;
   prompt: string;
   promptOptions: PromptOptions;
   url: string;

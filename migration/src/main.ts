@@ -1,89 +1,56 @@
 import 'dotenv/config';
-import { MongoClient, BSON } from 'mongodb';
+import { BSON, MongoClient } from 'mongodb';
 
 const MONGO_URL_PROD = process.env.MONGO_DB_DATABASE_URL_PROD;
 const MONGO_URL_DEV = process.env.MONGO_DB_DATABASE_URL_DEV;
 
 if (!MONGO_URL_PROD || !MONGO_URL_DEV) {
-	throw new Error('Missing MONGO_URL_PROD or MONGO_URL_DEV');
+  throw new Error('Missing MONGO_URL_PROD or MONGO_URL_DEV');
 }
 
-const client = new MongoClient(MONGO_URL_PROD);
-
-type PromptOptions = Record<string, any> | null;
-
-interface DepAvatarDocument {
-	_id: BSON.ObjectId;
-	avatar: string;
-	createdAt: number;
-	email: string;
-	prompt: string;
-}
-
-interface AvatarDocument {
-	_id: BSON.ObjectId;
-	avatar: string;
-	createdAt: number;
-	email: string;
-	prompt: string;
-	promptOptions: PromptOptions;
-}
-
-function getPrompt(promptOptions: PromptOptions) {
-	const parts = [
-		'circle shaped',
-		'close up',
-		'medium light',
-		'fictional',
-		'digital social media profile avatar',
-		'colourful lighting',
-		'vector art',
-	];
-
-	if (promptOptions) {
-		const values = Object.values(promptOptions).filter(
-			(value) => value !== "'rather not say'"
-		);
-
-		parts.push(...values);
-	}
-
-	return parts.join(', ');
-}
+const client = new MongoClient(MONGO_URL_DEV);
 
 async function main() {
-	await client.connect();
+  await client.connect();
 
-	const collection = client.db().collection('avatars');
+  const collection = client.db().collection('avatars');
 
-	const docs = await collection
-		.find<DepAvatarDocument>({
-			promptOptions: { $exists: false },
-		})
-		.toArray();
+  await collection.updateMany({}, { $set: { parentId: null } });
+  await collection.updateMany({}, { $unset: { variant: 1 } });
 
-	let queue = 0;
-	await Promise.all(
-		docs.map((doc) => {
-			queue++;
-			console.log('Queue', queue);
+  //   const docs = await collection.find<AvatarDocument>({}).toArray();
 
-			const parts = doc.prompt.split('&').map((part) => part.split('='));
+  //   const keys: string[] = [];
+  //   docs.forEach((doc) => {
+  //     keys.push(...Object.keys(doc.promptOptions ?? {}));
+  //   });
 
-			const promptOptions: PromptOptions = {};
+  //   console.log(Array.from(new Set(keys)));
 
-			for (const [key, value] of parts) {
-				promptOptions[key] = value;
-			}
+  await client.close();
 
-			return collection.updateOne(
-				{ _id: doc._id },
-				{ $set: { promptOptions, prompt: getPrompt(promptOptions) } }
-			);
-		})
-	);
+  // let queue = 0;
+  // await Promise.all(
+  // 	docs.map((doc) => {
+  // 		queue++;
+  // 		console.log('Queue', queue);
 
-	await client.close();
+  // 		const parts = doc.prompt.split('&').map((part) => part.split('='));
+
+  // 		const promptOptions: PromptOptions = {};
+
+  // 		for (const [key, value] of parts) {
+  // 			promptOptions[key] = value;
+  // 		}
+
+  // 		return collection.updateOne(
+  // 			{ _id: doc._id },
+  // 			{ $set: { promptOptions, prompt: getPrompt(promptOptions) } }
+  // 		);
+  // 	})
+  // );
+
+  // await client.close();
 }
 
 main();

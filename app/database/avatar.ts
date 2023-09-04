@@ -1,15 +1,22 @@
+import { Characteristic, Gender, Traits } from '@aa/models/prompt';
 import { Logger } from '@aa/services/logger';
 import mongodb, { ObjectId } from 'mongodb';
 
 import { getCollection } from './database';
 
-export type PromptOptions = Record<string, any> | null;
+export interface PromptOptions {
+  characteristics: Characteristic | null;
+  custom: boolean;
+  gender: Gender | null;
+  traits: Traits | null;
+}
 
 export interface AvatarDocument {
   _id: mongodb.BSON.ObjectId;
   avatar: string;
   createdAt: number;
   email: string;
+  parentId: mongodb.BSON.ObjectId | null;
   prompt: string;
   promptOptions: PromptOptions;
 }
@@ -19,6 +26,7 @@ export type CreateAvatarDocument = Omit<AvatarDocument, '_id'>;
 export interface CreateAvatarsOptions {
   avatars: string[];
   email: string;
+  parentId: mongodb.BSON.ObjectId | null;
   prompt: string;
   promptOptions: PromptOptions;
 }
@@ -50,6 +58,7 @@ export async function getAvatars(options: { email: string }) {
         email: avatarDocument.email,
         prompt: avatarDocument.prompt,
         promptOptions: avatarDocument.promptOptions,
+        parentId: avatarDocument.parentId,
       };
 
       return document;
@@ -85,6 +94,7 @@ export async function getAvatar(options: { id: string }) {
       email: result.email,
       prompt: result.prompt,
       promptOptions: result.promptOptions,
+      parentId: result.parentId,
     };
 
     return document;
@@ -96,7 +106,7 @@ export async function getAvatar(options: { id: string }) {
 
 export async function createAvatars(options: CreateAvatarsOptions) {
   try {
-    const { avatars, email, prompt, promptOptions } = options;
+    const { avatars, email, prompt, promptOptions, parentId } = options;
 
     const collection = await getCollection<CreateAvatarDocument>(
       AVATARS_COLLECTION_NAME,
@@ -113,6 +123,7 @@ export async function createAvatars(options: CreateAvatarsOptions) {
         email,
         prompt,
         promptOptions,
+        parentId,
       };
 
       return document;

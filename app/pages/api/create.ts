@@ -42,6 +42,7 @@ async function createAvatarModels(
       email,
       prompt,
       promptOptions,
+      parentId: null,
     });
     if (!createdAvatars) {
       throw new Error("couldn't create avatars");
@@ -61,6 +62,7 @@ async function createAvatarModels(
           prompt,
           promptOptions,
           url,
+          parentId: null,
         };
       }),
     );

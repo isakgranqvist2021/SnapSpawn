@@ -10,7 +10,8 @@ async function prepareAvatarModel(
   avatarDocument: AvatarDocument,
 ): Promise<AvatarModel | null> {
   try {
-    const { _id, avatar, createdAt, prompt, promptOptions } = avatarDocument;
+    const { _id, avatar, createdAt, prompt, promptOptions, parentId } =
+      avatarDocument;
 
     const url = await getSignedUrl(avatar);
 
@@ -20,6 +21,7 @@ async function prepareAvatarModel(
       prompt,
       promptOptions,
       url,
+      parentId: parentId?.toString() ?? null,
     };
   } catch {
     return null;

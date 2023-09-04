@@ -6,7 +6,7 @@ import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { getUserAndValidateCredits } from '@aa/utils';
-import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
+import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 async function createAvatarModels(
@@ -38,7 +38,13 @@ async function createAvatarModels(
     const createdAvatars = await createAvatars({
       email,
       avatars: avatarIds,
-      promptOptions: { custom: 'custom' },
+      promptOptions: {
+        custom: true,
+        characteristics: null,
+        gender: null,
+        traits: null,
+      },
+      parentId: null,
       prompt,
     });
     if (!createdAvatars) {
@@ -56,9 +62,15 @@ async function createAvatarModels(
         return {
           createdAt: Date.now(),
           id: insertedKeys[i].toString(),
-          promptOptions: { custom: 'custom' },
+          promptOptions: {
+            custom: true,
+            characteristics: null,
+            gender: null,
+            traits: null,
+          },
           url,
           prompt,
+          parentId: null,
         };
       }),
     );

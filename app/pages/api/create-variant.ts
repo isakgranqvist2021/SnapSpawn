@@ -1,12 +1,13 @@
 import { createAvatars, getAvatar } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
-import { getUser, reduceUserCredits } from '@aa/database/user';
+import { reduceUserCredits } from '@aa/database/user';
 import { AvatarModel, Size, avatarSizes } from '@aa/models/avatar';
 import { createAvatarVariant } from '@aa/services/avatar';
 import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { getUserAndValidateCredits } from '@aa/utils';
-import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
+import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
+import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 async function createAvatarVariants(
@@ -50,6 +51,7 @@ async function createAvatarVariants(
       email,
       prompt: avatar.prompt,
       promptOptions: avatar.promptOptions,
+      parentId: new ObjectId(id),
     });
     if (!createdAvatars) {
       throw new Error("couldn't create avatars");
@@ -67,7 +69,8 @@ async function createAvatarVariants(
           createdAt: Date.now(),
           id: insertedKeys[i].toString(),
           prompt: avatar.prompt,
-          promptOptions: { variant: true, ...avatar.promptOptions },
+          parentId: id,
+          promptOptions: avatar.promptOptions,
           url,
         };
       }),
