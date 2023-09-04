@@ -89,7 +89,7 @@ export function AddCreditsForm() {
         >
           {state.credits.isLoading && (
             <div className="absolute z-10">
-              <Spinner color="stroke-white" />
+              <Spinner />
             </div>
           )}
 

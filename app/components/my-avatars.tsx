@@ -49,7 +49,7 @@ function AvatarCard(props: AvatarModel) {
       <div>
         <button
           onClick={closeFullscreen}
-          className="btn btn-circle fixed top-10 right-10 z-30"
+          className="btn btn-circle btn-primary fixed top-10 right-10 z-30"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +75,7 @@ function AvatarCard(props: AvatarModel) {
           }}
         ></div>
 
-        <div className="fixed inset-8 z-20 p-5 bg-base-200 flex flex-col items-center">
+        <div className="fixed inset-8 z-20 p-5 bg-base-200 flex flex-col items-center ">
           <div className="h-4/6 flex flex-col items-center gap-3">
             <img
               className="object-fit max-h-full"
@@ -116,7 +116,7 @@ function AvatarCard(props: AvatarModel) {
         minWidth: 256,
         minHeight: 256,
       }}
-      className="cursor-pointer object-cover"
+      className="cursor-pointer object-cover rounded-lg"
       onClick={openFullscreen}
     />
   );
@@ -154,7 +154,7 @@ function Avatars() {
             minWidth: 256,
             minHeight: 256,
           }}
-          className="flex flex-col gap-2 justify-center items-center"
+          className="flex flex-col gap-2 justify-center items-center border rounded-lg border-accent"
         >
           <Spinner />
           <p>Generating avatar...</p>
@@ -175,10 +175,24 @@ function OpenContentSidebarButton() {
   return (
     <button
       disabled={state.avatars.isLoading}
-      className="mr-auto btn btn-secondary"
+      className="mr-auto btn btn-secondary flex gap-2"
       onClick={openSidebar}
     >
       Generate avatar
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="currentColor"
+        className="w-6 h-6"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
     </button>
   );
 }
