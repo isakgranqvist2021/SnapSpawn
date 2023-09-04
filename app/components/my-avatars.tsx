@@ -1,6 +1,6 @@
 import { AppContext, ContentSidebarContext } from '@aa/context';
 import { AvatarModel } from '@aa/models/avatar';
-import { useContext, useEffect } from 'react';
+import { Fragment, useContext, useEffect } from 'react';
 import { useState } from 'react';
 
 import { EmptyState } from './empty-state';
@@ -44,81 +44,79 @@ function AvatarCard(props: AvatarModel) {
     };
   }, []);
 
-  if (isFullscreen) {
-    return (
-      <div>
-        <button
-          onClick={closeFullscreen}
-          className="btn btn-circle btn-primary fixed top-10 right-10 z-30"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+  return (
+    <Fragment>
+      {isFullscreen && (
+        <div>
+          <button
+            onClick={closeFullscreen}
+            className="btn btn-circle btn-primary fixed top-10 right-10 z-30"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-
-        <div
-          onClick={closeFullscreen}
-          className="z-10 fixed inset-0"
-          style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          }}
-        ></div>
-
-        <div className="fixed inset-8 z-20 p-5 bg-base-200 flex flex-col items-center ">
-          <div className="h-4/6 flex flex-col items-center gap-3">
-            <img
-              className="object-fit max-h-full"
-              alt="Ai generated avatar"
-              loading="lazy"
-              src={url}
-            />
-
-            <div className="max-w-prose text-center flex flex-col gap-2">
-              <p className="content-base-300">
-                {formatTimestampWithIntl(createdAt)}
-              </p>
-
-              <p className="content-base-200">{prompt}</p>
-            </div>
-
-            <a
-              className="link link-primary"
-              href={url}
-              target="_blank"
-              rel="noreferrer"
-              download
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              Download
-            </a>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          <div
+            onClick={closeFullscreen}
+            className="z-10 fixed inset-0"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            }}
+          ></div>
+
+          <div className="fixed inset-8 z-20 p-5 bg-base-200 flex flex-col items-center">
+            <div className="h-4/6 flex flex-col items-center gap-3">
+              <img
+                className="object-fit max-h-full"
+                alt="Ai generated avatar"
+                loading="lazy"
+                src={url}
+              />
+
+              <div className="max-w-prose text-center flex flex-col gap-2">
+                <p className="content-base-300">
+                  {formatTimestampWithIntl(createdAt)}
+                </p>
+
+                <p className="content-base-200">{prompt}</p>
+              </div>
+
+              <a
+                className="link link-primary"
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                download
+              >
+                Download
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
 
-  return (
-    <div
-      style={{
-        backgroundImage: `url(${url})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        minWidth: 256,
-        minHeight: 256,
-      }}
-      className="cursor-pointer object-cover rounded-lg"
-      onClick={openFullscreen}
-    />
+      <div
+        style={{
+          backgroundImage: `url(${url})`,
+          minWidth: 256,
+          minHeight: 256,
+        }}
+        className="cursor-pointer ease-in-out transition-all duration-200 rounded-lg bg-cover bg-center outline outline-4 outline-transparent hover:outline-primary"
+        onClick={openFullscreen}
+      />
+    </Fragment>
   );
 }
 
