@@ -126,8 +126,8 @@ function renderAvatar(avatar: AvatarModel) {
 
 const avatarsEmptyState = (
   <EmptyState
-    message="You have no photos yet. Generate one now!"
-    buttonText="Generate Photo"
+    message="You have no pictures yet. Generate one now!"
+    buttonText="Generate Picture"
   />
 );
 
@@ -155,7 +155,7 @@ function Avatars() {
           className="flex flex-col gap-2 justify-center items-center border rounded-lg border-accent"
         >
           <Spinner />
-          <p>Generating avatar...</p>
+          <p>Generating picture...</p>
         </div>
       )}
 
@@ -176,7 +176,7 @@ function OpenContentSidebarButton() {
       className="mr-auto btn btn-secondary flex gap-2"
       onClick={openSidebar}
     >
-      Generate avatar
+      Generate Picture
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
