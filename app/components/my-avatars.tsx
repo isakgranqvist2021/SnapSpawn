@@ -1,5 +1,6 @@
 import { AppContext, ContentSidebarContext } from '@aa/context';
 import { AvatarModel } from '@aa/models/avatar';
+import Image from 'next/image';
 import { Fragment, useContext, useEffect } from 'react';
 import { useState } from 'react';
 
@@ -127,14 +128,14 @@ function AvatarCard(props: AvatarModel) {
         </div>
       )}
 
-      <div
-        style={{
-          backgroundImage: `url(${url})`,
-          minWidth: 256,
-          minHeight: 256,
-        }}
-        className="cursor-pointer ease-in-out transition-all duration-200 rounded-lg bg-cover bg-center outline outline-4 outline-transparent hover:outline-primary"
+      <Image
+        alt="Ai generated avatar"
+        className="cursor-pointer ease-in-out transition-all duration-200 rounded-lg outline outline-4 outline-transparent hover:outline-primary"
+        height={144}
+        loading="lazy"
         onClick={openFullscreen}
+        src={url}
+        width={144}
       />
     </Fragment>
   );
@@ -159,23 +160,17 @@ function Avatars() {
   }
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(256px, 1fr))',
-        gap: '1rem',
-      }}
-    >
+    <div className="flex flex-wrap gap-4">
       {state.avatars.isLoading && (
         <div
           style={{
-            minWidth: 256,
-            minHeight: 256,
+            minWidth: 144,
+            minHeight: 144,
           }}
           className="flex flex-col gap-2 justify-center items-center border rounded-lg border-accent"
         >
           <Spinner />
-          <p>Generating picture...</p>
+          <p>Generating</p>
         </div>
       )}
 
