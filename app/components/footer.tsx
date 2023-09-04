@@ -70,6 +70,8 @@ export function Footer(props: FooterProps) {
           Ai Portrait Studio.
           <br />
           Bringing your vision to life with AI Portraits.
+          <br />
+          <a href="mailto:contact@granqvist.dev">contact@granqvist.dev</a>
         </p>
       </div>
 
