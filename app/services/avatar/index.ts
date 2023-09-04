@@ -1,6 +1,5 @@
 import { OPEN_AI_API_KEY } from '@aa/config';
 import { Size, avatarSizes } from '@aa/models/avatar';
-import fs from 'fs';
 import OpenAI from 'openai';
 
 import { Logger } from '../logger';

@@ -41,7 +41,10 @@ async function createAvatarModels(
       avatars: avatarIds,
       email,
       prompt,
-      promptOptions,
+      promptOptions: {
+        ...promptOptions,
+        custom: false,
+      },
       parentId: null,
     });
     if (!createdAvatars) {
