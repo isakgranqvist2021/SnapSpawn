@@ -394,10 +394,10 @@
   dependencies:
     glob "7.1.7"
 
-"@next/font@13.1.6":
-  version "13.1.6"
-  resolved "https://registry.yarnpkg.com/@next/font/-/font-13.1.6.tgz#2bf99e3321ec9b4d65781c0d0ebff072e8752e1a"
-  integrity sha512-AITjmeb1RgX1HKMCiA39ztx2mxeAyxl4ljv2UoSBUGAbFFMg8MO7YAvjHCgFhD39hL7YTbFjol04e/BPBH5RzQ==
+"@next/font@13.4.19":
+  version "13.4.19"
+  resolved "https://registry.yarnpkg.com/@next/font/-/font-13.4.19.tgz#2b69aee760a3bbabf54873f80ae6d4b09b35d133"
+  integrity sha512-yOuSRYfqksWcaG/sATr1/DEGvvI8gnmAAnQCCZ0+L9p4Pio3/DMu71J56YHh9Hz84LDN4tMVzuux0ssCuM50sA==
 
 "@next/swc-android-arm-eabi@13.1.6":
   version "13.1.6"
