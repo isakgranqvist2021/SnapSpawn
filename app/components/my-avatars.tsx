@@ -104,16 +104,47 @@ function AvatarCard(props: AvatarModel) {
                 <p className="content-base-200">{prompt}</p>
               </div>
 
-              <div className="flex items-center gap-5">
-                <a
-                  className="link link-secondary"
-                  href={urls['1024x1024']}
-                  target="_blank"
-                  rel="noreferrer"
-                  download
-                >
-                  Download
-                </a>
+              <div className="flex flex-col gap-5">
+                <div className="flex gap-5 flex-wrap justify-center">
+                  <a
+                    className="link link-secondary"
+                    href={urls['1024x1024']}
+                    target="_blank"
+                    rel="noreferrer"
+                    download
+                  >
+                    1024x1024
+                  </a>
+                  <a
+                    className="link link-secondary"
+                    href={urls['512x512']}
+                    target="_blank"
+                    rel="noreferrer"
+                    download
+                  >
+                    512x512
+                  </a>
+
+                  <a
+                    className="link link-secondary"
+                    href={urls['256x256']}
+                    target="_blank"
+                    rel="noreferrer"
+                    download
+                  >
+                    256x256
+                  </a>
+
+                  <a
+                    className="link link-secondary"
+                    href={urls['128x128']}
+                    target="_blank"
+                    rel="noreferrer"
+                    download
+                  >
+                    128x128
+                  </a>
+                </div>
 
                 <button
                   onClick={generateVariant}
