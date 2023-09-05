@@ -12,43 +12,41 @@ steps:
   - name: node:18.12.1
     id: install
     dir: functions
-
     entrypoint: npm
     args: ['install']
 
   - name: node:18.12.1
     waitFor: ['install']
-
     id: create-env
     dir: functions
-
     entrypoint: npm
     args: ['run', 'create-env']
 
   - name: node:18.12.1
     waitFor: ['create-env']
-
     dir: functions
     id: build
-
     entrypoint: npm
     args: ['run', 'build']
 
   - name: bash
     waitFor: ['build']
-
     dir: functions
     id: move-package.json
-
     script: |
       #!/usr/bin/env bash
+      rm package.json
+      touch package.json
+      echo '{
+        "scripts": {
+          "start": "node dist/index.js"
+        }
+      }' > package.json
       mv package.json dist/package.json
-      mv package-lock.json dist/package-lock.json
       mv tsconfig.json dist/tsconfig.json
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     waitFor: ['move-package.json']
-
     dir: functions
     args:
       - gcloud
