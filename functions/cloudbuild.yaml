@@ -26,8 +26,8 @@ steps:
     waitFor: ['create-env']
     dir: functions
     id: build
-    entrypoint: npm
-    args: ['run', 'build']
+    entrypoint: npx
+    args: ['tsc', '--project', 'tsconfig.json']
 
   - name: bash
     waitFor: ['build']
@@ -35,13 +35,6 @@ steps:
     id: move-package.json
     script: |
       #!/usr/bin/env bash
-      rm package.json
-      touch package.json
-      echo '{
-        "scripts": {
-          "start": "node dist/index.js"
-        }
-      }' > package.json
       mv package.json dist/package.json
       mv tsconfig.json dist/tsconfig.json
 
