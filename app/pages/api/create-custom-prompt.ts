@@ -1,7 +1,7 @@
 import { createAvatars } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
 import { reduceUserCredits } from '@aa/database/user';
-import { AvatarModel, Size, avatarSizes } from '@aa/models/avatar';
+import { AvatarModel } from '@aa/models/avatar';
 import { generateAvatars } from '@aa/services/avatar';
 import { getSignedUrls, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
@@ -9,17 +9,12 @@ import { getUserAndValidateCredits } from '@aa/utils';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-async function createAvatarModels(
-  prompt: string,
-  email: string,
-  size: Size,
-  n: number,
-) {
+async function createAvatarModels(prompt: string, email: string) {
   try {
     /*
      * Generate avatars from OpenAI API
      */
-    const openAiUrls = await generateAvatars(prompt, size, n);
+    const openAiUrls = await generateAvatars(prompt);
     if (!openAiUrls) {
       throw new Error("couldn't generate avatars");
     }
@@ -98,26 +93,11 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
 
     const session = await getSession(req, res);
     const user = await getUserAndValidateCredits(session);
-
     if (!user) {
       throw new Error('cannot generate avatar user is null');
     }
 
-    if (req.body.n > 5) {
-      throw new Error('cannot generate more than 5 avatars at a time');
-    }
-
-    if (!avatarSizes.includes(req.body.size)) {
-      throw new Error('cannot generate avatar with invalid size');
-    }
-
-    const avatarModels = await createAvatarModels(
-      req.body.options,
-      user.email,
-      req.body.size,
-      req.body.n,
-    );
-
+    const avatarModels = await createAvatarModels(req.body.options, user.email);
     if (!avatarModels) {
       throw new Error('cannot generate avatar avatarModels is null');
     }

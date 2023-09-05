@@ -45,7 +45,6 @@ export default withApiAuthRequired(async (req, res) => {
     req.body = JSON.parse(req.body);
 
     const session = await getSession(req, res);
-
     if (!session?.user.email) {
       throw new Error('cannot generate avatar while logged out');
     }

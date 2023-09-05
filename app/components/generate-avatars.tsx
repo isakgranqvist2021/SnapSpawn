@@ -1,5 +1,5 @@
 import { AppContext, ContentSidebarContext } from '@aa/context';
-import { AvatarModel, Size } from '@aa/models/avatar';
+import { AvatarModel } from '@aa/models/avatar';
 import {
   Characteristic,
   Gender,
@@ -15,7 +15,6 @@ import {
   PropsWithChildren,
   Reducer,
   createContext,
-  useCallback,
   useContext,
   useReducer,
 } from 'react';
@@ -26,14 +25,11 @@ type GenerateAvatarMode = 'custom' | 'generate';
 
 type ReducerAction =
   | { isLoading: boolean; type: 'set:isLoading' }
-  | { age: number; type: 'set:age' }
   | { traits: Traits; type: 'set:traits' }
   | { gender: Gender; type: 'set:gender' }
   | { characteristics: Characteristic; type: 'set:characteristics' }
   | { type: 'toggle:custom-prompt' }
   | { type: 'set:custom-prompt'; customPrompt: string }
-  | { type: 'set:size'; size: Size }
-  | { type: 'set:n'; n: number }
   | { type: 'set:mode'; mode: GenerateAvatarMode };
 
 const DEFAULT_FORM_STATE: PromptModel = {
@@ -46,8 +42,6 @@ interface GenerateAvatarState {
   customPrompt: string | null;
   form: PromptModel;
   mode: GenerateAvatarMode;
-  n: number;
-  size: Size;
 }
 
 interface GenerateAvatarContextType {
@@ -59,8 +53,6 @@ const INITIAL_STATE: GenerateAvatarState = {
   customPrompt: null,
   form: DEFAULT_FORM_STATE,
   mode: 'generate',
-  n: 1,
-  size: '1024x1024',
 };
 
 const GenerateAvatarContext = createContext<GenerateAvatarContextType>({
@@ -97,12 +89,6 @@ function reducer(
         customPrompt: action.customPrompt.length ? action.customPrompt : null,
       };
 
-    case 'set:size':
-      return { ...state, size: action.size };
-
-    case 'set:n':
-      return { ...state, n: action.n };
-
     case 'set:mode':
       return { ...state, mode: action.mode };
 
@@ -125,26 +111,71 @@ function GenerateAvatarProvider(props: PropsWithChildren) {
   );
 }
 
-function useGenerateAvatar() {
-  const { methods } = useContext(AppContext);
+function useGenerateAvatarMethods() {
+  const appContext = useContext(AppContext);
+  const contentSidebarContext = useContext(ContentSidebarContext);
+  const generateAvatarContext = useContext(GenerateAvatarContext);
 
-  const { setIsOpen } = useContext(ContentSidebarContext);
-
-  const {
-    state: { customPrompt, form, mode, n, size },
-  } = useContext(GenerateAvatarContext);
-
-  return useCallback(async () => {
+  return async () => {
     window.scrollTo(0, 0);
+    contentSidebarContext.setIsOpen(false);
 
-    setIsOpen(false);
+    try {
+      appContext.dispatch({ type: 'avatars:set-is-loading', isLoading: true });
 
-    if (mode === 'custom') {
-      await methods.generateCustomPicture(customPrompt!, size, n);
-    } else {
-      await methods.generateAvatars(form, size, n);
+      const res = await fetch(
+        generateAvatarContext.state.mode === 'custom'
+          ? '/api/create-custom-prompt'
+          : '/api/create',
+        {
+          body: JSON.stringify({
+            options:
+              generateAvatarContext.state.mode === 'custom'
+                ? generateAvatarContext.state.customPrompt!
+                : generateAvatarContext.state.form,
+          }),
+          method: 'POST',
+        },
+      );
+
+      if (res.status !== 200) {
+        throw new Error('Invalid response');
+      }
+
+      const data: { avatars: AvatarModel[] } | undefined = await res.json();
+
+      if (!data || !Array.isArray(data.avatars)) {
+        throw new Error('Invalid response');
+      }
+
+      appContext.dispatch({ type: 'avatars:add', avatars: data.avatars });
+      appContext.dispatch({
+        type: 'credits:reduce',
+        reduceCreditsBy: data.avatars.length,
+      });
+      appContext.dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'success',
+          message: 'Avatar generated successfully!',
+        },
+      });
+      appContext.dispatch({ type: 'avatars:set-is-loading', isLoading: false });
+
+      return data.avatars;
+    } catch {
+      appContext.dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'error',
+          message: 'Something went wrong. Please try again later.',
+        },
+      });
+      appContext.dispatch({ type: 'avatars:set-is-loading', isLoading: false });
+
+      return null;
     }
-  }, [methods, customPrompt, form, mode, n, size, setIsOpen]);
+  };
 }
 
 function FormSection(props: PropsWithChildren) {
@@ -164,15 +195,14 @@ function FormSection(props: PropsWithChildren) {
 }
 
 function PickGender() {
-  const { state } = useContext(AppContext);
-
-  const {
-    dispatch,
-    state: { form },
-  } = useContext(GenerateAvatarContext);
+  const appContext = useContext(AppContext);
+  const generateAvatarContext = useContext(GenerateAvatarContext);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({ gender: e.target.value as Gender, type: 'set:gender' });
+    generateAvatarContext.dispatch({
+      gender: e.target.value as Gender,
+      type: 'set:gender',
+    });
   };
 
   const renderGenderRadioButton = (gender: Gender) => {
@@ -181,7 +211,9 @@ function PickGender() {
         <label className="label cursor-pointer flex gap-4">
           <span
             className={`label-text capitalize ${
-              form.gender === gender ? 'text-primary' : ''
+              generateAvatarContext.state.form.gender === gender
+                ? 'text-primary'
+                : ''
             }`}
           >
             {gender}
@@ -190,9 +222,9 @@ function PickGender() {
             onChange={onChange}
             value={gender}
             type="radio"
-            disabled={state.avatars.isLoading}
+            disabled={appContext.state.avatars.isLoading}
             className="radio"
-            checked={form.gender === gender}
+            checked={generateAvatarContext.state.form.gender === gender}
           />
         </label>
       </div>
@@ -203,15 +235,11 @@ function PickGender() {
 }
 
 function PickTraits() {
-  const { state } = useContext(AppContext);
-
-  const {
-    dispatch,
-    state: { form },
-  } = useContext(GenerateAvatarContext);
+  const appContext = useContext(AppContext);
+  const generateAvatarContext = useContext(GenerateAvatarContext);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({
+    generateAvatarContext.dispatch({
       traits: e.target.value as Traits,
       type: 'set:traits',
     });
@@ -223,7 +251,9 @@ function PickTraits() {
         <label className="label cursor-pointer flex gap-2">
           <span
             className={`label-text capitalize ${
-              form.traits === trait ? 'text-primary' : ''
+              generateAvatarContext.state.form.traits === trait
+                ? 'text-primary'
+                : ''
             }`}
           >
             {trait}
@@ -232,9 +262,9 @@ function PickTraits() {
             onChange={onChange}
             value={trait}
             type="radio"
-            disabled={state.avatars.isLoading}
+            disabled={appContext.state.avatars.isLoading}
             className="radio"
-            checked={form.traits === trait}
+            checked={generateAvatarContext.state.form.traits === trait}
           />
         </label>
       </div>
@@ -245,22 +275,19 @@ function PickTraits() {
 }
 
 function PickCharacteristics() {
-  const { state } = useContext(AppContext);
-
-  const {
-    dispatch,
-    state: { form },
-  } = useContext(GenerateAvatarContext);
+  const appContext = useContext(AppContext);
+  const generateAvatarContext = useContext(GenerateAvatarContext);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({
+    generateAvatarContext.dispatch({
       characteristics: e.target.value as Characteristic,
       type: 'set:characteristics',
     });
   };
 
   const renderCharacteristicButton = (characteristic: Characteristic) => {
-    const isChecked = form.characteristics === characteristic;
+    const isChecked =
+      generateAvatarContext.state.form.characteristics === characteristic;
 
     return (
       <div className="form-control" key={characteristic}>
@@ -273,7 +300,7 @@ function PickCharacteristics() {
             {characteristic}
           </span>
           <input
-            disabled={state.avatars.isLoading}
+            disabled={appContext.state.avatars.isLoading}
             onChange={onChange}
             value={characteristic}
             type="radio"
@@ -291,14 +318,11 @@ function PickCharacteristics() {
 function GenerateAvatarSubmitButton(props: { text: string }) {
   const { text } = props;
 
-  const { state } = useContext(AppContext);
+  const appContext = useContext(AppContext);
 
-  const credits = state.credits.data;
-  const isLoading = state.avatars.isLoading;
+  const generateAvatars = useGenerateAvatarMethods();
 
-  const generateAvatars = useGenerateAvatar();
-
-  if (credits === 0) {
+  if (appContext.state.credits.data === 0) {
     return (
       <Link href="/refill" className="btn btn-secondary">
         0 Credits. Add some now!
@@ -309,25 +333,27 @@ function GenerateAvatarSubmitButton(props: { text: string }) {
   return (
     <button
       className="btn btn-secondary relative"
-      disabled={isLoading}
+      disabled={appContext.state.avatars.isLoading}
       onClick={generateAvatars}
       type="submit"
     >
-      {isLoading && (
+      {appContext.state.avatars.isLoading && (
         <div className="absolute z-10">
           <Spinner />
         </div>
       )}
 
-      <span className={isLoading ? 'opacity-0' : ''}>{text}</span>
+      <span className={appContext.state.avatars.isLoading ? 'opacity-0' : ''}>
+        {text}
+      </span>
     </button>
   );
 }
 
 function UserCreditsText() {
-  const { state } = useContext(AppContext);
+  const appContext = useContext(AppContext);
 
-  if (!state.credits.data) {
+  if (!appContext.state.credits.data) {
     return (
       <h1 className="text-2xl mt-3 text-center">
         You have <span className="text-secondary">0</span> credits
@@ -340,31 +366,31 @@ function UserCreditsText() {
 
   return (
     <h1 className="text-2xl text-center">
-      You have <span className="text-secondary">{state.credits.data}</span>{' '}
+      You have{' '}
+      <span className="text-secondary">{appContext.state.credits.data}</span>{' '}
       credits
     </h1>
   );
 }
 
 function CustomPromptTextarea() {
-  const { state } = useContext(AppContext);
-
-  const {
-    dispatch,
-    state: { customPrompt },
-  } = useContext(GenerateAvatarContext);
+  const appContext = useContext(AppContext);
+  const generateAvatarContext = useContext(GenerateAvatarContext);
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    dispatch({ type: 'set:custom-prompt', customPrompt: e.target.value });
+    generateAvatarContext.dispatch({
+      type: 'set:custom-prompt',
+      customPrompt: e.target.value,
+    });
   };
 
   return (
     <textarea
       className="textarea textarea-bordered h-24 resize w-full"
-      disabled={state.avatars.isLoading}
+      disabled={appContext.state.avatars.isLoading}
       onChange={onChange}
       placeholder="Enter custom prompt here"
-      value={customPrompt ?? ''}
+      value={generateAvatarContext.state.customPrompt ?? ''}
     ></textarea>
   );
 }
@@ -400,9 +426,9 @@ function CustomPromptForm() {
 }
 
 function FormFooter() {
-  const { setIsOpen } = useContext(ContentSidebarContext);
+  const contentSidebarContext = useContext(ContentSidebarContext);
 
-  const closeContentSidebar = () => setIsOpen(false);
+  const closeContentSidebar = () => contentSidebarContext.setIsOpen(false);
 
   return (
     <div className="flex gap-3 p-5 justify-center bg-base-200">
@@ -420,11 +446,9 @@ function FormFooter() {
 }
 
 function Form() {
-  const {
-    state: { mode },
-  } = useContext(GenerateAvatarContext);
+  const generateAvatarContext = useContext(GenerateAvatarContext);
 
-  const generateAvatars = useGenerateAvatar();
+  const generateAvatars = useGenerateAvatarMethods();
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -433,7 +457,7 @@ function Form() {
 
   return (
     <form className="flex flex-col gap-5" onSubmit={onSubmit}>
-      {mode === 'generate' ? (
+      {generateAvatarContext.state.mode === 'generate' ? (
         <GenerateFromPreDefinedOptionsForm />
       ) : (
         <CustomPromptForm />
@@ -443,31 +467,34 @@ function Form() {
 }
 
 function TabHeader() {
-  const {
-    dispatch,
-    state: { mode },
-  } = useContext(GenerateAvatarContext);
+  const generateAvatarContext = useContext(GenerateAvatarContext);
 
   const setModeAsCustom = () => {
-    dispatch({ type: 'set:mode', mode: 'custom' });
+    generateAvatarContext.dispatch({ type: 'set:mode', mode: 'custom' });
   };
 
   const setModeAsGenerate = () => {
-    dispatch({ type: 'set:mode', mode: 'generate' });
+    generateAvatarContext.dispatch({ type: 'set:mode', mode: 'generate' });
   };
 
   return (
     <div className="flex gap-3">
       <button
         className={
-          mode === 'generate' ? 'btn btn-sm btn-outline' : 'btn btn-sm'
+          generateAvatarContext.state.mode === 'generate'
+            ? 'btn btn-sm btn-outline'
+            : 'btn btn-sm'
         }
         onClick={setModeAsGenerate}
       >
         Pre Defined Prompts
       </button>
       <button
-        className={mode === 'custom' ? 'btn btn-sm btn-outline' : 'btn btn-sm'}
+        className={
+          generateAvatarContext.state.mode === 'custom'
+            ? 'btn btn-sm btn-outline'
+            : 'btn btn-sm'
+        }
         onClick={setModeAsCustom}
       >
         Custom Prompt
@@ -477,21 +504,21 @@ function TabHeader() {
 }
 
 function GenerateAvatarsFormContent() {
-  const { isOpen, setIsOpen } = useContext(ContentSidebarContext);
+  const contentSidebarContext = useContext(ContentSidebarContext);
 
-  const closeContentSidebar = () => setIsOpen(false);
+  const closeContentSidebar = () => contentSidebarContext.setIsOpen(false);
 
   return (
     <div>
       <div
         onClick={closeContentSidebar}
         className={
-          isOpen
+          contentSidebarContext.isOpen
             ? 'fixed inset-0 z-10 ease-in-out transition-all duration-200'
             : 'fixed inset-0 z-10 ease-in-out transition-all duration-200 pointer-events-none'
         }
         style={
-          isOpen
+          contentSidebarContext.isOpen
             ? {
                 backgroundColor: 'rgba(0,0,0,0.7)',
               }
@@ -501,7 +528,7 @@ function GenerateAvatarsFormContent() {
 
       <div
         className={
-          isOpen
+          contentSidebarContext.isOpen
             ? 'fixed top-0 left-0 bg-base-100 h-screen flex flex-col justify-between overflow-hidden ease-in-out transition-all duration-200 z-20 w-96'
             : 'fixed top-0 left-0 bg-base-100 h-screen flex flex-col justify-between overflow-hidden ease-in-out transition-all duration-200 z-20 w-0'
         }

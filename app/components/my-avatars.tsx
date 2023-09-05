@@ -28,7 +28,7 @@ function sortUrlsBySize(a: string, b: string) {
 function AvatarCard(props: AvatarModel) {
   const { id, urls, createdAt, prompt } = props;
 
-  const { state, methods } = useContext(AppContext);
+  const appContext = useContext(AppContext);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -42,10 +42,53 @@ function AvatarCard(props: AvatarModel) {
 
   const generateVariant = async () => {
     closeFullscreen();
-
-    methods.createVariant(id, '1024x1024', 1);
-
     window.scrollTo(0, 0);
+
+    try {
+      appContext.dispatch({ type: 'avatars:set-is-loading', isLoading: true });
+
+      const res = await fetch('/api/create-variant', {
+        body: JSON.stringify({ id }),
+        method: 'POST',
+      });
+
+      if (res.status !== 200) {
+        throw new Error('Invalid response');
+      }
+
+      const data: { avatars: AvatarModel[] } | undefined = await res.json();
+
+      if (!data || !Array.isArray(data.avatars)) {
+        throw new Error('Invalid response');
+      }
+
+      appContext.dispatch({ type: 'avatars:add', avatars: data.avatars });
+      appContext.dispatch({
+        type: 'credits:reduce',
+        reduceCreditsBy: data.avatars.length,
+      });
+      appContext.dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'success',
+          message: 'Variant generated successfully!',
+        },
+      });
+      appContext.dispatch({ type: 'avatars:set-is-loading', isLoading: false });
+
+      return data.avatars;
+    } catch {
+      appContext.dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'error',
+          message: 'Something went wrong. Please try again later.',
+        },
+      });
+      appContext.dispatch({ type: 'avatars:set-is-loading', isLoading: false });
+
+      return null;
+    }
   };
 
   const renderDownloadLink = (key: string) => {
@@ -136,7 +179,10 @@ function AvatarCard(props: AvatarModel) {
                 <button
                   onClick={generateVariant}
                   className="btn btn-primary"
-                  disabled={!state.credits.data || state.avatars.isLoading}
+                  disabled={
+                    !appContext.state.credits.data ||
+                    appContext.state.avatars.isLoading
+                  }
                 >
                   Generate variant
                 </button>
@@ -171,10 +217,10 @@ const avatarsEmptyState = (
 );
 
 function FirstAvatarGridItem() {
-  const { state } = useContext(AppContext);
-  const { setIsOpen } = useContext(ContentSidebarContext);
+  const appContext = useContext(AppContext);
+  const contentSidebarContext = useContext(ContentSidebarContext);
 
-  if (state.avatars.isLoading) {
+  if (appContext.state.avatars.isLoading) {
     return (
       <div
         style={{
@@ -189,7 +235,7 @@ function FirstAvatarGridItem() {
     );
   }
 
-  const openSidebar = () => setIsOpen(true);
+  const openSidebar = () => contentSidebarContext.setIsOpen(true);
 
   return (
     <div
@@ -220,9 +266,9 @@ function FirstAvatarGridItem() {
 }
 
 function Avatars() {
-  const { state } = useContext(AppContext);
+  const appContext = useContext(AppContext);
 
-  if (!state.avatars.data.length) {
+  if (!appContext.state.avatars.data.length) {
     return avatarsEmptyState;
   }
 
@@ -230,7 +276,7 @@ function Avatars() {
     <div className="flex flex-wrap gap-4">
       <FirstAvatarGridItem />
 
-      {state.avatars.data.map(renderAvatar)}
+      {appContext.state.avatars.data.map(renderAvatar)}
     </div>
   );
 }
@@ -244,11 +290,11 @@ const creditsEmptyState = (
 );
 
 export function MyAvatars() {
-  const { state } = useContext(AppContext);
+  const appContext = useContext(AppContext);
 
   return (
     <div className="flex flex-col gap-5 w-full p-5">
-      {state.credits.data === 0 && creditsEmptyState}
+      {appContext.state.credits.data === 0 && creditsEmptyState}
 
       <Avatars />
     </div>

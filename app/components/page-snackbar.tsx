@@ -37,17 +37,17 @@ function PageSnackbarAlert(props: Alert) {
 function PageSnackbarToast(props: Alert) {
   const { id } = props;
 
-  const { methods } = useContext(AppContext);
+  const appContext = useContext(AppContext);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      methods.clearAlert(id);
+      appContext.dispatch({ type: 'alerts:remove', id });
     }, 5000);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [methods, id]);
+  }, [appContext.dispatch, id]);
 
   return (
     <div className="toast z-20">
@@ -61,7 +61,9 @@ function renderPageSnackbarToast(alert: Alert, index: number) {
 }
 
 export function PageSnackbar() {
-  const { state } = useContext(AppContext);
+  const appContext = useContext(AppContext);
 
-  return <Fragment>{state.alerts.map(renderPageSnackbarToast)}</Fragment>;
+  return (
+    <Fragment>{appContext.state.alerts.map(renderPageSnackbarToast)}</Fragment>
+  );
 }

@@ -1,7 +1,7 @@
 import { createAvatars, getAvatar } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
 import { reduceUserCredits } from '@aa/database/user';
-import { AvatarModel, Size, avatarSizes } from '@aa/models/avatar';
+import { AvatarModel } from '@aa/models/avatar';
 import { createAvatarVariant } from '@aa/services/avatar';
 import { getSignedUrls, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
@@ -10,12 +10,7 @@ import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-async function createAvatarVariants(
-  id: string,
-  email: string,
-  size: Size,
-  n: number,
-) {
+async function createAvatarVariants(id: string, email: string) {
   try {
     /*
      * Get avatar from MongoDB that we want to generate variants for
@@ -30,7 +25,7 @@ async function createAvatarVariants(
      */
     const url = await getSignedUrls(avatar.avatar);
     const res = await fetch(url['1024x1024']);
-    const openAiUrls = await createAvatarVariant(res, size, n);
+    const openAiUrls = await createAvatarVariant(res);
     if (!openAiUrls) {
       throw new Error("couldn't generate avatars");
     }
@@ -99,26 +94,11 @@ async function createVariant(req: NextApiRequest, res: NextApiResponse) {
 
     const session = await getSession(req, res);
     const user = await getUserAndValidateCredits(session);
-
     if (!user) {
       throw new Error('cannot generate avatar user is null');
     }
 
-    if (req.body.n > 5) {
-      throw new Error('cannot generate more than 5 avatars at a time');
-    }
-
-    if (!avatarSizes.includes(req.body.size)) {
-      throw new Error('cannot generate avatar with invalid size');
-    }
-
-    const avatarModels = await createAvatarVariants(
-      req.body.id,
-      user.email,
-      req.body.size,
-      req.body.n,
-    );
-
+    const avatarModels = await createAvatarVariants(req.body.id, user.email);
     if (!avatarModels) {
       throw new Error('cannot generate avatar avatarModels is null');
     }
