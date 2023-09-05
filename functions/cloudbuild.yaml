@@ -31,20 +31,20 @@ steps:
     waitFor: ['install']
 
   - name: node:18.12.1
-    args: ['run', 'build']
+    args:
+      ['tsc', '--target', 'ES2015', '--module', 'Node16', '--outDir', 'dist']
     dir: functions
-    entrypoint: npm
+    entrypoint: npx
     id: build
     waitFor: ['create-env']
 
   - name: bash
     dir: functions
+    id: move-package.json
+    waitFor: ['build']
     script: |
       #!/usr/bin/env bash
       mv package.json dist/package.json
-
-    id: move-package.json
-    waitFor: ['build']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     dir: functions
