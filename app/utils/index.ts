@@ -1,7 +1,7 @@
 import { AvatarDocument, PromptOptions, getAvatars } from '@aa/database/avatar';
 import { createUser, getUser } from '@aa/database/user';
 import { AvatarModel } from '@aa/models/avatar';
-import { getSignedUrl } from '@aa/services/gcp';
+import { getSignedUrls } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { Session, getSession } from '@auth0/nextjs-auth0';
 import { GetServerSidePropsContext } from 'next';
@@ -13,14 +13,14 @@ async function prepareAvatarModel(
     const { _id, avatar, createdAt, prompt, promptOptions, parentId } =
       avatarDocument;
 
-    const url = await getSignedUrl(avatar);
+    const urls = await getSignedUrls(avatar);
 
     return {
       createdAt: new Date(createdAt).getTime(),
       id: _id.toHexString(),
       prompt,
       promptOptions,
-      url,
+      urls,
       parentId: parentId?.toString() ?? null,
     };
   } catch {

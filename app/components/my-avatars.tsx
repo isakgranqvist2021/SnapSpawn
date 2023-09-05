@@ -19,7 +19,7 @@ function formatTimestampWithIntl(timestamp: number) {
 }
 
 function AvatarCard(props: AvatarModel) {
-  const { id, url, createdAt, prompt } = props;
+  const { id, urls, createdAt, prompt } = props;
 
   const { state, methods } = useContext(AppContext);
 
@@ -93,7 +93,7 @@ function AvatarCard(props: AvatarModel) {
                 className="object-fit max-h-full"
                 alt="Ai generated avatar"
                 loading="lazy"
-                src={url}
+                src={urls['1024x1024']}
               />
 
               <div className="max-w-prose text-center flex flex-col gap-2">
@@ -107,7 +107,7 @@ function AvatarCard(props: AvatarModel) {
               <div className="flex items-center gap-5">
                 <a
                   className="link link-secondary"
-                  href={url}
+                  href={urls['1024x1024']}
                   target="_blank"
                   rel="noreferrer"
                   download
@@ -134,7 +134,7 @@ function AvatarCard(props: AvatarModel) {
         height={144}
         loading="lazy"
         onClick={openFullscreen}
-        src={url}
+        src={urls['128x128']}
         width={144}
       />
     </Fragment>
@@ -142,7 +142,7 @@ function AvatarCard(props: AvatarModel) {
 }
 
 function renderAvatar(avatar: AvatarModel) {
-  return <AvatarCard {...avatar} key={avatar.url} />;
+  return <AvatarCard {...avatar} key={avatar.id} />;
 }
 
 const avatarsEmptyState = (

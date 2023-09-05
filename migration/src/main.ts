@@ -1,62 +1,77 @@
+import { Storage } from '@google-cloud/storage';
 import 'dotenv/config';
-import { BSON, MongoClient } from 'mongodb';
+import { MongoClient } from 'mongodb';
+import sharp from 'sharp';
 
-const MONGO_URL_PROD = process.env.MONGO_DB_DATABASE_URL_PROD;
-const MONGO_URL_DEV = process.env.MONGO_DB_DATABASE_URL_DEV;
+const client = new MongoClient(process.env.MONGO_DB_DATABASE_URL_PROD!);
 
-if (!MONGO_URL_PROD || !MONGO_URL_DEV) {
-  throw new Error('Missing MONGO_URL_PROD or MONGO_URL_DEV');
+export const fileSizes = [
+  '1024x1024',
+  '512x512',
+  '256x256',
+  '128x128',
+] as const;
+
+const storage = new Storage({
+  projectId: process.env.GCP_PROJECT_ID,
+  credentials: {
+    type: 'service_account',
+    private_key: process.env.GCP_PRIVATE_KEY,
+    client_email: process.env.GCP_CLIENT_EMAIL,
+    client_id: process.env.GCP_CLIENT_ID,
+  },
+});
+
+const bucket = storage.bucket(process.env.GCP_BUCKET_NAME!);
+
+export function getImageFromUrl(url: string) {
+  return fetch(url).then((res) => res.blob());
 }
 
-const client = new MongoClient(MONGO_URL_DEV);
+async function createPictureSizes(ids: string[]) {
+  await Promise.all(
+    ids.map(async (id) => {
+      try {
+        const url = await bucket.file(`${id}.png`).getSignedUrl({
+          action: 'read',
+          expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        });
+
+        const blob = await getImageFromUrl(url[0]);
+
+        const arrayBuffer = await blob.arrayBuffer();
+
+        await Promise.all(
+          fileSizes.map(async (size) => {
+            const [width, height] = size.split('x');
+
+            const resizedBuffer = await sharp(arrayBuffer)
+              .resize(parseInt(width), parseInt(height))
+              .png()
+              .toBuffer();
+
+            await bucket.file(`${id}-${size}.png`).save(resizedBuffer);
+          }),
+        );
+
+        await bucket.file(`${id}.png`).delete();
+      } catch (err) {
+        console.log('error', 'Error uploading avatar', err);
+      }
+    }),
+  );
+}
 
 async function main() {
   await client.connect();
 
   const collection = client.db().collection('avatars');
 
-  await collection.updateMany(
-    {
-      'promptOptions.characteristics': {
-        $exists: false,
-      },
-    },
-    { $set: { 'promptOptions.characteristics': null } },
-  );
+  const docs = await collection.find({}).toArray();
 
-  await collection.updateMany(
-    {
-      'promptOptions.gender': {
-        $exists: false,
-      },
-    },
-    { $set: { 'promptOptions.gender': null } },
-  );
+  const avatars = docs.map((doc) => doc.avatar);
 
-  await collection.updateMany(
-    {
-      'promptOptions.traits': {
-        $exists: false,
-      },
-    },
-    { $set: { 'promptOptions.traits': null } },
-  );
-
-  await collection.updateMany(
-    {
-      'promptOptions.custom': {
-        $exists: false,
-      },
-    },
-    { $set: { 'promptOptions.custom': false } },
-  );
-
-  await collection.updateMany(
-    {
-      'promptOptions.custom': 'custom',
-    },
-    { $set: { 'promptOptions.custom': true } },
-  );
+  await createPictureSizes(avatars.slice(1, avatars.length));
 
   await client.close();
 }

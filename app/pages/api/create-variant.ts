@@ -3,7 +3,7 @@ import { createTransaction } from '@aa/database/transaction';
 import { reduceUserCredits } from '@aa/database/user';
 import { AvatarModel, Size, avatarSizes } from '@aa/models/avatar';
 import { createAvatarVariant } from '@aa/services/avatar';
-import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
+import { getSignedUrls, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { getUserAndValidateCredits } from '@aa/utils';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
@@ -28,8 +28,8 @@ async function createAvatarVariants(
     /*
      * Generate avatars from OpenAI API
      */
-    const url = await getSignedUrl(avatar.avatar);
-    const res = await fetch(url);
+    const url = await getSignedUrls(avatar.avatar);
+    const res = await fetch(url['1024x1024']);
     const openAiUrls = await createAvatarVariant(res, size, n);
     if (!openAiUrls) {
       throw new Error("couldn't generate avatars");
@@ -63,7 +63,7 @@ async function createAvatarVariants(
     const insertedKeys = Object.values(createdAvatars.insertedIds);
     const newAvatars = await Promise.all(
       avatarIds.map(async (avatarId, i): Promise<AvatarModel> => {
-        const url = await getSignedUrl(avatarId);
+        const urls = await getSignedUrls(avatarId);
 
         return {
           createdAt: Date.now(),
@@ -71,7 +71,7 @@ async function createAvatarVariants(
           prompt: avatar.prompt,
           parentId: id,
           promptOptions: avatar.promptOptions,
-          url,
+          urls,
         };
       }),
     );

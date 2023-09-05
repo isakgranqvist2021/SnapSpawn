@@ -30,8 +30,6 @@ type ReducerAction =
   | { traits: Traits; type: 'set:traits' }
   | { gender: Gender; type: 'set:gender' }
   | { characteristics: Characteristic; type: 'set:characteristics' }
-  | { type: 'set:result'; result: string[] }
-  | { type: 'clear:result' }
   | { type: 'toggle:custom-prompt' }
   | { type: 'set:custom-prompt'; customPrompt: string }
   | { type: 'set:size'; size: Size }
@@ -49,7 +47,6 @@ interface GenerateAvatarState {
   form: PromptModel;
   mode: GenerateAvatarMode;
   n: number;
-  result: string[] | null;
   size: Size;
 }
 
@@ -63,7 +60,6 @@ const INITIAL_STATE: GenerateAvatarState = {
   form: DEFAULT_FORM_STATE,
   mode: 'generate',
   n: 1,
-  result: null,
   size: '1024x1024',
 };
 
@@ -88,12 +84,6 @@ function reducer(
         ...state,
         form: { ...state.form, characteristics: action.characteristics },
       };
-
-    case 'set:result':
-      return { ...state, result: [...action.result, ...(state.result ?? [])] };
-
-    case 'clear:result':
-      return { ...state, result: null };
 
     case 'toggle:custom-prompt':
       return {
@@ -141,7 +131,6 @@ function useGenerateAvatar() {
   const { setIsOpen } = useContext(ContentSidebarContext);
 
   const {
-    dispatch,
     state: { customPrompt, form, mode, n, size },
   } = useContext(GenerateAvatarContext);
 
@@ -150,19 +139,12 @@ function useGenerateAvatar() {
 
     setIsOpen(false);
 
-    let res: AvatarModel[] | null = null;
-
     if (mode === 'custom') {
-      res = await methods.generateCustomPicture(customPrompt!, size, n);
+      await methods.generateCustomPicture(customPrompt!, size, n);
     } else {
-      res = await methods.generateAvatars(form, size, n);
+      await methods.generateAvatars(form, size, n);
     }
-
-    if (res) {
-      const urls = res.map((avatar: AvatarModel) => avatar.url);
-      dispatch({ result: urls, type: 'set:result' });
-    }
-  }, [methods, dispatch, customPrompt, form, mode, n, size, setIsOpen]);
+  }, [methods, customPrompt, form, mode, n, size, setIsOpen]);
 }
 
 function FormSection(props: PropsWithChildren) {

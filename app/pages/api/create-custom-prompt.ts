@@ -1,9 +1,9 @@
 import { createAvatars } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
-import { getUser, reduceUserCredits } from '@aa/database/user';
+import { reduceUserCredits } from '@aa/database/user';
 import { AvatarModel, Size, avatarSizes } from '@aa/models/avatar';
 import { generateAvatars } from '@aa/services/avatar';
-import { getSignedUrl, uploadAvatar } from '@aa/services/gcp';
+import { getSignedUrls, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { getUserAndValidateCredits } from '@aa/utils';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
@@ -57,7 +57,7 @@ async function createAvatarModels(
     const insertedKeys = Object.values(createdAvatars.insertedIds);
     const newAvatars = await Promise.all(
       avatarIds.map(async (avatarId, i): Promise<AvatarModel> => {
-        const url = await getSignedUrl(avatarId);
+        const urls = await getSignedUrls(avatarId);
 
         return {
           createdAt: Date.now(),
@@ -68,7 +68,7 @@ async function createAvatarModels(
             gender: null,
             traits: null,
           },
-          url,
+          urls,
           prompt,
           parentId: null,
         };
