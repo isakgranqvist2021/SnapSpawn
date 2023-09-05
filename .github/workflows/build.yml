@@ -41,8 +41,8 @@ jobs:
 
       - name: Install
         working-directory: ./app
-        run: yarn install
+        run: npm install
 
       - name: Build
         working-directory: ./app
-        run: yarn build
+        run: npm run build
