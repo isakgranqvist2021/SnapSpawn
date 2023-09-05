@@ -9,14 +9,6 @@ options:
 timeout: '1600s'
 
 steps:
-  - name: bash
-    dir: functions
-    script: |
-      #!/usr/bin/env bash
-      ls
-      pwd
-      ls ..
-
   - name: node:18.12.1
     dir: functions
     entrypoint: npm
