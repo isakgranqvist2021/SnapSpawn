@@ -15,42 +15,50 @@ async function main() {
 
   const collection = client.db().collection('avatars');
 
-  await collection.updateMany({}, { $set: { parentId: null } });
-  await collection.updateMany({}, { $unset: { variant: 1 } });
+  await collection.updateMany(
+    {
+      'promptOptions.characteristics': {
+        $exists: false,
+      },
+    },
+    { $set: { 'promptOptions.characteristics': null } },
+  );
 
-  //   const docs = await collection.find<AvatarDocument>({}).toArray();
+  await collection.updateMany(
+    {
+      'promptOptions.gender': {
+        $exists: false,
+      },
+    },
+    { $set: { 'promptOptions.gender': null } },
+  );
 
-  //   const keys: string[] = [];
-  //   docs.forEach((doc) => {
-  //     keys.push(...Object.keys(doc.promptOptions ?? {}));
-  //   });
+  await collection.updateMany(
+    {
+      'promptOptions.traits': {
+        $exists: false,
+      },
+    },
+    { $set: { 'promptOptions.traits': null } },
+  );
 
-  //   console.log(Array.from(new Set(keys)));
+  await collection.updateMany(
+    {
+      'promptOptions.custom': {
+        $exists: false,
+      },
+    },
+    { $set: { 'promptOptions.custom': false } },
+  );
+
+  await collection.updateMany(
+    {
+      'promptOptions.custom': 'custom',
+    },
+    { $set: { 'promptOptions.custom': true } },
+  );
 
   await client.close();
-
-  // let queue = 0;
-  // await Promise.all(
-  // 	docs.map((doc) => {
-  // 		queue++;
-  // 		console.log('Queue', queue);
-
-  // 		const parts = doc.prompt.split('&').map((part) => part.split('='));
-
-  // 		const promptOptions: PromptOptions = {};
-
-  // 		for (const [key, value] of parts) {
-  // 			promptOptions[key] = value;
-  // 		}
-
-  // 		return collection.updateOne(
-  // 			{ _id: doc._id },
-  // 			{ $set: { promptOptions, prompt: getPrompt(promptOptions) } }
-  // 		);
-  // 	})
-  // );
-
-  // await client.close();
 }
 
 main();

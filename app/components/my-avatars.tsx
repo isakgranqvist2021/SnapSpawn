@@ -152,6 +152,55 @@ const avatarsEmptyState = (
   />
 );
 
+function FirstAvatarGridItem() {
+  const { state } = useContext(AppContext);
+  const { setIsOpen } = useContext(ContentSidebarContext);
+
+  if (state.avatars.isLoading) {
+    return (
+      <div
+        style={{
+          minWidth: 144,
+          minHeight: 144,
+        }}
+        className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-accent"
+      >
+        <Spinner />
+        <p>Generating</p>
+      </div>
+    );
+  }
+
+  const openSidebar = () => setIsOpen(true);
+
+  return (
+    <div
+      style={{
+        minWidth: 144,
+        minHeight: 144,
+      }}
+      className="flex flex-col gap-2 justify-center items-center ease-in-out transition-all duration-200 rounded-lg cursor-pointer outline outline-4 outline-accent hover:outline-accent-focus"
+      onClick={openSidebar}
+      role="button"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+        className="w-6 h-6"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    </div>
+  );
+}
+
 function Avatars() {
   const { state } = useContext(AppContext);
 
@@ -161,52 +210,10 @@ function Avatars() {
 
   return (
     <div className="flex flex-wrap gap-4">
-      {state.avatars.isLoading && (
-        <div
-          style={{
-            minWidth: 144,
-            minHeight: 144,
-          }}
-          className="flex flex-col gap-2 justify-center items-center border rounded-lg border-accent"
-        >
-          <Spinner />
-          <p>Generating</p>
-        </div>
-      )}
+      <FirstAvatarGridItem />
 
       {state.avatars.data.map(renderAvatar)}
     </div>
-  );
-}
-
-function OpenContentSidebarButton() {
-  const { state } = useContext(AppContext);
-  const { setIsOpen } = useContext(ContentSidebarContext);
-
-  const openSidebar = () => setIsOpen(true);
-
-  return (
-    <button
-      disabled={state.avatars.isLoading}
-      className="mr-auto btn btn-secondary flex gap-2"
-      onClick={openSidebar}
-    >
-      Generate Picture
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
-        className="w-6 h-6"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-    </button>
   );
 }
 
@@ -223,11 +230,7 @@ export function MyAvatars() {
 
   return (
     <div className="flex flex-col gap-5 w-full p-5">
-      {state.credits.data === 0 ? (
-        creditsEmptyState
-      ) : (
-        <OpenContentSidebarButton />
-      )}
+      {state.credits.data === 0 && creditsEmptyState}
 
       <Avatars />
     </div>
