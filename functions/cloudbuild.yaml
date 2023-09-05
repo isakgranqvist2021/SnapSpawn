@@ -24,7 +24,7 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     dir: functions
-    waitFor: ['move-package.json']
+    waitFor: ['create-env']
     args:
       - gcloud
       - functions
