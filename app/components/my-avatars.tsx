@@ -106,44 +106,24 @@ function AvatarCard(props: AvatarModel) {
 
               <div className="flex flex-col gap-5">
                 <div className="flex gap-5 flex-wrap justify-center">
-                  <a
-                    className="link link-secondary"
-                    href={urls['1024x1024']}
-                    target="_blank"
-                    rel="noreferrer"
-                    download
-                  >
-                    1024x1024
-                  </a>
-                  <a
-                    className="link link-secondary"
-                    href={urls['512x512']}
-                    target="_blank"
-                    rel="noreferrer"
-                    download
-                  >
-                    512x512
-                  </a>
+                  {Object.keys(urls)
+                    .sort((a, b) => {
+                      const aSize = parseInt(a.split('x')[0]);
+                      const bSize = parseInt(b.split('x')[0]);
 
-                  <a
-                    className="link link-secondary"
-                    href={urls['256x256']}
-                    target="_blank"
-                    rel="noreferrer"
-                    download
-                  >
-                    256x256
-                  </a>
-
-                  <a
-                    className="link link-secondary"
-                    href={urls['128x128']}
-                    target="_blank"
-                    rel="noreferrer"
-                    download
-                  >
-                    128x128
-                  </a>
+                      return bSize - aSize;
+                    })
+                    .map((key) => (
+                      <a
+                        className="link link-secondary"
+                        href={urls[key as keyof typeof urls]}
+                        target="_blank"
+                        rel="noreferrer"
+                        download
+                      >
+                        {key}
+                      </a>
+                    ))}
                 </div>
 
                 <button
