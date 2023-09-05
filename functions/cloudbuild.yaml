@@ -9,38 +9,37 @@ options:
 timeout: '1600s'
 
 steps:
-  - name: node:18.12.1
-    dir: functions
-    entrypoint: yarn
+  - name: 'gcr.io/cloud-builders/npm'
     args: ['install']
     id: install
 
-  - name: node:18.12.1
-    args: ['create-env']
-    dir: functions
-    entrypoint: yarn
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'create-env']
     id: create-env
     waitFor: ['install']
 
-  - name: node:18.12.1
-    args: ['build']
-    dir: functions
-    entrypoint: yarn
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build']
     id: build
     waitFor: ['create-env']
 
-  - name: bash
-    dir: functions
-    script: |
-      #!/usr/bin/env bash
-      mv package.json dist/package.json
-
+  - name: 'bash'
+    args: [cp, 'package.json', 'dist']
     id: move-package.json
     waitFor: ['build']
 
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    dir: functions
+  - name: 'bash'
+    args: [cp, 'package-lock.json', 'dist']
+    id: move-package-lock.json
     waitFor: ['move-package.json']
+
+  - name: 'bash'
+    args: [rm, 'tsconfig.json']
+    id: remove-tsconfig.json
+    waitFor: ['move-package-lock.json']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    waitFor: ['remove-tsconfig.json']
     args:
       - gcloud
       - functions
