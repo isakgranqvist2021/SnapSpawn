@@ -11,29 +11,31 @@ timeout: '1600s'
 steps:
   - name: node:18.12.1
     dir: functions
-    entrypoint: yarn
+    entrypoint: npm
     args: ['install']
     id: install
 
   - name: node:18.12.1
-    args: ['create-env']
+    args: ['run', 'create-env']
     dir: functions
-    entrypoint: yarn
+    entrypoint: npm
     id: create-env
     waitFor: ['install']
 
-  - name: node:18.12.1
-    args: ['build']
-    dir: functions
-    entrypoint: yarn
-    id: build
-    waitFor: ['create-env']
+  # - name: node:18.12.1
+  #   args: ['run', 'build']
+  #   dir: functions
+  #   entrypoint: npm
+  #   id: build
+  #   waitFor: ['create-env']
 
   - name: bash
     dir: functions
     script: |
       #!/usr/bin/env bash
       mv package.json dist/package.json
+      mv package-lock.json dist/package-lock.json
+      mv tsconfig.json dist/tsconfig.json
 
     id: move-package.json
     waitFor: ['build']
