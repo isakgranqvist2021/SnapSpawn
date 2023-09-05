@@ -38,7 +38,7 @@ steps:
       mv tsconfig.json dist/tsconfig.json
 
     id: move-package.json
-    waitFor: ['build']
+    waitFor: ['create-env']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     dir: functions
