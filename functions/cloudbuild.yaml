@@ -22,23 +22,23 @@ steps:
     id: create-env
     waitFor: ['install']
 
-  # - name: node:18.12.1
-  #   args: ['run', 'build']
-  #   dir: functions
-  #   entrypoint: npm
-  #   id: build
-  #   waitFor: ['create-env']
+  - name: node:18.12.1
+    args: ['run', 'build']
+    dir: functions
+    entrypoint: npm
+    id: build
+    waitFor: ['create-env']
 
   - name: bash
     dir: functions
     script: |
       #!/usr/bin/env bash
-      mv package.json dist/package.json
-      mv package-lock.json dist/package-lock.json
       mv tsconfig.json dist/tsconfig.json
+      mv package-lock.json dist/package-lock.json
+      mv package.json dist/package.json
 
     id: move-package.json
-    waitFor: ['create-env']
+    waitFor: ['build']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     dir: functions
