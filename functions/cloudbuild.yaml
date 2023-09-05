@@ -43,8 +43,8 @@ steps:
     script: |
       #!/usr/bin/env bash
       mv package.json dist/package.json
-      rm -rf src
-      rm tsconfig.json
+      mv package-lock.json dist/package-lock.json
+      mv tsconfig.json dist/tsconfig.json
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     waitFor: ['move-package.json']
