@@ -18,6 +18,13 @@ function formatTimestampWithIntl(timestamp: number) {
   }).format(date);
 }
 
+function sortUrlsBySize(a: string, b: string) {
+  const aSize = parseInt(a.split('x')[0]);
+  const bSize = parseInt(b.split('x')[0]);
+
+  return bSize - aSize;
+}
+
 function AvatarCard(props: AvatarModel) {
   const { id, urls, createdAt, prompt } = props;
 
@@ -39,6 +46,21 @@ function AvatarCard(props: AvatarModel) {
     methods.createVariant(id, '1024x1024', 1);
 
     window.scrollTo(0, 0);
+  };
+
+  const renderDownloadLink = (key: string) => {
+    return (
+      <a
+        className="link link-secondary"
+        download
+        href={urls[key as keyof typeof urls]}
+        key={key}
+        rel="noreferrer"
+        target="_blank"
+      >
+        {key}
+      </a>
+    );
   };
 
   useEffect(() => {
@@ -107,23 +129,8 @@ function AvatarCard(props: AvatarModel) {
               <div className="flex flex-col gap-5">
                 <div className="flex gap-5 flex-wrap justify-center">
                   {Object.keys(urls)
-                    .sort((a, b) => {
-                      const aSize = parseInt(a.split('x')[0]);
-                      const bSize = parseInt(b.split('x')[0]);
-
-                      return bSize - aSize;
-                    })
-                    .map((key) => (
-                      <a
-                        className="link link-secondary"
-                        href={urls[key as keyof typeof urls]}
-                        target="_blank"
-                        rel="noreferrer"
-                        download
-                      >
-                        {key}
-                      </a>
-                    ))}
+                    .sort(sortUrlsBySize)
+                    .map(renderDownloadLink)}
                 </div>
 
                 <button
