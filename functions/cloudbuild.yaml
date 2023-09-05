@@ -22,15 +22,22 @@ steps:
     id: create-env
     waitFor: ['install']
 
+  - name: node:18.12.1
+    args: ['run', 'build']
+    dir: functions
+    entrypoint: npm
+    id: build
+    waitFor: ['create-env']
+
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     dir: functions
-    waitFor: ['create-env']
+    waitFor: ['build']
     args:
       - gcloud
       - functions
       - deploy
       - stripe-webhook-9
       - --region=europe-west1
-      - --source=.
+      - --source=dist
       - --trigger-http
       - --runtime=nodejs18
