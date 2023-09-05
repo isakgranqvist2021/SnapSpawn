@@ -11,27 +11,36 @@ timeout: '1600s'
 steps:
   - name: node:18.12.1
     dir: functions
-    entrypoint: npm
+    entrypoint: yarn
     args: ['install']
     id: install
 
   - name: node:18.12.1
-    args: ['run', 'create-env']
+    args: ['create-env']
     dir: functions
-    entrypoint: npm
+    entrypoint: yarn
     id: create-env
     waitFor: ['install']
 
   - name: node:18.12.1
-    args: ['run', 'build']
+    args: ['build']
     dir: functions
-    entrypoint: npm
+    entrypoint: yarn
     id: build
     waitFor: ['create-env']
 
+  - name: bash
+    dir: functions
+    script: |
+      #!/usr/bin/env bash
+      mv package.json dist/package.json
+
+    id: move-package.json
+    waitFor: ['build']
+
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     dir: functions
-    waitFor: ['build']
+    waitFor: ['move-package.json']
     args:
       - gcloud
       - functions
