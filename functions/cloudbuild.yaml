@@ -31,6 +31,6 @@ steps:
       - deploy
       - stripe-webhook-9
       - --region=europe-west1
-      - --source=dist
+      - --source=src
       - --trigger-http
       - --runtime=nodejs18
