@@ -29,8 +29,14 @@ steps:
     entrypoint: npx
     args: ['tsc', '--project', 'tsconfig.json']
 
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: bash
     waitFor: ['build']
+    dir: functions
+    id: move-package.json
+    args: ['mv', 'package.json', 'dist/package.json']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    waitFor: ['move-package.json']
     dir: functions
     args:
       - gcloud
