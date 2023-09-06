@@ -274,47 +274,31 @@ function FirstAvatarGridItem() {
   );
 }
 
-interface AvatarNode extends AvatarModel {
-  nodes: AvatarNode[] | null;
-}
+function constructTreeAsList(avatars: AvatarModel[]): AvatarModel[] {
+  const flatTree: AvatarModel[] = [];
 
-function constructTree(
-  avatars: AvatarModel[],
-  parentId: string | null = null,
-): AvatarNode[] {
-  const tree: AvatarNode[] = [];
+  const addToFlatTree = (avatar: AvatarModel) => {
+    flatTree.push(avatar);
+
+    avatars
+      .filter((child) => child.parentId === avatar.id)
+      .forEach((child) => addToFlatTree(child));
+  };
 
   avatars.forEach((avatar) => {
-    if (avatar.parentId === parentId) {
-      const childNodes = constructTree(avatars, avatar.id);
-      tree.push({ ...avatar, nodes: childNodes.length ? childNodes : null });
+    if (avatar.parentId === null) {
+      addToFlatTree(avatar);
     }
   });
 
-  return tree;
-}
-
-function renderTreeNode(node: AvatarNode) {
-  return <TreeNode {...node} key={node.id} />;
-}
-
-function TreeNode(props: AvatarNode) {
-  const { nodes, ...rest } = props;
-
-  return (
-    <React.Fragment>
-      {renderAvatar(rest)}
-
-      {nodes?.map(renderTreeNode)}
-    </React.Fragment>
-  );
+  return flatTree;
 }
 
 function Avatars() {
   const appContext = useContext(AppContext);
 
-  const tree = useMemo(
-    () => constructTree(appContext.state.avatars.data),
+  const flatTree = useMemo(
+    () => constructTreeAsList(appContext.state.avatars.data),
     [appContext.state.avatars.data],
   );
 
@@ -326,7 +310,7 @@ function Avatars() {
     <div className="flex flex-wrap gap-4">
       <FirstAvatarGridItem />
 
-      {tree.map(renderTreeNode)}
+      {flatTree.map(renderAvatar)}
     </div>
   );
 }
