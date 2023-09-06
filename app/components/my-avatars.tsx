@@ -1,4 +1,6 @@
 import { AppContext, ContentSidebarContext } from '@aa/context';
+import { useDropzone } from '@aa/hooks/use-dropzone';
+import { useUploadFiles } from '@aa/hooks/use-upload-files';
 import { AvatarModel } from '@aa/models/avatar';
 import Image from 'next/image';
 import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
@@ -316,7 +318,7 @@ function Avatars() {
     [appContext.state.avatars.data],
   );
 
-  if (!appContext.state.avatars.data.length) {
+  if (!appContext.state.avatars.data.length && !appContext.state.credits.data) {
     return avatarsEmptyState;
   }
 
@@ -337,135 +339,14 @@ const creditsEmptyState = (
   />
 );
 
-function useDropzone(options: {
-  onDrop: (e: DragEvent, ref: React.RefObject<HTMLDivElement>) => void;
-  onDragEnter?: (e: DragEvent, ref: React.RefObject<HTMLDivElement>) => void;
-  onDragLeave?: (e: DragEvent, ref: React.RefObject<HTMLDivElement>) => void;
-}) {
-  const dropzoneRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const dropzone = dropzoneRef.current;
-
-    if (!dropzone) {
-      return;
-    }
-
-    const onDragOverHandler = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-    };
-
-    const onDropHandler = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      options.onDrop(e, dropzoneRef);
-    };
-
-    const onDragEnterHandler = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      options.onDragEnter?.(e, dropzoneRef);
-    };
-
-    const onDragLeaveHandler = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      options.onDragLeave?.(e, dropzoneRef);
-    };
-
-    dropzone.addEventListener('dragover', onDragOverHandler);
-    dropzone.addEventListener('drop', onDropHandler);
-    dropzone.addEventListener('dragenter', onDragEnterHandler);
-    dropzone.addEventListener('dragleave', onDragLeaveHandler);
-
-    return () => {
-      dropzone.removeEventListener('dragover', onDragOverHandler);
-      dropzone.removeEventListener('drop', onDropHandler);
-      dropzone.removeEventListener('dragenter', onDragEnterHandler);
-      dropzone.removeEventListener('dragleave', onDragLeaveHandler);
-    };
-  }, [dropzoneRef, options]);
-
-  return dropzoneRef;
-}
-
 function UploadImage() {
-  const appContext = useContext(AppContext);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const uploadIconRef = useRef<SVGSVGElement>(null);
 
   const openFileInput = () => fileInputRef.current?.click();
 
-  const uploadFiles = async (files: FileList) => {
-    const formData = new FormData();
-    let maxCount = 5;
-
-    for (let i = 0; i < files.length; i++) {
-      if (maxCount === 0) {
-        break;
-      }
-
-      const file = files[i];
-
-      if (
-        (file.type !== 'image/png' &&
-          file.type !== 'image/jpeg' &&
-          file.type !== 'image/jpg') ||
-        file.size > 10000000
-      ) {
-        continue;
-      }
-
-      formData.append('files', file);
-      maxCount--;
-    }
-
-    try {
-      appContext.dispatch({ type: 'upload:set-is-loading', isLoading: true });
-
-      const res = await fetch('/api/upload', {
-        body: formData,
-        method: 'POST',
-      });
-
-      if (res.status !== 200) {
-        throw new Error('Invalid response');
-      }
-
-      const data: { avatars: AvatarModel[] } | undefined = await res.json();
-
-      if (!data || !Array.isArray(data.avatars)) {
-        throw new Error('Invalid response');
-      }
-
-      appContext.dispatch({ type: 'avatars:add', avatars: data.avatars });
-      appContext.dispatch({
-        type: 'alerts:add',
-        alert: {
-          severity: 'success',
-          message: 'Upload success!',
-        },
-      });
-      appContext.dispatch({ type: 'upload:set-is-loading', isLoading: false });
-
-      return data.avatars;
-    } catch {
-      appContext.dispatch({
-        type: 'alerts:add',
-        alert: {
-          severity: 'error',
-          message: 'Something went wrong. Please try again later.',
-        },
-      });
-      appContext.dispatch({ type: 'upload:set-is-loading', isLoading: false });
-
-      return null;
-    }
-  };
+  const uploadFiles = useUploadFiles();
 
   const onFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -509,7 +390,7 @@ function UploadImage() {
       />
 
       <div ref={contentRef} className="flex flex-col gap-5 items-center">
-        <h3 className="text-2xl">
+        <h3 className="text-3xl">
           Upload image and generate variants based on it.
         </h3>
 

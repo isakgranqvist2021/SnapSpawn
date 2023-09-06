@@ -1,9 +1,12 @@
 import { AppContext, ContentSidebarContext } from '@aa/context';
-import { AvatarModel } from '@aa/models/avatar';
+import {
+  useGenerateAvatar,
+  useGenerateCustomPicture,
+} from '@aa/hooks/use-generate-avatar';
 import {
   Characteristic,
   Gender,
-  PromptModel,
+  GeneralAvatarModel,
   Traits,
   characteristics,
   genders,
@@ -32,7 +35,7 @@ type ReducerAction =
   | { type: 'set:custom-prompt'; customPrompt: string }
   | { type: 'set:mode'; mode: GenerateAvatarMode };
 
-const DEFAULT_FORM_STATE: PromptModel = {
+const DEFAULT_FORM_STATE: GeneralAvatarModel = {
   characteristics: 'afrofuturism',
   gender: 'female',
   traits: 'beard',
@@ -40,7 +43,7 @@ const DEFAULT_FORM_STATE: PromptModel = {
 
 interface GenerateAvatarState {
   customPrompt: string | null;
-  form: PromptModel;
+  form: GeneralAvatarModel;
   mode: GenerateAvatarMode;
 }
 
@@ -109,73 +112,6 @@ function GenerateAvatarProvider(props: PropsWithChildren) {
       {children}
     </GenerateAvatarContext.Provider>
   );
-}
-
-function useGenerateAvatarMethods() {
-  const appContext = useContext(AppContext);
-  const contentSidebarContext = useContext(ContentSidebarContext);
-  const generateAvatarContext = useContext(GenerateAvatarContext);
-
-  return async () => {
-    window.scrollTo(0, 0);
-    contentSidebarContext.setIsOpen(false);
-
-    try {
-      appContext.dispatch({ type: 'avatars:set-is-loading', isLoading: true });
-
-      const res = await fetch(
-        generateAvatarContext.state.mode === 'custom'
-          ? '/api/create-custom-prompt'
-          : '/api/create',
-        {
-          body: JSON.stringify({
-            options:
-              generateAvatarContext.state.mode === 'custom'
-                ? generateAvatarContext.state.customPrompt!
-                : generateAvatarContext.state.form,
-          }),
-          method: 'POST',
-        },
-      );
-
-      if (res.status !== 200) {
-        throw new Error('Invalid response');
-      }
-
-      const data: { avatars: AvatarModel[] } | undefined = await res.json();
-
-      if (!data || !Array.isArray(data.avatars)) {
-        throw new Error('Invalid response');
-      }
-
-      appContext.dispatch({ type: 'avatars:add', avatars: data.avatars });
-      appContext.dispatch({
-        type: 'credits:reduce',
-        reduceCreditsBy: data.avatars.length,
-      });
-      appContext.dispatch({
-        type: 'alerts:add',
-        alert: {
-          severity: 'success',
-          message: 'Avatar generated successfully!',
-        },
-      });
-      appContext.dispatch({ type: 'avatars:set-is-loading', isLoading: false });
-
-      return data.avatars;
-    } catch {
-      appContext.dispatch({
-        type: 'alerts:add',
-        alert: {
-          severity: 'error',
-          message: 'Something went wrong. Please try again later.',
-        },
-      });
-      appContext.dispatch({ type: 'avatars:set-is-loading', isLoading: false });
-
-      return null;
-    }
-  };
 }
 
 function FormSection(props: PropsWithChildren) {
@@ -319,13 +255,25 @@ function GenerateAvatarSubmitButton(props: { text: string }) {
   const { text } = props;
 
   const appContext = useContext(AppContext);
+  const contentSidebarContext = useContext(ContentSidebarContext);
+  const generateAvatarContext = useContext(GenerateAvatarContext);
 
-  const generateAvatars = useGenerateAvatarMethods();
+  const generateAvatars = useGenerateAvatar();
+  const generateCustomPicture = useGenerateCustomPicture();
+
+  const handleSubmit = () => {
+    window.scrollTo(0, 0);
+    contentSidebarContext.setIsOpen(false);
+
+    generateAvatarContext.state.mode === 'generate'
+      ? generateAvatars(generateAvatarContext.state.form)
+      : generateCustomPicture(generateAvatarContext.state.customPrompt!);
+  };
 
   if (appContext.state.credits.data === 0) {
     return (
       <Link href="/refill" className="btn btn-secondary">
-        0 Credits. Add some now!
+        {text}
       </Link>
     );
   }
@@ -334,7 +282,7 @@ function GenerateAvatarSubmitButton(props: { text: string }) {
     <button
       className="btn btn-secondary relative"
       disabled={appContext.state.avatars.isLoading}
-      onClick={generateAvatars}
+      onClick={handleSubmit}
       type="submit"
     >
       {appContext.state.avatars.isLoading && (
@@ -356,9 +304,8 @@ function UserCreditsText() {
   if (!appContext.state.credits.data) {
     return (
       <h1 className="text-2xl mt-3 text-center">
-        You have <span className="text-secondary">0</span> credits
-        <Link className="ml-2 text-secondary" href="/refill">
-          add some now!
+        <Link href="/refill">
+          You have <span className="text-secondary">0</span> credits
         </Link>
       </h1>
     );
@@ -447,16 +394,24 @@ function FormFooter() {
 
 function Form() {
   const generateAvatarContext = useContext(GenerateAvatarContext);
+  const contentSidebarContext = useContext(ContentSidebarContext);
 
-  const generateAvatars = useGenerateAvatarMethods();
+  const generateAvatars = useGenerateAvatar();
+  const generateCustomPicture = useGenerateCustomPicture();
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    generateAvatars();
+
+    window.scrollTo(0, 0);
+    contentSidebarContext.setIsOpen(false);
+
+    generateAvatarContext.state.mode === 'generate'
+      ? generateAvatars(generateAvatarContext.state.form)
+      : generateCustomPicture(generateAvatarContext.state.customPrompt!);
   };
 
   return (
-    <form className="flex flex-col gap-5" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
       {generateAvatarContext.state.mode === 'generate' ? (
         <GenerateFromPreDefinedOptionsForm />
       ) : (
