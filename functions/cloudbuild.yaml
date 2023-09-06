@@ -30,7 +30,7 @@ steps:
     args: ['tsc', '--project', 'tsconfig.json']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    waitFor: ['move-package.json']
+    waitFor: ['build']
     dir: functions
     args:
       - gcloud
