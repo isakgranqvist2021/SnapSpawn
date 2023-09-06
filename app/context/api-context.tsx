@@ -12,6 +12,7 @@ interface AppContextState {
   alerts: Alert[];
   avatars: ApiState<AvatarModel[]>;
   credits: ApiState<number>;
+  upload: ApiState<null>;
 }
 
 interface AppProviderProps {
@@ -32,10 +33,16 @@ type AvatarsReducerAction =
   | { type: 'avatars:add'; avatars: AvatarModel[] }
   | { type: 'avatars:set-is-loading'; isLoading: boolean };
 
+type UploadReducerAction = {
+  type: 'upload:set-is-loading';
+  isLoading: boolean;
+};
+
 type ReducerAction =
   | AlertReducerAction
   | CreditsReducerAction
-  | AvatarsReducerAction;
+  | AvatarsReducerAction
+  | UploadReducerAction;
 
 interface AppContextType {
   dispatch: Dispatch<ReducerAction>;
@@ -48,6 +55,7 @@ export const AppContext = createContext<AppContextType>({
     alerts: [],
     avatars: { data: [], isLoading: false },
     credits: { data: 0, isLoading: false },
+    upload: { data: null, isLoading: false },
   },
 });
 
@@ -95,6 +103,15 @@ function apiReducer(
         alerts: [...state.alerts, { ...action.alert, id: uid() }],
       };
 
+    case 'upload:set-is-loading':
+      return {
+        ...state,
+        upload: {
+          ...state.upload,
+          isLoading: action.isLoading,
+        },
+      };
+
     case 'alerts:remove':
       const alerts = [...state.alerts];
       const index = alerts.findIndex((alert) => alert.id === action.id);
@@ -113,6 +130,7 @@ export function AppProvider(props: AppProviderProps) {
     alerts: [],
     avatars: { data: avatars, isLoading: false },
     credits: { data: credits, isLoading: false },
+    upload: { data: null, isLoading: false },
   };
 
   const [state, dispatch] = useReducer<Reducer<AppContextState, ReducerAction>>(

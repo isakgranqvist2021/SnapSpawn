@@ -47,7 +47,7 @@ function PageSnackbarToast(props: Alert) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [appContext.dispatch, id]);
+  }, [appContext, id]);
 
   return (
     <div className="toast z-20">

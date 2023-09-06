@@ -7,6 +7,8 @@ import {
 } from '@aa/config';
 import { AvatarURLs, avatarSizes } from '@aa/models/avatar';
 import { Storage } from '@google-cloud/storage';
+import formidable from 'formidable';
+import fs from 'fs';
 import sharp from 'sharp';
 import { uid } from 'uid';
 
@@ -56,6 +58,50 @@ export async function uploadAvatar(avatarUrls: string[]): Promise<string[]> {
   return avatarIds.filter((avatarId): avatarId is string => avatarId !== null);
 }
 
+export async function uploadFile(
+  files: formidable.Files<string>,
+): Promise<string[]> {
+  if (!Array.isArray(files.files)) {
+    return [];
+  }
+
+  const avatarIds = await Promise.all(
+    files.files.map(async (file): Promise<string | null> => {
+      if (
+        file.mimetype !== 'image/png' &&
+        file.mimetype !== 'image/jpeg' &&
+        file.mimetype !== 'image/jpg' &&
+        file.size > 1000000
+      ) {
+        return null;
+      }
+
+      try {
+        const buffer = fs.readFileSync(file.filepath);
+        const avatarId = uid();
+
+        await Promise.all(
+          avatarSizes.map(async (size) => {
+            const resizedBuffer = await sharp(buffer)
+              .resize(parseInt(size.split('x')[0]))
+              .png()
+              .toBuffer();
+
+            await bucket.file(`${avatarId}-${size}.png`).save(resizedBuffer);
+          }),
+        );
+
+        return avatarId;
+      } catch (err) {
+        Logger.log('error', 'Error uploading avatar', err);
+        return null;
+      }
+    }),
+  );
+
+  return avatarIds.filter((avatarId): avatarId is string => avatarId !== null);
+}
+
 export async function getSignedUrls(avatarId: string): Promise<AvatarURLs> {
   const urls: AvatarURLs = {
     '1024x1024': '',
@@ -65,14 +111,16 @@ export async function getSignedUrls(avatarId: string): Promise<AvatarURLs> {
   };
 
   for (let i = 0; i < avatarSizes.length; i++) {
-    const file = bucket.file(`${avatarId}-${avatarSizes[i]}.png`);
+    const size = avatarSizes[i];
+
+    const file = bucket.file(`${avatarId}-${size}.png`);
 
     const [signedUrl] = await file.getSignedUrl({
       action: 'read',
       expires: Date.now() + ONE_HOUR_IN_MS,
     });
 
-    urls[avatarSizes[i]] = signedUrl;
+    urls[size] = signedUrl;
   }
 
   return urls;

@@ -1,7 +1,7 @@
 import { AppContext, ContentSidebarContext } from '@aa/context';
 import { AvatarModel } from '@aa/models/avatar';
 import Image from 'next/image';
-import { Fragment, useContext, useEffect } from 'react';
+import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 
 import { EmptyState } from './empty-state';
@@ -200,6 +200,7 @@ function AvatarCard(props: AvatarModel) {
         onClick={openFullscreen}
         src={urls['128x128']}
         width={144}
+        style={{ maxWidth: 144, maxHeight: 144 }}
       />
     </Fragment>
   );
@@ -220,13 +221,22 @@ function FirstAvatarGridItem() {
   const appContext = useContext(AppContext);
   const contentSidebarContext = useContext(ContentSidebarContext);
 
+  if (appContext.state.upload.isLoading) {
+    return (
+      <div
+        style={{ width: 144, height: 144 }}
+        className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-accent"
+      >
+        <Spinner />
+        <p>Uploading</p>
+      </div>
+    );
+  }
+
   if (appContext.state.avatars.isLoading) {
     return (
       <div
-        style={{
-          minWidth: 144,
-          minHeight: 144,
-        }}
+        style={{ width: 144, height: 144 }}
         className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-accent"
       >
         <Spinner />
@@ -239,10 +249,7 @@ function FirstAvatarGridItem() {
 
   return (
     <div
-      style={{
-        minWidth: 144,
-        minHeight: 144,
-      }}
+      style={{ width: 144, height: 144 }}
       className="flex flex-col gap-2 justify-center items-center ease-in-out transition-all duration-200 rounded-lg cursor-pointer outline outline-4 outline-accent hover:outline-accent-focus"
       onClick={openSidebar}
       role="button"
@@ -265,8 +272,49 @@ function FirstAvatarGridItem() {
   );
 }
 
+interface AvatarNode extends AvatarModel {
+  nodes: AvatarNode[] | null;
+}
+
+function constructTree(
+  avatars: AvatarModel[],
+  parentId: string | null = null,
+): AvatarNode[] {
+  const tree: AvatarNode[] = [];
+
+  avatars.forEach((avatar) => {
+    if (avatar.parentId === parentId) {
+      const childNodes = constructTree(avatars, avatar.id);
+      tree.push({ ...avatar, nodes: childNodes.length ? childNodes : null });
+    }
+  });
+
+  return tree;
+}
+
+function renderTreeNode(node: AvatarNode) {
+  return <TreeNode {...node} key={node.id} />;
+}
+
+function TreeNode(props: AvatarNode) {
+  const { nodes, ...rest } = props;
+
+  return (
+    <React.Fragment>
+      {renderAvatar(rest)}
+
+      {nodes?.map(renderTreeNode)}
+    </React.Fragment>
+  );
+}
+
 function Avatars() {
   const appContext = useContext(AppContext);
+
+  const tree = useMemo(
+    () => constructTree(appContext.state.avatars.data),
+    [appContext.state.avatars.data],
+  );
 
   if (!appContext.state.avatars.data.length) {
     return avatarsEmptyState;
@@ -276,7 +324,7 @@ function Avatars() {
     <div className="flex flex-wrap gap-4">
       <FirstAvatarGridItem />
 
-      {appContext.state.avatars.data.map(renderAvatar)}
+      {tree.map(renderTreeNode)}
     </div>
   );
 }
@@ -289,12 +337,207 @@ const creditsEmptyState = (
   />
 );
 
+function useDropzone(options: {
+  onDrop: (e: DragEvent, ref: React.RefObject<HTMLDivElement>) => void;
+  onDragEnter?: (e: DragEvent, ref: React.RefObject<HTMLDivElement>) => void;
+  onDragLeave?: (e: DragEvent, ref: React.RefObject<HTMLDivElement>) => void;
+}) {
+  const dropzoneRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const dropzone = dropzoneRef.current;
+
+    if (!dropzone) {
+      return;
+    }
+
+    const onDragOverHandler = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const onDropHandler = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      options.onDrop(e, dropzoneRef);
+    };
+
+    const onDragEnterHandler = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      options.onDragEnter?.(e, dropzoneRef);
+    };
+
+    const onDragLeaveHandler = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      options.onDragLeave?.(e, dropzoneRef);
+    };
+
+    dropzone.addEventListener('dragover', onDragOverHandler);
+    dropzone.addEventListener('drop', onDropHandler);
+    dropzone.addEventListener('dragenter', onDragEnterHandler);
+    dropzone.addEventListener('dragleave', onDragLeaveHandler);
+
+    return () => {
+      dropzone.removeEventListener('dragover', onDragOverHandler);
+      dropzone.removeEventListener('drop', onDropHandler);
+      dropzone.removeEventListener('dragenter', onDragEnterHandler);
+      dropzone.removeEventListener('dragleave', onDragLeaveHandler);
+    };
+  }, [dropzoneRef, options]);
+
+  return dropzoneRef;
+}
+
+function UploadImage() {
+  const appContext = useContext(AppContext);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const uploadIconRef = useRef<SVGSVGElement>(null);
+
+  const openFileInput = () => fileInputRef.current?.click();
+
+  const uploadFiles = async (files: FileList) => {
+    const formData = new FormData();
+    let maxCount = 5;
+
+    for (let i = 0; i < files.length; i++) {
+      if (maxCount === 0) {
+        break;
+      }
+
+      const file = files[i];
+
+      if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+        continue;
+      }
+
+      formData.append('files', file);
+      maxCount--;
+    }
+
+    try {
+      appContext.dispatch({ type: 'upload:set-is-loading', isLoading: true });
+
+      const res = await fetch('/api/upload', {
+        body: formData,
+        method: 'POST',
+      });
+
+      if (res.status !== 200) {
+        throw new Error('Invalid response');
+      }
+
+      const data: { avatars: AvatarModel[] } | undefined = await res.json();
+
+      if (!data || !Array.isArray(data.avatars)) {
+        throw new Error('Invalid response');
+      }
+
+      appContext.dispatch({ type: 'avatars:add', avatars: data.avatars });
+      appContext.dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'success',
+          message: 'Upload success!',
+        },
+      });
+      appContext.dispatch({ type: 'upload:set-is-loading', isLoading: false });
+
+      return data.avatars;
+    } catch {
+      appContext.dispatch({
+        type: 'alerts:add',
+        alert: {
+          severity: 'error',
+          message: 'Something went wrong. Please try again later.',
+        },
+      });
+      appContext.dispatch({ type: 'upload:set-is-loading', isLoading: false });
+
+      return null;
+    }
+  };
+
+  const onFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    uploadFiles(e.target.files);
+  };
+
+  const dropzoneRef = useDropzone({
+    onDrop: (e, ref) => {
+      ref.current?.classList.remove('bg-base-300');
+      contentRef.current?.classList.remove('hidden');
+      uploadIconRef.current?.classList.add('hidden');
+
+      if (!e.dataTransfer?.files) return;
+
+      uploadFiles(e.dataTransfer.files);
+    },
+    onDragEnter: (_, ref) => {
+      ref.current?.classList.add('bg-base-300');
+      contentRef.current?.classList.add('hidden');
+      uploadIconRef.current?.classList.remove('hidden');
+    },
+    onDragLeave: (_, ref) => {
+      ref.current?.classList.remove('bg-base-300');
+      contentRef.current?.classList.remove('hidden');
+      uploadIconRef.current?.classList.add('hidden');
+    },
+  });
+
+  return (
+    <div
+      className="text-center p-5 bg-base-200 w-full flex flex-col items-center items-center h-60 justify-center cursor-pointer ease-in-out"
+      onClick={openFileInput}
+      ref={dropzoneRef}
+    >
+      <input
+        hidden
+        onChange={onFileInputChange}
+        ref={fileInputRef}
+        type="file"
+      />
+
+      <div ref={contentRef} className="flex flex-col gap-5 items-center">
+        <h3 className="text-2xl">
+          Upload image and generate variants based on it.
+        </h3>
+
+        <button className="btn btn-primary">Upload Image</button>
+      </div>
+
+      <svg
+        ref={uploadIconRef}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+        className="w-24 h-24 hidden"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+        />
+      </svg>
+    </div>
+  );
+}
+
 export function MyAvatars() {
   const appContext = useContext(AppContext);
 
   return (
     <div className="flex flex-col gap-5 w-full p-5">
       {appContext.state.credits.data === 0 && creditsEmptyState}
+
+      <UploadImage />
 
       <Avatars />
     </div>

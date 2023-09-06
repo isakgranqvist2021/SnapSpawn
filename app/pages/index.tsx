@@ -154,6 +154,24 @@ function HowItWorksSection() {
           </p>
           <p className="text-center flex items-center gap-5 text-xs lg:text-base">
             <svg
+              xmlns="http://www.w3.org/2000/svg"
+              aria-label="Green checkmark"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-green-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+            Upload your own images and generate variants
+          </p>
+          <p className="text-center flex items-center gap-5 text-xs lg:text-base">
+            <svg
               aria-label="Green checkmark"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

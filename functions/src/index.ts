@@ -1,7 +1,7 @@
+import 'dotenv/config';
 import type { Request, Response } from 'express';
 import { MongoClient } from 'mongodb';
 import Stripe from 'stripe';
-import 'dotenv/config';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
@@ -11,6 +11,10 @@ if (!stripe) {
   throw new Error('Stripe is null');
 }
 
+/*
+ * Map of amount captured to credits in USD
+ * 100 cent = 10 credits
+ */
 const amountMap = new Map([
   [100, 10],
   [450, 50],
