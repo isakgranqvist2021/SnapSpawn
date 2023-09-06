@@ -411,7 +411,12 @@ function UploadImage() {
 
       const file = files[i];
 
-      if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+      if (
+        (file.type !== 'image/png' &&
+          file.type !== 'image/jpeg' &&
+          file.type !== 'image/jpg') ||
+        file.size > 10000000
+      ) {
         continue;
       }
 

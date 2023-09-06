@@ -68,10 +68,10 @@ export async function uploadFile(
   const avatarIds = await Promise.all(
     files.files.map(async (file): Promise<string | null> => {
       if (
-        file.mimetype !== 'image/png' &&
-        file.mimetype !== 'image/jpeg' &&
-        file.mimetype !== 'image/jpg' &&
-        file.size > 1000000
+        (file.mimetype !== 'image/png' &&
+          file.mimetype !== 'image/jpeg' &&
+          file.mimetype !== 'image/jpg') ||
+        file.size > 10000000
       ) {
         return null;
       }
