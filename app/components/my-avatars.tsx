@@ -197,12 +197,12 @@ function AvatarCard(props: AvatarModel) {
       <Image
         alt="Ai generated avatar"
         className="cursor-pointer ease-in-out transition-all duration-200 rounded-lg outline outline-4 outline-transparent hover:outline-primary"
-        height={144}
+        height={128}
         loading="lazy"
         onClick={openFullscreen}
         src={urls['128x128']}
-        width={144}
-        style={{ maxWidth: 144, maxHeight: 144 }}
+        width={128}
+        style={{ maxWidth: 128, maxHeight: 128 }}
       />
     </Fragment>
   );
@@ -226,7 +226,7 @@ function FirstAvatarGridItem() {
   if (appContext.state.upload.isLoading) {
     return (
       <div
-        style={{ width: 144, height: 144 }}
+        style={{ width: 128, height: 128 }}
         className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-accent"
       >
         <Spinner />
@@ -238,7 +238,7 @@ function FirstAvatarGridItem() {
   if (appContext.state.avatars.isLoading) {
     return (
       <div
-        style={{ width: 144, height: 144 }}
+        style={{ width: 128, height: 128 }}
         className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-accent"
       >
         <Spinner />
@@ -251,7 +251,7 @@ function FirstAvatarGridItem() {
 
   return (
     <div
-      style={{ width: 144, height: 144 }}
+      style={{ width: 128, height: 128 }}
       className="flex flex-col gap-2 justify-center items-center ease-in-out transition-all duration-200 rounded-lg cursor-pointer outline outline-4 outline-accent hover:outline-accent-focus"
       onClick={openSidebar}
       role="button"
@@ -307,7 +307,7 @@ function Avatars() {
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap gap-4 justify-center">
       <FirstAvatarGridItem />
 
       {flatTree.map(renderAvatar)}
