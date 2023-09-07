@@ -89,6 +89,7 @@ async function handleEvent(req: Request, res: Response) {
           );
       }
 
+
       const credits = paymentIntent.amount_captured / 5;
 
       if (!credits) {

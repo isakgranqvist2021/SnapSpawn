@@ -41,53 +41,41 @@ export function AddCreditsForm() {
   };
 
   return (
-    <form className="max-w-fit" onSubmit={continueToCheckout}>
-      <div className="pb-5">
-        <h1 className="text-3xl leading-10">Add Credits</h1>
-        <p className="max-w-prose">
-          You can add credits to your account to generate more avatars. Credits
-          will be added to your account after the payment has been completed.
-        </p>
-      </div>
+    <form onSubmit={continueToCheckout} className="flex flex-col">
+      <label className="label">Number of credits</label>
 
-      <hr />
+      <div className="flex gap-5 flex-wrap">
+        <input
+          type="number"
+          value={credits}
+          onChange={onChange}
+          className="input input-bordered w-full"
+          min={20}
+          max={10000}
+        />
 
-      <div className="flex flex-col py-5">
-        <label className="label">Number of credits</label>
+        <button
+          disabled={
+            appContext.state.credits.isLoading ||
+            !credits ||
+            credits < 20 ||
+            credits > 10000
+          }
+          type="submit"
+          className="btn btn-primary"
+        >
+          {appContext.state.credits.isLoading && (
+            <div className="absolute z-10">
+              <Spinner />
+            </div>
+          )}
 
-        <div className="flex gap-5 flex-wrap">
-          <input
-            type="number"
-            value={credits}
-            onChange={onChange}
-            className="input input-bordered w-full"
-            min={20}
-            max={10000}
-          />
-
-          <button
-            disabled={
-              appContext.state.credits.isLoading ||
-              !credits ||
-              credits < 20 ||
-              credits > 10000
-            }
-            type="submit"
-            className="btn btn-primary"
+          <span
+            className={appContext.state.credits.isLoading ? 'opacity-0' : ''}
           >
-            {appContext.state.credits.isLoading && (
-              <div className="absolute z-10">
-                <Spinner />
-              </div>
-            )}
-
-            <span
-              className={appContext.state.credits.isLoading ? 'opacity-0' : ''}
-            >
-              {getCheckoutButtonText()}
-            </span>
-          </button>
-        </div>
+            {getCheckoutButtonText()}
+          </span>
+        </button>
       </div>
     </form>
   );
