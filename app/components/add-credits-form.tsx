@@ -6,7 +6,7 @@ import { FormEvent, useContext, useState } from 'react';
 export function AddCreditsForm() {
   const appContext = useContext(AppContext);
 
-  const [credits, setCredits] = useState(10);
+  const [credits, setCredits] = useState(100);
 
   const addCredits = useAddCredits();
 
@@ -18,6 +18,26 @@ export function AddCreditsForm() {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredits(parseInt(e.target.value));
+  };
+
+  const getCheckoutButtonText = () => {
+    if (appContext.state.credits.isLoading) {
+      return 'Loading...';
+    }
+
+    if (!credits) {
+      return 'Please enter a number';
+    }
+
+    if (credits < 20) {
+      return 'Minimum 20 credits';
+    }
+
+    if (credits > 10000) {
+      return 'Maximum 10000 credits';
+    }
+
+    return `Continue to checkout €${credits / 20}`;
   };
 
   return (
@@ -32,76 +52,42 @@ export function AddCreditsForm() {
 
       <hr />
 
-      <div className="p-5">
-        <div className="form-control">
-          <label htmlFor="10" className="label cursor-pointer">
-            <span className="label-text">10 credits for €1</span>
-            <input
-              checked={credits === 10}
-              className="radio"
-              disabled={appContext.state.credits.isLoading}
-              id="10"
-              name="credits"
-              onChange={onChange}
-              type="radio"
-              value={10}
-            />
-          </label>
-        </div>
+      <div className="flex flex-col py-5">
+        <label className="label">Number of credits</label>
 
-        <div className="form-control">
-          <label htmlFor="50" className="label cursor-pointer">
-            <span className="label-text">50 credits for €4.5</span>
-            <input
-              checked={credits === 50}
-              className="radio"
-              disabled={appContext.state.credits.isLoading}
-              id="50"
-              name="credits"
-              onChange={onChange}
-              type="radio"
-              value={50}
-            />
-          </label>
-        </div>
+        <div className="flex gap-5 flex-wrap">
+          <input
+            type="number"
+            value={credits}
+            onChange={onChange}
+            className="input input-bordered w-full"
+            min={20}
+            max={10000}
+          />
 
-        <div className="form-control">
-          <label htmlFor="100" className="label cursor-pointer">
-            <span className="label-text">100 credits for €8</span>
-            <input
-              checked={credits === 100}
-              className="radio"
-              disabled={appContext.state.credits.isLoading}
-              id="100"
-              name="credits"
-              onChange={onChange}
-              type="radio"
-              value={100}
-            />
-          </label>
-        </div>
-      </div>
-
-      <hr />
-
-      <div className="py-5 flex justify-end">
-        <button
-          disabled={appContext.state.credits.isLoading}
-          type="submit"
-          className="btn btn-primary"
-        >
-          {appContext.state.credits.isLoading && (
-            <div className="absolute z-10">
-              <Spinner />
-            </div>
-          )}
-
-          <span
-            className={appContext.state.credits.isLoading ? 'opacity-0' : ''}
+          <button
+            disabled={
+              appContext.state.credits.isLoading ||
+              !credits ||
+              credits < 20 ||
+              credits > 10000
+            }
+            type="submit"
+            className="btn btn-primary"
           >
-            Continue to checkout
-          </span>
-        </button>
+            {appContext.state.credits.isLoading && (
+              <div className="absolute z-10">
+                <Spinner />
+              </div>
+            )}
+
+            <span
+              className={appContext.state.credits.isLoading ? 'opacity-0' : ''}
+            >
+              {getCheckoutButtonText()}
+            </span>
+          </button>
+        </div>
       </div>
     </form>
   );

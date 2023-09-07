@@ -1,5 +1,4 @@
 import { STRIPE_SECRET_KEY } from '@aa/config';
-import { creditsMap } from '@aa/models/credits';
 import { Logger } from '@aa/services/logger';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import Stripe from 'stripe';
@@ -9,13 +8,11 @@ const stripe = new Stripe(STRIPE_SECRET_KEY, {
 });
 
 function getStripeCheckoutParams(credits: number, email: string, url?: string) {
-  const amount = creditsMap.get(credits);
-
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
     {
       price_data: {
         currency: 'EUR',
-        unit_amount: amount,
+        unit_amount: (credits / 20) * 100,
         product_data: { name: `${credits} Credits` },
       },
       quantity: 1,

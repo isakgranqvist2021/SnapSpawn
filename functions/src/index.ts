@@ -11,16 +11,6 @@ if (!stripe) {
   throw new Error('Stripe is null');
 }
 
-/*
- * Map of amount captured to credits in USD
- * 100 cent = 10 credits
- */
-const amountMap = new Map([
-  [100, 10],
-  [450, 50],
-  [800, 100],
-]);
-
 async function addUserCredits(email: string, credits: number) {
   try {
     const client = await new MongoClient(
@@ -39,7 +29,7 @@ async function addUserCredits(email: string, credits: number) {
 
     return await collection.updateOne({ email }, { $inc: { credits } });
   } catch (err) {
-    console.error(err);
+    console.error('err', err);
     return null;
   }
 }
@@ -61,7 +51,7 @@ function getWebhookEvent(
 
     return event;
   } catch (err) {
-    console.error(err);
+    console.error('err', err);
     return null;
   }
 }
@@ -70,7 +60,7 @@ async function handleEvent(req: Request, res: Response) {
   try {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
-      res.status(405).end('Method Not Allowed');
+      res.status(405).send('Method Not Allowed');
       return;
     }
 
@@ -99,7 +89,7 @@ async function handleEvent(req: Request, res: Response) {
           );
       }
 
-      const credits = amountMap.get(paymentIntent.amount_captured);
+      const credits = paymentIntent.amount_captured / 5;
 
       if (!credits) {
         return res
@@ -128,12 +118,13 @@ async function handleEvent(req: Request, res: Response) {
 
     return res.status(204).send('Webhook received: Unhandled event');
   } catch (err) {
-    console.error(err);
+    console.error('err', err);
     return res.status(500).send('Webhook Error: Unhandled error');
   }
 }
 
-export default function (req: Request & { rawBody: any }, res: Response) {
+export default (req: Request & { rawBody: any }, res: Response) => {
   req.body = req.rawBody;
+
   return handleEvent(req, res);
-}
+};
