@@ -1,7 +1,118 @@
+import { AppContext } from '@aa/context';
+import { useAddCredits } from '@aa/hooks/use-add-credits';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { FormEvent, useContext, useState } from 'react';
+
+import {
+  Drawer,
+  DrawerContent,
+  DrawerContext,
+  DrawerFooter,
+  DrawerProvider,
+} from './drawer';
+import { Spinner } from './spinner';
+
+const MAX_CREDITS = 10000000;
+const MIN_CREDITS = 20;
+
+function AddCreditsForm() {
+  const drawerContext = useContext(DrawerContext);
+
+  const appContext = useContext(AppContext);
+
+  const [credits, setCredits] = useState(100);
+
+  const addCredits = useAddCredits();
+
+  const continueToCheckout = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    addCredits(credits);
+  };
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCredits(parseInt(e.target.value));
+  };
+
+  const getCheckoutButtonText = () => {
+    if (appContext.state.credits.isLoading) {
+      return 'Loading...';
+    }
+
+    if (!credits) {
+      return 'Please enter a number';
+    }
+
+    if (credits < MIN_CREDITS) {
+      return `Minimum ${MIN_CREDITS} credits`;
+    }
+
+    if (credits > MAX_CREDITS) {
+      return `Maximum ${MAX_CREDITS} credits`;
+    }
+
+    return `Continue to checkout €${credits / 20}`;
+  };
+
+  return (
+    <form
+      className="h-full flex flex-col justify-between"
+      onSubmit={continueToCheckout}
+    >
+      <DrawerContent>
+        <h1 className="text-3xl leading-10">Add Credits</h1>
+
+        <div className="form-control">
+          <label className="label">Number of credits</label>
+
+          <input
+            type="number"
+            value={credits}
+            onChange={onChange}
+            className="input input-bordered w-full"
+            min={MIN_CREDITS}
+            max={MAX_CREDITS}
+          />
+        </div>
+      </DrawerContent>
+
+      <DrawerFooter>
+        <button
+          onClick={drawerContext.closeDrawer}
+          type="button"
+          className="btn btn-outline btn-error"
+        >
+          Cancel
+        </button>
+
+        <button
+          disabled={
+            appContext.state.credits.isLoading ||
+            !credits ||
+            credits < MIN_CREDITS ||
+            credits > MAX_CREDITS
+          }
+          type="submit"
+          className="btn btn-primary"
+        >
+          {appContext.state.credits.isLoading && (
+            <div className="absolute z-10">
+              <Spinner />
+            </div>
+          )}
+
+          <span
+            className={appContext.state.credits.isLoading ? 'opacity-0' : ''}
+          >
+            {getCheckoutButtonText()}
+          </span>
+        </button>
+      </DrawerFooter>
+    </form>
+  );
+}
 
 function UserProfileImage() {
   const { isLoading, user } = useUser();
@@ -50,6 +161,7 @@ function UserProfileImage() {
 
 function NavMenuDropDown() {
   const { user } = useUser();
+  const drawerContext = useContext(DrawerContext);
 
   return (
     <div className="dropdown dropdown-end md:hidden">
@@ -65,11 +177,13 @@ function NavMenuDropDown() {
           </Link>
         </li>
 
-        <li className="text-base-content">
-          <Link className="w-full" href="/refill">
-            Add Credits
-          </Link>
-        </li>
+        {user && (
+          <li className="text-base-content" onClick={drawerContext.openDrawer}>
+            <a role="button" className="w-full">
+              Add Credits
+            </a>
+          </li>
+        )}
 
         <li className="text-base-content">
           {user ? (
@@ -89,6 +203,8 @@ function NavMenuDropDown() {
 
 function NavMenu() {
   const { user } = useUser();
+
+  const drawerContext = useContext(DrawerContext);
 
   if (user) {
     return (
@@ -112,8 +228,8 @@ function NavMenu() {
             Avatar Studio
           </Link>
         </li>
-        <li className="hidden md:flex">
-          <Link href="/refill">
+        <li className="hidden md:flex" onClick={drawerContext.openDrawer}>
+          <a role="button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -129,7 +245,7 @@ function NavMenu() {
               />
             </svg>
             Add Credits
-          </Link>
+          </a>
         </li>
       </React.Fragment>
     );
@@ -139,6 +255,14 @@ function NavMenu() {
     <li className="hidden md:flex">
       <Link href="/api/auth/login">Log In</Link>
     </li>
+  );
+}
+
+function AddCreditsDrawer() {
+  return (
+    <Drawer position="right">
+      <AddCreditsForm />
+    </Drawer>
   );
 }
 
@@ -157,10 +281,14 @@ export function Nav(props: React.ComponentPropsWithoutRef<'div'>) {
       </div>
 
       <div className="flex-none gap-2">
-        <ul className="menu menu-horizontal px-1">
-          <NavMenu />
-          <NavMenuDropDown />
-        </ul>
+        <DrawerProvider>
+          <ul className="menu menu-horizontal px-1">
+            <NavMenu />
+            <NavMenuDropDown />
+          </ul>
+
+          <AddCreditsDrawer />
+        </DrawerProvider>
       </div>
     </div>
   );

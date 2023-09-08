@@ -99,7 +99,7 @@ export function getPrompt(promptOptions: PromptOptions) {
 
   if (promptOptions) {
     const values = Object.values(promptOptions).filter(
-      (value) => value !== "'rather not say'",
+      (value) => value !== "'none'",
     );
 
     parts.push(...values);

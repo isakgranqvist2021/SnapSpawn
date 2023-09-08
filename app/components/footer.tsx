@@ -23,7 +23,6 @@ export const footerLegalLinksList: List = {
 const footerQuickLinkList = {
   title: 'Quick Links',
   links: [
-    { href: '/refill', text: 'Add Credits' },
     { href: '/account', text: 'Avatar Studio' },
     { href: '/api/auth/logout', text: 'Logout' },
   ],

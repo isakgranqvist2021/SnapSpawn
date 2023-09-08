@@ -1,4 +1,4 @@
-export const genders = ['male', 'female', 'rather not say'] as const;
+export const genders = ['male', 'female', 'none'] as const;
 
 export const traits = [
   'baseball cap',
