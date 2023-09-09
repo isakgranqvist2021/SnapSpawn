@@ -1,6 +1,6 @@
 import { Characteristic, Gender, Traits } from '@aa/models/prompt';
 import { Logger } from '@aa/services/logger';
-import mongodb, { ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import { getCollection } from './database';
 
@@ -12,11 +12,11 @@ export interface PromptOptions {
 }
 
 export interface AvatarDocument {
-  _id: mongodb.BSON.ObjectId;
+  _id: ObjectId;
   avatar: string;
   createdAt: number;
   email: string;
-  parentId: mongodb.BSON.ObjectId | null;
+  parentId: ObjectId | null;
   prompt: string;
   promptOptions: PromptOptions;
 }
@@ -26,7 +26,7 @@ export type CreateAvatarDocument = Omit<AvatarDocument, '_id'>;
 export interface CreateAvatarsOptions {
   avatars: string[];
   email: string;
-  parentId: mongodb.BSON.ObjectId | null;
+  parentId: ObjectId | null;
   prompt: string;
   promptOptions: PromptOptions;
 }

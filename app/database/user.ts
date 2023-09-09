@@ -1,10 +1,10 @@
 import { Logger } from '@aa/services/logger';
-import mongodb from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import { getCollection } from './database';
 
 export interface UserDocument {
-  _id: mongodb.ObjectId;
+  _id: ObjectId;
   createdAt: number;
   credits: number;
   email: string;

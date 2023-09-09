@@ -5,6 +5,7 @@ import {
   GCP_PRIVATE_KEY,
   GCP_PROJECT_ID,
 } from '@aa/config';
+import { ONE_MB_IN_BYTES, acceptedMimeTypes } from '@aa/constants';
 import { AvatarURLs, avatarSizes } from '@aa/models/avatar';
 import { Storage } from '@google-cloud/storage';
 import formidable from 'formidable';
@@ -68,10 +69,8 @@ export async function uploadFile(
   const avatarIds = await Promise.all(
     files.files.map(async (file): Promise<string | null> => {
       if (
-        (file.mimetype !== 'image/png' &&
-          file.mimetype !== 'image/jpeg' &&
-          file.mimetype !== 'image/jpg') ||
-        file.size > 10000000
+        !acceptedMimeTypes.includes(file.mimetype as any) ||
+        file.size > ONE_MB_IN_BYTES * 10
       ) {
         return null;
       }

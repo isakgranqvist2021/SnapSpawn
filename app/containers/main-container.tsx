@@ -1,4 +1,6 @@
-import { PropsWithChildren } from 'react';
+import { useDropzone } from '@aa/hooks/use-dropzone';
+import { useUploadFiles } from '@aa/hooks/use-upload-files';
+import { PropsWithChildren, useRef } from 'react';
 
 export function MainContainerContent(props: PropsWithChildren) {
   const { children } = props;
@@ -19,8 +21,21 @@ export function MainContainerLayout(props: PropsWithChildren) {
 export function MainContainer(props: PropsWithChildren) {
   const { children } = props;
 
+  const uploadFiles = useUploadFiles();
+
+  const dropzoneRef = useDropzone({
+    onDrop: (e) => {
+      if (!e.dataTransfer?.files) return;
+
+      uploadFiles(e.dataTransfer.files);
+    },
+  });
+
   return (
-    <main className="min-h-screen	justify-between flex flex-col bg-base-100">
+    <main
+      ref={dropzoneRef}
+      className="min-h-screen	justify-between flex flex-col bg-base-100"
+    >
       {children}
     </main>
   );

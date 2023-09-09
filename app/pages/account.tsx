@@ -690,23 +690,11 @@ function FirstAvatarGridItem() {
   const appContext = useContext(AppContext);
   const drawerContext = useContext(DrawerContext);
 
-  if (appContext.state.upload.isLoading) {
-    return (
-      <div
-        style={{ width: 128, height: 128 }}
-        className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-accent"
-      >
-        <Spinner />
-        <p>Uploading</p>
-      </div>
-    );
-  }
-
   if (appContext.state.avatars.isLoading) {
     return (
       <div
         style={{ width: 128, height: 128 }}
-        className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-accent"
+        className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-primary"
       >
         <Spinner />
         <p>Generating</p>
@@ -717,7 +705,7 @@ function FirstAvatarGridItem() {
   return (
     <div
       style={{ width: 128, height: 128 }}
-      className="flex flex-col gap-2 justify-center items-center ease-in-out transition-all duration-200 rounded-lg cursor-pointer outline outline-4 outline-accent hover:outline-accent-focus"
+      className="flex flex-col gap-2 justify-center items-center ease-in-out transition-all duration-200 rounded-lg cursor-pointer outline outline-4 outline-primary hover:outline-primary-content"
       onClick={drawerContext.openDrawer}
       role="button"
     >
@@ -739,27 +727,10 @@ function FirstAvatarGridItem() {
   );
 }
 
-function Avatars() {
+function UploadImage() {
   const appContext = useContext(AppContext);
 
-  const flatTree = useMemo(
-    () => constructTreeAsList(appContext.state.avatars.data),
-    [appContext.state.avatars.data],
-  );
-
-  return (
-    <div className="flex flex-wrap gap-4 justify-center">
-      <FirstAvatarGridItem />
-
-      {flatTree.map(renderAvatar)}
-    </div>
-  );
-}
-
-function UploadImage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const uploadIconRef = useRef<SVGSVGElement>(null);
 
   const openFileInput = () => fileInputRef.current?.click();
 
@@ -771,32 +742,23 @@ function UploadImage() {
     uploadFiles(e.target.files);
   };
 
-  const dropzoneRef = useDropzone({
-    onDrop: (e, ref) => {
-      ref.current?.classList.remove('bg-base-300');
-      contentRef.current?.classList.remove('hidden');
-      uploadIconRef.current?.classList.add('hidden');
-
-      if (!e.dataTransfer?.files) return;
-
-      uploadFiles(e.dataTransfer.files);
-    },
-    onDragEnter: (_, ref) => {
-      ref.current?.classList.add('bg-base-300');
-      contentRef.current?.classList.add('hidden');
-      uploadIconRef.current?.classList.remove('hidden');
-    },
-    onDragLeave: (_, ref) => {
-      ref.current?.classList.remove('bg-base-300');
-      contentRef.current?.classList.remove('hidden');
-      uploadIconRef.current?.classList.add('hidden');
-    },
-  });
+  if (appContext.state.upload.isLoading) {
+    return (
+      <div
+        style={{ width: 128, height: 128 }}
+        className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-secondary"
+      >
+        <Spinner />
+        <p>Uploading</p>
+      </div>
+    );
+  }
 
   return (
     <div
-      className="text-center p-5 bg-base-200 w-full flex flex-col items-center items-center h-60 justify-center ease-in-out"
-      ref={dropzoneRef}
+      style={{ width: 128, height: 128 }}
+      className="flex flex-col gap-2 justify-center items-center rounded-lg outline outline-4 outline-secondary hover:outline-secondary-content ease-in-out transition-all duration-200 cursor-pointer"
+      onClick={openFileInput}
     >
       <input
         hidden
@@ -805,24 +767,13 @@ function UploadImage() {
         type="file"
       />
 
-      <div ref={contentRef} className="flex flex-col gap-5 items-center">
-        <h3 className="md:text-3xl text-xl">
-          Upload image and generate variants based on it.
-        </h3>
-
-        <button onClick={openFileInput} className="btn btn-primary">
-          Upload Image
-        </button>
-      </div>
-
       <svg
-        ref={uploadIconRef}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-24 h-24 hidden"
+        className="w-6 h-6"
       >
         <path
           strokeLinecap="round"
@@ -834,13 +785,29 @@ function UploadImage() {
   );
 }
 
+function Avatars() {
+  const appContext = useContext(AppContext);
+
+  const flatTree = useMemo(
+    () => constructTreeAsList(appContext.state.avatars.data),
+    [appContext.state.avatars.data],
+  );
+
+  return (
+    <div className="flex flex-wrap gap-4 justify-center">
+      <FirstAvatarGridItem />
+      <UploadImage />
+
+      {flatTree.map(renderAvatar)}
+    </div>
+  );
+}
+
 export default function Account(props: DefaultProps) {
   return (
     <AuthPageContainer title="Account" {...props}>
       <DrawerProvider>
         <div className="flex flex-col gap-5 w-full p-5">
-          <UploadImage />
-
           <Avatars />
         </div>
 

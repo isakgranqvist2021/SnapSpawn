@@ -1,3 +1,4 @@
+import { ONE_MB_IN_BYTES, acceptedMimeTypes } from '@aa/constants';
 import { AppContext } from '@aa/context';
 import { AvatarModel } from '@aa/models/avatar';
 import { useContext } from 'react';
@@ -22,26 +23,22 @@ export const useUploadFiles = () => {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
 
-      if (file.size > 10000000) continue;
+      if (file.size > ONE_MB_IN_BYTES * 10) continue;
 
-      switch (file.type) {
-        case 'image/png':
-        case 'image/jpeg':
-        case 'image/jpg':
-          formData.append('files', file);
-          break;
-
-        default:
-          appContext.dispatch({
-            type: 'alerts:add',
-            alert: {
-              severity: 'error',
-              message: `File ${file.name} is not allowed.`,
-            },
-          });
-          break;
+      if (acceptedMimeTypes.includes(file.type)) {
+        formData.append('files', file);
+      } else {
+        appContext.dispatch({
+          type: 'alerts:add',
+          alert: {
+            severity: 'error',
+            message: `File ${file.name} is not allowed.`,
+          },
+        });
       }
     }
+
+    if (!formData.get('files')) return;
 
     try {
       appContext.dispatch({ type: 'upload:set-is-loading', isLoading: true });
