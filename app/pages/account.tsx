@@ -444,7 +444,7 @@ function TabHeader() {
   };
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-3 justify-center flex-wrap">
       <button
         className={
           generateAvatarContext.state.mode === 'generate'
@@ -795,8 +795,7 @@ function UploadImage() {
 
   return (
     <div
-      className="text-center p-5 bg-base-200 w-full flex flex-col items-center items-center h-60 justify-center cursor-pointer ease-in-out"
-      onClick={openFileInput}
+      className="text-center p-5 bg-base-200 w-full flex flex-col items-center items-center h-60 justify-center ease-in-out"
       ref={dropzoneRef}
     >
       <input
@@ -807,11 +806,13 @@ function UploadImage() {
       />
 
       <div ref={contentRef} className="flex flex-col gap-5 items-center">
-        <h3 className="text-3xl">
+        <h3 className="md:text-3xl text-xl">
           Upload image and generate variants based on it.
         </h3>
 
-        <button className="btn btn-primary">Upload Image</button>
+        <button onClick={openFileInput} className="btn btn-primary">
+          Upload Image
+        </button>
       </div>
 
       <svg

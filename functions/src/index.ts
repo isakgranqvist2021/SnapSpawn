@@ -7,120 +7,97 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
 });
 
-if (!stripe) {
-  throw new Error('Stripe is null');
-}
+const mongoClient = new MongoClient(process.env.MONGO_DB_DATABASE_URL!);
 
-async function addUserCredits(email: string, credits: number) {
-  try {
-    const client = await new MongoClient(
-      process.env.MONGO_DB_DATABASE_URL!,
-    ).connect();
-
-    if (!client) {
-      throw new Error('MongoClient is null');
-    }
-
-    const collection = client.db().collection('users');
-
-    if (!collection) {
-      throw new Error('Collection is null');
-    }
-
-    return await collection.updateOne({ email }, { $inc: { credits } });
-  } catch (err) {
-    console.error('err', err);
-    return null;
-  }
-}
-
-function getWebhookEvent(
-  buffer: Buffer,
-  signature: string | string[] | undefined,
-) {
-  if (!signature) {
-    return null;
-  }
-
-  try {
-    const event = stripe.webhooks.constructEvent(
-      buffer.toString(),
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!,
-    );
-
-    return event;
-  } catch (err) {
-    console.error('err', err);
-    return null;
-  }
+function logAndSend(res: Response, status: number, message: string) {
+  console.log(message);
+  return res.status(status).send(message);
 }
 
 async function handleEvent(req: Request, res: Response) {
   try {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
-      res.status(405).send('Method Not Allowed');
-      return;
+      return logAndSend(res, 405, 'Method Not Allowed');
     }
 
-    const event = getWebhookEvent(req.body, req.headers['stripe-signature']);
+    if (!req.headers['stripe-signature']) {
+      return logAndSend(res, 400, 'Webhook Error: stripe-signature is null');
+    }
 
+    const event = stripe.webhooks.constructEvent(
+      req.body,
+      req.headers['stripe-signature'],
+      process.env.STRIPE_WEBHOOK_SECRET!,
+    );
     if (!event) {
-      return res.status(400).send('Webhook Error: event is null');
+      return logAndSend(res, 400, 'Webhook Error: event is null');
     }
 
     if (event.type === 'payment_intent.succeeded') {
-      return res.status(202).send('Webhook received: PaymentIntent successful');
+      return logAndSend(res, 202, 'Webhook received: PaymentIntent successful');
     }
 
     if (event.type === 'payment_intent.payment_failed') {
-      return res.status(400).send('Webhook received: PaymentIntent failed');
+      return logAndSend(res, 400, 'Webhook received: PaymentIntent failed');
     }
 
     if (event.type === 'charge.succeeded') {
-      const paymentIntent = event.data.object as any;
-
-      if (!paymentIntent) {
-        return res
-          .status(400)
-          .send(
-            'Webhook received: Charge successful, but paymentIntent is null',
-          );
+      const eventData = event.data.object as Stripe.Charge;
+      if (!eventData.payment_intent) {
+        return logAndSend(res, 400, 'Webhook Error: paymentIntent is null');
       }
 
+      const paymentIntentId =
+        typeof eventData.payment_intent === 'string'
+          ? eventData.payment_intent
+          : eventData.payment_intent.id;
 
-      const credits = paymentIntent.amount_captured / 5;
+      const [checkoutSessionData] = await stripe.checkout.sessions
+        .list({
+          payment_intent: paymentIntentId,
+        })
+        .then((sessions) => sessions.data);
 
+      const credits = checkoutSessionData.metadata?.credits;
       if (!credits) {
-        return res
-          .status(400)
-          .send('Webhook received: Charge successful, but credits is null');
+        return logAndSend(res, 400, 'Webhook Error: credits is null');
       }
 
-      const email: string = paymentIntent.billing_details.email;
-
+      const email = checkoutSessionData.customer_email;
       if (!email) {
-        return res
-          .status(400)
-          .send('Webhook received: Charge successful, but email is null');
+        return logAndSend(res, 400, 'Webhook Error: email is null');
       }
 
-      const updateResult = await addUserCredits(email, credits);
-
-      if (updateResult?.modifiedCount === 1) {
-        return res.status(201).send('Webhook received: Charge successful');
+      const client = await mongoClient.connect();
+      if (!client) {
+        throw new Error('MongoClient is null');
       }
 
-      return res
-        .status(400)
-        .send('Webhook received: Charge successful, but user not found');
+      const collection = client.db().collection('users');
+      if (!collection) {
+        throw new Error('Collection is null');
+      }
+
+      const updateResult = await collection.updateOne(
+        { email },
+        { $inc: { credits: parseInt(credits) } },
+      );
+      if (updateResult?.modifiedCount !== 1) {
+        return logAndSend(
+          res,
+          400,
+          'Webhook received: Charge successful, but user not found',
+        );
+      }
+
+      return logAndSend(res, 201, 'Webhook received: Charge successful');
     }
 
-    return res.status(204).send('Webhook received: Unhandled event');
+    return logAndSend(res, 400, 'Webhook Error: Unhandled event');
   } catch (err) {
-    console.error('err', err);
-    return res.status(500).send('Webhook Error: Unhandled error');
+    console.error(err);
+    return logAndSend(res, 500, 'Webhook Error: Unhandled error');
   }
 }
 

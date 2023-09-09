@@ -38,8 +38,8 @@ function getDrawerClassNames(isOpen: boolean, position: 'left' | 'right') {
     : 'fixed inset-0 z-10 ease-in-out transition-all duration-200 pointer-events-none';
 
   let drawer = isOpen
-    ? 'fixed top-0 bg-base-100 h-screen flex flex-col justify-between overflow-hidden ease-in-out transition-all duration-200 z-20 w-96'
-    : 'fixed top-0 bg-base-100 h-screen flex flex-col justify-between overflow-hidden ease-in-out transition-all duration-200 z-20 w-0';
+    ? 'fixed top-0 bg-base-100 h-screen flex flex-col justify-between overflow-hidden ease-in-out transition-all duration-200 z-20 sm:w-96 w-full sm:opacity-1 opacity-1 pointer-events-auto'
+    : 'fixed top-0 bg-base-100 h-screen flex flex-col justify-between overflow-hidden ease-in-out transition-all duration-200 z-20 sm:w-0 w-full sm:opacity-1 opacity-0 pointer-events-none';
 
   switch (position) {
     case 'left':
@@ -56,7 +56,9 @@ export function DrawerContent(props: PropsWithChildren) {
   const { children } = props;
 
   return (
-    <div className="flex flex-col gap-5 overflow-auto p-5 w-96">{children}</div>
+    <div className="flex flex-col gap-5 overflow-auto p-5 sm:w-96 w-full">
+      {children}
+    </div>
   );
 }
 
