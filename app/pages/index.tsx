@@ -1,8 +1,7 @@
 import { DefaultHead } from '@aa/components/default-head';
-import { Footer, footerLegalLinksList } from '@aa/components/footer';
+import { Footer } from '@aa/components/footer';
 import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 import { Fragment } from 'react';
 
@@ -264,29 +263,6 @@ function CallToActionFooterSection() {
   );
 }
 
-function HomePageFooter() {
-  const { user } = useUser();
-
-  if (user) {
-    return <Footer />;
-  }
-
-  return (
-    <Footer
-      lists={[
-        {
-          title: 'Quick Links',
-          links: [
-            { href: '/api/auth/login', text: 'Login' },
-            { href: '/account', text: 'Avatar Studio' },
-          ],
-        },
-        footerLegalLinksList,
-      ]}
-    />
-  );
-}
-
 function Home() {
   return (
     <Fragment>
@@ -305,7 +281,7 @@ function Home() {
 
         <CallToActionFooterSection />
 
-        <HomePageFooter />
+        <Footer />
       </MainContainer>
     </Fragment>
   );
