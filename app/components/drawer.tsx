@@ -8,29 +8,9 @@ import {
 
 type DrawerProps = PropsWithChildren<{
   position: 'left' | 'right';
+  isOpen: boolean;
+  onClose: () => void;
 }>;
-
-export const DrawerContext = createContext({
-  isOpen: false,
-  closeDrawer: () => {},
-  openDrawer: () => {},
-});
-
-export function DrawerProvider(props: PropsWithChildren) {
-  const { children } = props;
-
-  const [isOpen, setIsOpen] = useState(false);
-
-  const closeDrawer = () => setIsOpen(false);
-
-  const openDrawer = () => setIsOpen(true);
-
-  return (
-    <DrawerContext.Provider value={{ isOpen, closeDrawer, openDrawer }}>
-      {children}
-    </DrawerContext.Provider>
-  );
-}
 
 function getDrawerClassNames(isOpen: boolean, position: 'left' | 'right') {
   const backdrop = isOpen
@@ -71,9 +51,7 @@ export function DrawerFooter(props: PropsWithChildren) {
 }
 
 export function Drawer(props: DrawerProps) {
-  const { children, position } = props;
-
-  const { isOpen, closeDrawer } = useContext(DrawerContext);
+  const { children, position, isOpen, onClose } = props;
 
   const { backdrop, drawer } = getDrawerClassNames(isOpen, position);
 
@@ -88,7 +66,7 @@ export function Drawer(props: DrawerProps) {
   return (
     <div>
       <div
-        onClick={closeDrawer}
+        onClick={onClose}
         className={backdrop}
         style={
           isOpen

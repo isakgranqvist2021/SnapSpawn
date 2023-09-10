@@ -1,6 +1,6 @@
 import '@aa/styles/globals.css';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
-import type { AppProps } from 'next/app';
+import { AppProps } from 'next/app';
 import { useEffect, useState } from 'react';
 
 function Menu(props: { isOpen: boolean }) {

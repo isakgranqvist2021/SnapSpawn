@@ -7,7 +7,7 @@ import { Fragment } from 'react';
 
 function HeroSection() {
   return (
-    <div className="hero bg-base-200 mt-16">
+    <div style={{ minHeight: '70vh' }} className="hero bg-base-200 mt-16">
       <div className="hero-content flex-col lg:flex-row-reverse lg:justify-center lg:items-center lg:gap-20 lg:p-20 p-6">
         <img
           alt="Hero image"
