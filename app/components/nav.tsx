@@ -818,12 +818,14 @@ export function Nav(props: React.ComponentPropsWithoutRef<'div'>) {
               AI Portrait Studio
             </Link>
 
-            <div className="flex-none gap-2">
-              <ul className="menu menu-horizontal px-1">
-                <GeneratePictureNavItem />
-                <UploadPictureNavItem />
-              </ul>
-            </div>
+            {user && (
+              <div className="flex-none gap-2">
+                <ul className="menu menu-horizontal px-1">
+                  <GeneratePictureNavItem />
+                  <UploadPictureNavItem />
+                </ul>
+              </div>
+            )}
           </div>
 
           <div className="flex-none gap-2">
