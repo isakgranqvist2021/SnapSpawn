@@ -394,7 +394,7 @@ function NavMenu() {
           <a role="button">Add Credits</a>
         </li>
         <li className="hidden md:flex">
-          <a href="/api/auth/logout">Logout</a>
+          <Link href="/api/auth/logout">Logout</Link>
         </li>
       </React.Fragment>
     );
