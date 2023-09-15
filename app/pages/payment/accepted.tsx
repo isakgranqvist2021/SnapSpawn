@@ -41,8 +41,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
     const res = await verifyAndCompletePayment(checkoutSessionId);
 
-    console.log(res);
-
     if (res instanceof Error) {
       return {
         redirect: {
