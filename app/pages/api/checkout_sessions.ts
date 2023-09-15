@@ -17,7 +17,7 @@ function getStripeCheckoutParams(options: {
     {
       price_data: {
         currency: 'EUR',
-        unit_amount: (options.credits / COIN_FACTOR) * 100,
+        unit_amount: Math.round((options.credits / COIN_FACTOR) * 100),
         product_data: { name: `${options.credits} Credits` },
       },
       quantity: 1,
