@@ -59,7 +59,8 @@ async function handleEvent(req: Request, res: Response) {
         })
         .then((sessions) => sessions.data);
 
-      const credits = checkoutSessionData.metadata?.credits;
+      const credits =
+        checkoutSessionData.metadata?.credits ?? eventData.amount_captured / 5;
       if (!credits) {
         return logAndSend(res, 400, 'Webhook Error: credits is null');
       }
@@ -81,7 +82,11 @@ async function handleEvent(req: Request, res: Response) {
 
       const updateResult = await collection.updateOne(
         { email },
-        { $inc: { credits: parseInt(credits) } },
+        {
+          $inc: {
+            credits: typeof credits === 'string' ? parseInt(credits) : credits,
+          },
+        },
       );
       if (updateResult?.modifiedCount !== 1) {
         return logAndSend(
