@@ -30,7 +30,7 @@ function getStripeCheckoutParams(options: {
     payment_method_types: ['card'],
     customer_email: options.email,
     line_items: lineItems,
-    success_url: `${options.url}/payment/accepted?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${options.url}/payment/accepted?checkoutSessionId={CHECKOUT_SESSION_ID}`,
     cancel_url: `${options.url}/payment/rejected`,
     metadata: { credits: options.credits },
   };
