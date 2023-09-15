@@ -41,8 +41,15 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
     const res = await verifyAndCompletePayment(checkoutSessionId);
 
+    console.log(res);
+
     if (res instanceof Error) {
-      return NextResponse.redirect('/payment/rejected');
+      return {
+        redirect: {
+          destination: '/payment/rejected',
+          permanent: false,
+        },
+      };
     }
 
     return { props: {} };
