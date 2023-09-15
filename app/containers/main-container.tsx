@@ -15,7 +15,7 @@ export function MainContainerContent(props: PropsWithChildren) {
 export function MainContainerLayout(props: PropsWithChildren) {
   const { children } = props;
 
-  return <div className="flex bg-white flex-auto">{children}</div>;
+  return <div className="flex bg-white flex-auto mt-16">{children}</div>;
 }
 
 export function MainContainer(props: PropsWithChildren) {

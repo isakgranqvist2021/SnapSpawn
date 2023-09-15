@@ -49,9 +49,9 @@ type ReducerAction =
   | { type: 'set:mode'; mode: GenerateAvatarMode };
 
 const DEFAULT_FORM_STATE: GeneralAvatarModel = {
-  characteristics: 'afrofuturism',
-  gender: 'female',
-  traits: 'beard',
+  characteristics: '2014-era tumblr',
+  gender: 'male',
+  traits: 'baseball cap',
 };
 
 interface GenerateAvatarState {
@@ -216,7 +216,7 @@ function AddCreditsForm() {
 
   return (
     <form
-      className="h-full flex flex-col justify-between"
+      className="grow flex flex-col justify-between"
       onSubmit={continueToCheckout}
     >
       <DrawerContent>
@@ -433,10 +433,6 @@ function PickGender() {
         onChange={onChange}
         className="select select-bordered capitalize"
       >
-        <option disabled selected>
-          Pick one
-        </option>
-
         {genders.map(renderGenderOption)}
       </select>
     </div>
@@ -469,10 +465,6 @@ function PickTraits() {
         onChange={onChange}
         className="select select-bordered capitalize"
       >
-        <option disabled selected>
-          Pick one
-        </option>
-
         {traits.map(renderTraitOption)}
       </select>
     </div>
@@ -509,10 +501,6 @@ function PickCharacteristics() {
         onChange={onChange}
         className="select select-bordered capitalize"
       >
-        <option disabled selected>
-          Pick one
-        </option>
-
         {characteristics.map(renderCharacteristicOption)}
       </select>
     </div>
@@ -751,9 +739,18 @@ function GeneratePictureNavItem() {
 
   if (appContext.state.avatars.isLoading) {
     return (
-      <li className="opacity-50">
-        <a role="button">Generating</a>
-      </li>
+      <Fragment>
+        <li className="opacity-50 hidden md:flex">
+          <a role="button">
+            Generate Picture <Spinner />
+          </a>
+        </li>
+        <li className="opacity-50 md:hidden">
+          <a role="button">
+            Generating <Spinner />
+          </a>
+        </li>
+      </Fragment>
     );
   }
 
@@ -781,9 +778,18 @@ function UploadPictureNavItem() {
 
   if (appContext.state.upload.isLoading) {
     return (
-      <li className="opacity-50">
-        <a role="button">Uploading..</a>
-      </li>
+      <Fragment>
+        <li className="opacity-50 hidden md:flex">
+          <a role="button">
+            Upload Picture <Spinner />
+          </a>
+        </li>
+        <li className="opacity-50 md:hidden">
+          <a role="button">
+            Uploading <Spinner />
+          </a>
+        </li>
+      </Fragment>
     );
   }
 
@@ -809,7 +815,7 @@ export function Nav(props: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <AddCreditsDrawerProvider>
       <GeneratePictureDrawerProvider>
-        <div className="navbar bg-base-200 flex" {...props}>
+        <div className="navbar bg-base-200 flex fixed top-0 w-100" {...props}>
           <div className="flex-1">
             <Link
               href={!user ? '/' : '/account'}
