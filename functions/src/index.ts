@@ -48,24 +48,12 @@ async function handleEvent(req: Request, res: Response) {
         return logAndSend(res, 400, 'Webhook Error: paymentIntent is null');
       }
 
-      const paymentIntentId =
-        typeof eventData.payment_intent === 'string'
-          ? eventData.payment_intent
-          : eventData.payment_intent.id;
-
-      const [checkoutSessionData] = await stripe.checkout.sessions
-        .list({
-          payment_intent: paymentIntentId,
-        })
-        .then((sessions) => sessions.data);
-
-      const credits =
-        checkoutSessionData.metadata?.credits ?? eventData.amount_captured / 5;
+      const credits = eventData.amount_captured / 5;
       if (!credits) {
         return logAndSend(res, 400, 'Webhook Error: credits is null');
       }
 
-      const email = checkoutSessionData.customer_email;
+      const email = eventData.billing_details.email;
       if (!email) {
         return logAndSend(res, 400, 'Webhook Error: email is null');
       }
@@ -82,11 +70,7 @@ async function handleEvent(req: Request, res: Response) {
 
       const updateResult = await collection.updateOne(
         { email },
-        {
-          $inc: {
-            credits: typeof credits === 'string' ? parseInt(credits) : credits,
-          },
-        },
+        { $inc: { credits } },
       );
       if (updateResult?.modifiedCount !== 1) {
         return logAndSend(
