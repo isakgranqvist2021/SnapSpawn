@@ -175,8 +175,8 @@ function AvatarCard(props: AvatarModel) {
             }}
           ></div>
 
-          <div className="fixed inset-8 z-20 p-5 bg-base-200 flex flex-col items-center">
-            <div className="h-4/6 flex flex-col items-center gap-3">
+          <div className="fixed inset-8 z-20 p-5 bg-base-200 flex flex-col items-center overflow-auto">
+            <div className="flex flex-col items-center gap-3">
               <img
                 className="object-fit max-h-full"
                 alt="Ai generated avatar"

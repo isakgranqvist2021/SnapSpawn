@@ -68,7 +68,7 @@ interface GenerateAvatarContextType {
 const INITIAL_STATE: GenerateAvatarState = {
   customPrompt: null,
   form: DEFAULT_FORM_STATE,
-  mode: 'generate',
+  mode: 'custom',
 };
 
 const GenerateAvatarContext = createContext<GenerateAvatarContextType>({
