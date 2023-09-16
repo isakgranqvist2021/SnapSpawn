@@ -34,13 +34,11 @@ export default function Accepted() {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   try {
     const checkoutSessionId = context.query['checkoutSessionId'];
-
     if (typeof checkoutSessionId !== 'string') {
       throw new Error('Invalid checkout session id');
     }
 
     const res = await verifyAndCompletePayment(checkoutSessionId);
-
     if (res instanceof Error) {
       return {
         redirect: {

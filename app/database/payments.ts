@@ -37,6 +37,7 @@ export async function createPaymentDocument(
     }
 
     await collection.createIndex({ email: 1 });
+    await collection.createIndex({ checkoutSessionId: 1 });
 
     const document: CreatePaymentDocument = {
       amount,

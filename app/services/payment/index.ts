@@ -65,6 +65,7 @@ export async function verifyAndCompletePayment(
 
     return null;
   } catch (err) {
+    console.error(err);
     return err instanceof Error ? err : new Error('Unknown error');
   }
 }
