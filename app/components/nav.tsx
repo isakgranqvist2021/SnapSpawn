@@ -574,11 +574,17 @@ function UserCreditsText() {
   );
 }
 
+const MAX_LENGTH = 1000;
+
 function CustomPromptTextarea() {
   const appContext = useContext(AppContext);
   const generateAvatarContext = useContext(GenerateAvatarContext);
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value.length >= MAX_LENGTH) {
+      e.target.value = e.target.value.slice(0, MAX_LENGTH);
+    }
+
     generateAvatarContext.dispatch({
       type: 'set:custom-prompt',
       customPrompt: e.target.value,
@@ -586,13 +592,21 @@ function CustomPromptTextarea() {
   };
 
   return (
-    <textarea
-      className="textarea textarea-bordered h-24 resize w-full"
-      disabled={appContext.state.avatars.isLoading}
-      onChange={onChange}
-      placeholder="Enter custom prompt here"
-      value={generateAvatarContext.state.customPrompt ?? ''}
-    ></textarea>
+    <div className="form-control">
+      <textarea
+        maxLength={MAX_LENGTH}
+        className="textarea textarea-bordered h-24 resize w-full"
+        disabled={appContext.state.avatars.isLoading}
+        onChange={onChange}
+        placeholder="Enter custom prompt here"
+        value={generateAvatarContext.state.customPrompt ?? ''}
+      ></textarea>
+      <label className="label justify-end">
+        <span className="label-text-alt">
+          {generateAvatarContext.state.customPrompt?.length ?? 0}/{MAX_LENGTH}
+        </span>
+      </label>
+    </div>
   );
 }
 

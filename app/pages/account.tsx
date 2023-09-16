@@ -135,6 +135,14 @@ function AvatarCard(props: AvatarModel) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isFullscreen]);
+
   return (
     <Fragment>
       {isFullscreen && (
