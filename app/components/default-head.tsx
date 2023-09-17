@@ -13,12 +13,12 @@ export function DefaultHead(props: { title: string }) {
         <title>{documentTitle}</title>
         <meta
           name="description"
-          content="Get instant, custom portraits at AI Portrait Studio. Our AI technology generates unique images based on your photos. Create a personalized work of art in minutes."
+          content="Get instant, custom portraits at AI Portrait Studio. Our AI technology generates unique images based on your pictures. Create a personalized work of art in minutes. Generate images with Dall-E and Stable Diffusion."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="keywords"
-          content="AI technology, Portraits, Custom, Images, Personalized, Photos, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists, Dall-E, Stable Diffusion"
+          content="AI technology, Image Generator, AI Image, Portraits, Custom, Images, Personalized, Pictures, Art, Instant, Generates, Unique, Memories, Work of art, Advanced technology, Skilled artists, Dall-E, Stable Diffusion"
         />
         <meta httpEquiv="Content-Type" content="text/html;charset=UTF-8" />
         <link rel="icon" href="/favicon.ico" />

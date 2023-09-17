@@ -1,5 +1,5 @@
 import { STRIPE_SECRET_KEY } from '@aa/config';
-import { creditsMap } from '@aa/models/credits';
+import { COIN_FACTOR } from '@aa/constants';
 import { Logger } from '@aa/services/logger';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import Stripe from 'stripe';
@@ -8,15 +8,17 @@ const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: '2022-11-15',
 });
 
-function getStripeCheckoutParams(credits: number, email: string, url?: string) {
-  const amount = creditsMap.get(credits);
-
+function getStripeCheckoutParams(options: {
+  credits: number;
+  email: string;
+  url?: string;
+}) {
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
     {
       price_data: {
         currency: 'EUR',
-        unit_amount: amount,
-        product_data: { name: `${credits} Credits` },
+        unit_amount: Math.round((options.credits / COIN_FACTOR) * 100),
+        product_data: { name: `${options.credits} Credits` },
       },
       quantity: 1,
     },
@@ -26,10 +28,11 @@ function getStripeCheckoutParams(credits: number, email: string, url?: string) {
     mode: 'payment',
     submit_type: 'pay',
     payment_method_types: ['card'],
-    customer_email: email,
+    customer_email: options.email,
     line_items: lineItems,
-    success_url: `${url}/payment/accepted?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${url}/payment/rejected`,
+    success_url: `${options.url}/payment/accepted?checkoutSessionId={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${options.url}/payment/rejected`,
+    metadata: { credits: options.credits },
   };
 
   return params;
@@ -45,16 +48,15 @@ export default withApiAuthRequired(async (req, res) => {
     req.body = JSON.parse(req.body);
 
     const session = await getSession(req, res);
-
     if (!session?.user.email) {
       throw new Error('cannot generate avatar while logged out');
     }
 
-    const stripeCheckoutParams = getStripeCheckoutParams(
-      req.body.credits,
-      session.user.email,
-      req.headers.origin,
-    );
+    const stripeCheckoutParams = getStripeCheckoutParams({
+      credits: req.body.credits,
+      email: session.user.email,
+      url: req.headers.origin,
+    });
 
     const checkoutSession = await stripe.checkout.sessions.create(
       stripeCheckoutParams,

@@ -5,10 +5,14 @@ import {
   GCP_PRIVATE_KEY,
   GCP_PROJECT_ID,
 } from '@aa/config';
+import { ONE_MB_IN_BYTES, acceptedMimeTypes } from '@aa/constants';
+import { AvatarURLs, avatarSizes } from '@aa/models/avatar';
 import { Storage } from '@google-cloud/storage';
+import formidable from 'formidable';
+import fs from 'fs';
+import sharp from 'sharp';
 import { uid } from 'uid';
 
-import { getImageFromUrl } from '../avatar';
 import { Logger } from '../logger';
 
 const ONE_HOUR_IN_MS = 1000 * 60 * 60;
@@ -29,11 +33,21 @@ export async function uploadAvatar(avatarUrls: string[]): Promise<string[]> {
   const avatarIds = await Promise.all(
     avatarUrls.map(async (avatarUrl): Promise<string | null> => {
       try {
-        const blob = await getImageFromUrl(avatarUrl);
+        const blob = await fetch(avatarUrl).then((res) => res.blob());
         const arrayBuffer = await blob.arrayBuffer();
         const avatarId = uid();
 
-        await bucket.file(`${avatarId}.png`).save(Buffer.from(arrayBuffer));
+        await Promise.all(
+          avatarSizes.map(async (size) => {
+            const resizedBuffer = await sharp(arrayBuffer)
+              .resize(parseInt(size.split('x')[0]))
+              .png()
+              .toBuffer();
+
+            await bucket.file(`${avatarId}-${size}.png`).save(resizedBuffer);
+          }),
+        );
+
         return avatarId;
       } catch (err) {
         Logger.log('error', 'Error uploading avatar', err);
@@ -45,13 +59,68 @@ export async function uploadAvatar(avatarUrls: string[]): Promise<string[]> {
   return avatarIds.filter((avatarId): avatarId is string => avatarId !== null);
 }
 
-export async function getSignedUrl(avatarId: string) {
-  const file = bucket.file(`${avatarId}.png`);
+export async function uploadFile(
+  files: formidable.Files<string>,
+): Promise<string[]> {
+  if (!Array.isArray(files.files)) {
+    return [];
+  }
 
-  const [signedUrl] = await file.getSignedUrl({
-    action: 'read',
-    expires: Date.now() + ONE_HOUR_IN_MS,
-  });
+  const avatarIds = await Promise.all(
+    files.files.map(async (file): Promise<string | null> => {
+      if (
+        !acceptedMimeTypes.includes(file.mimetype as any) ||
+        file.size > ONE_MB_IN_BYTES * 10
+      ) {
+        return null;
+      }
 
-  return signedUrl;
+      try {
+        const buffer = fs.readFileSync(file.filepath);
+        const avatarId = uid();
+
+        await Promise.all(
+          avatarSizes.map(async (size) => {
+            const resizedBuffer = await sharp(buffer)
+              .resize(parseInt(size.split('x')[0]))
+              .png()
+              .toBuffer();
+
+            await bucket.file(`${avatarId}-${size}.png`).save(resizedBuffer);
+          }),
+        );
+
+        return avatarId;
+      } catch (err) {
+        Logger.log('error', 'Error uploading avatar', err);
+        return null;
+      }
+    }),
+  );
+
+  return avatarIds.filter((avatarId): avatarId is string => avatarId !== null);
+}
+
+export async function getSignedUrls(avatarId: string): Promise<AvatarURLs> {
+  const urls: AvatarURLs = {
+    '1024x1024': '',
+    '128x128': '',
+    '256x256': '',
+    '512x512': '',
+  };
+
+  for (let i = 0; i < avatarSizes.length; i++) {
+    const size = avatarSizes[i];
+
+    const file = bucket.file(`${avatarId}-${size}.png`);
+
+    const [signedUrl] = await file.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + ONE_HOUR_IN_MS,
+    });
+
+    urls[size] = signedUrl;
+  }
+
+  return urls;
 }

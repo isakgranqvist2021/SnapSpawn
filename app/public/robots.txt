@@ -7,10 +7,4 @@ Disallow: /auth/api/logout
 User-agent: AdsBot-Google
 Disallow: /account
 
-User-agent: AdsBot-Google
-Disallow: /create
-
-User-agent: AdsBot-Google
-Disallow: /refill
-
 Sitemap: https://aiportraitstudio.com/sitemap.xml

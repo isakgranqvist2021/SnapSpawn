@@ -1,4 +1,4 @@
-export const genders = ['male', 'female', 'rather not say'] as const;
+export const genders = ['male', 'female', 'none'] as const;
 
 export const traits = [
   'baseball cap',
@@ -13,6 +13,8 @@ export const traits = [
   'texture bucket hat',
   'turban',
   'wings',
+  'witch hat',
+  'wizard hat',
 ] as const;
 
 export const characteristics = [
@@ -32,20 +34,16 @@ export const characteristics = [
   'memphis',
   'steampunk',
   'vaporwave',
+  'victorian',
+  'y2k',
 ] as const;
-
-export const eyeColors = ['blue', 'brown', 'green', 'hazel'] as const;
 
 export type Gender = (typeof genders)[number];
 export type Traits = (typeof traits)[number];
 export type Characteristic = (typeof characteristics)[number];
 
-export interface PromptModel {
+export interface GeneralAvatarModel {
   characteristics: Characteristic;
   gender: Gender;
   traits: Traits;
-}
-
-export interface CustomPrompt {
-  customPrompt: string;
 }

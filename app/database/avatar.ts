@@ -1,41 +1,40 @@
-<<<<<<< Updated upstream
-=======
-import { AvatarModel } from '@aa/models/avatar';
 import { PaginateReturn } from '@aa/models/paginate';
 import { Characteristic, Gender, Traits } from '@aa/models/prompt';
->>>>>>> Stashed changes
 import { Logger } from '@aa/services/logger';
-import mongodb from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import { getCollection } from './database';
 
-export type PromptOptions = Record<string, any> | null;
+export interface PromptOptions {
+  characteristics: Characteristic | null;
+  custom: boolean;
+  gender: Gender | null;
+  traits: Traits | null;
+}
 
 export interface AvatarDocument {
-  _id: mongodb.BSON.ObjectId;
+  _id: ObjectId;
   avatar: string;
   createdAt: number;
   email: string;
+  parentId: ObjectId | null;
   prompt: string;
   promptOptions: PromptOptions;
 }
 
 export type CreateAvatarDocument = Omit<AvatarDocument, '_id'>;
 
-export interface GetAvatarsOptions {
-  email: string;
-}
-
 export interface CreateAvatarsOptions {
   avatars: string[];
   email: string;
+  parentId: ObjectId | null;
   prompt: string;
   promptOptions: PromptOptions;
 }
 
 export const AVATARS_COLLECTION_NAME = 'avatars';
 
-export async function getAvatars(options: GetAvatarsOptions) {
+export async function getAvatars(options: { email: string }) {
   try {
     const { email } = options;
 
@@ -60,6 +59,7 @@ export async function getAvatars(options: GetAvatarsOptions) {
         email: avatarDocument.email,
         prompt: avatarDocument.prompt,
         promptOptions: avatarDocument.promptOptions,
+        parentId: avatarDocument.parentId,
       };
 
       return document;
@@ -70,8 +70,6 @@ export async function getAvatars(options: GetAvatarsOptions) {
   }
 }
 
-<<<<<<< Updated upstream
-=======
 export async function paginateAvatars(options: {
   email: string;
   page: number;
@@ -171,10 +169,9 @@ export async function getAvatar(options: { id: string }) {
   }
 }
 
->>>>>>> Stashed changes
 export async function createAvatars(options: CreateAvatarsOptions) {
   try {
-    const { avatars, email, prompt, promptOptions } = options;
+    const { avatars, email, prompt, promptOptions, parentId } = options;
 
     const collection = await getCollection<CreateAvatarDocument>(
       AVATARS_COLLECTION_NAME,
@@ -191,6 +188,7 @@ export async function createAvatars(options: CreateAvatarsOptions) {
         email,
         prompt,
         promptOptions,
+        parentId,
       };
 
       return document;

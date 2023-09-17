@@ -2,16 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.sidebar {
-  max-width: 90%;
-}
-
-.my-avatars {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(256px, 256px));
-}
-
 .hero {
   min-height: 70vh;
 }

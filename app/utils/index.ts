@@ -1,25 +1,27 @@
-import { AvatarDocument, getAvatars } from '@aa/database/avatar';
+import { AvatarDocument, PromptOptions, getAvatars } from '@aa/database/avatar';
 import { createUser, getUser } from '@aa/database/user';
 import { AvatarModel } from '@aa/models/avatar';
-import { getSignedUrl } from '@aa/services/gcp';
+import { getSignedUrls } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
-import { getSession } from '@auth0/nextjs-auth0';
+import { Session, getSession } from '@auth0/nextjs-auth0';
 import { GetServerSidePropsContext } from 'next';
 
 async function prepareAvatarModel(
   avatarDocument: AvatarDocument,
 ): Promise<AvatarModel | null> {
   try {
-    const { _id, avatar, createdAt, prompt, promptOptions } = avatarDocument;
+    const { _id, avatar, createdAt, prompt, promptOptions, parentId } =
+      avatarDocument;
 
-    const url = await getSignedUrl(avatar);
+    const urls = await getSignedUrls(avatar);
 
     return {
       createdAt: new Date(createdAt).getTime(),
       id: _id.toHexString(),
       prompt,
       promptOptions,
-      url,
+      urls,
+      parentId: parentId?.toString() ?? null,
     };
   } catch {
     return null;
@@ -59,4 +61,49 @@ export async function loadServerSideProps(ctx: GetServerSidePropsContext) {
   );
 
   return { props: { credits: user.credits, avatars } };
+}
+
+export async function getUserAndValidateCredits(session?: Session | null) {
+  try {
+    if (!session?.user.email) {
+      throw new Error('cannot generate avatar while logged out');
+    }
+
+    const user = await getUser({ email: session.user.email });
+
+    if (!user) {
+      throw new Error('cannot generate avatar for non-existent user');
+    }
+
+    if (user.credits <= 0) {
+      throw new Error('cannot generate avatar without credits');
+    }
+
+    return user;
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
+}
+
+export function getPrompt(promptOptions: PromptOptions) {
+  const parts = [
+    'circle shaped',
+    'close up',
+    'medium light',
+    'fictional',
+    'digital social media profile avatar',
+    'colourful lighting',
+    'vector art',
+  ];
+
+  if (promptOptions) {
+    const values = Object.values(promptOptions).filter(
+      (value) => value !== "'none'",
+    );
+
+    parts.push(...values);
+  }
+
+  return parts.join(', ');
 }

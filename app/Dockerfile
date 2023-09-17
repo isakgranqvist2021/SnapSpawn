@@ -36,10 +36,10 @@ ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
 COPY . .
 
-RUN yarn install
-RUN yarn create-env
-RUN yarn run build
+RUN npm install
+RUN npm run create-env
+RUN npm run build
 
 EXPOSE 80
 
-CMD [ "yarn", "start" ]
+CMD [ "npm", "start" ]

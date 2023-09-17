@@ -1,8 +1,8 @@
 import { Logger } from '@aa/services/logger';
 import clientPromise from '@aa/services/mongodb';
-import mongodb from 'mongodb';
+import { Document } from 'mongodb';
 
-export async function getCollection<T extends mongodb.Document>(
+export async function getCollection<T extends Document>(
   collectionName: string,
 ) {
   try {

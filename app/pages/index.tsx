@@ -1,14 +1,13 @@
 import { DefaultHead } from '@aa/components/default-head';
-import { Footer, footerLegalLinksList } from '@aa/components/footer';
+import { Footer } from '@aa/components/footer';
 import { Nav } from '@aa/components/nav';
 import { MainContainer } from '@aa/containers/main-container';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 import { Fragment } from 'react';
 
 function HeroSection() {
   return (
-    <div className="hero bg-base-200 mt-16">
+    <div style={{ minHeight: '70vh' }} className="hero bg-base-200 mt-16">
       <div className="hero-content flex-col lg:flex-row-reverse lg:justify-center lg:items-center lg:gap-20 lg:p-20 p-6">
         <img
           alt="Hero image"
@@ -20,8 +19,8 @@ function HeroSection() {
             AI Portrait Studio
           </h1>
           <p className="py-6 max-w-prose lg:text-left text-center">
-            Generate captivating photos with ease. Our powerful tool lets you
-            generate photos with{' '}
+            Generate captivating pictures with ease. Our powerful tool lets you
+            generate pictures with{' '}
             <span className="text-secondary">custom prompts</span> or
             pre-defined options. Unleash your creativity today! Our model is
             based on <span className="text-secondary">DALL-E</span>.
@@ -78,7 +77,7 @@ function BenefitsSection() {
       <div className="mx-auto hero-content flex-col lg:flex-row lg:justify-center lg:items-center lg:gap-20">
         <img
           width={300}
-          alt="Creativity image"
+          alt="Lightbulb image"
           src="/images/pexels-led-supermarket-577514.jpg"
           className="max-w-sm rounded-lg shadow-2xl max-w-full"
         />
@@ -137,6 +136,7 @@ function HowItWorksSection() {
           <p className="text-center flex items-center gap-5 text-xs lg:text-base">
             <svg
               xmlns="http://www.w3.org/2000/svg"
+              aria-label="Green checkmark"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
@@ -154,6 +154,43 @@ function HowItWorksSection() {
           <p className="text-center flex items-center gap-5 text-xs lg:text-base">
             <svg
               xmlns="http://www.w3.org/2000/svg"
+              aria-label="Green checkmark"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-green-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+            Upload your own images and generate variants
+          </p>
+          <p className="text-center flex items-center gap-5 text-xs lg:text-base">
+            <svg
+              aria-label="Green checkmark"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-green-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.5 12.75l6 6 9-13.5"
+              />
+            </svg>
+            Generate variants of the same image
+          </p>
+          <p className="text-center flex items-center gap-5 text-xs lg:text-base">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              aria-label="Green checkmark"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
@@ -171,6 +208,7 @@ function HowItWorksSection() {
           <p className="text-center flex items-center gap-5 text-xs lg:text-base">
             <svg
               xmlns="http://www.w3.org/2000/svg"
+              aria-label="Red cross"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
@@ -192,6 +230,7 @@ function HowItWorksSection() {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
+            aria-label="Right arrow"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
@@ -224,29 +263,6 @@ function CallToActionFooterSection() {
   );
 }
 
-function HomePageFooter() {
-  const { user } = useUser();
-
-  if (user) {
-    return <Footer />;
-  }
-
-  return (
-    <Footer
-      lists={[
-        {
-          title: 'Quick Links',
-          links: [
-            { href: '/api/auth/login', text: 'Login' },
-            { href: '/account', text: 'Avatar Studio' },
-          ],
-        },
-        footerLegalLinksList,
-      ]}
-    />
-  );
-}
-
 function Home() {
   return (
     <Fragment>
@@ -265,7 +281,7 @@ function Home() {
 
         <CallToActionFooterSection />
 
-        <HomePageFooter />
+        <Footer />
       </MainContainer>
     </Fragment>
   );

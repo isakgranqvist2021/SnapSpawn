@@ -1,20 +1,31 @@
-import { createAvatars } from '@aa/database/avatar';
+import { createAvatars, getAvatar } from '@aa/database/avatar';
 import { createTransaction } from '@aa/database/transaction';
 import { reduceUserCredits } from '@aa/database/user';
 import { AvatarModel } from '@aa/models/avatar';
-import { generateAvatars } from '@aa/services/avatar';
+import { createAvatarVariant } from '@aa/services/avatar';
 import { getSignedUrls, uploadAvatar } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { getUserAndValidateCredits } from '@aa/utils';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
+import { ObjectId } from 'mongodb';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-async function createAvatarModels(prompt: string, email: string) {
+async function createAvatarVariants(id: string, email: string) {
   try {
+    /*
+     * Get avatar from MongoDB that we want to generate variants for
+     */
+    const avatar = await getAvatar({ id });
+    if (!avatar) {
+      throw new Error('cannot generate avatar for non-existent avatar');
+    }
+
     /*
      * Generate avatars from OpenAI API
      */
-    const openAiUrls = await generateAvatars(prompt);
+    const url = await getSignedUrls(avatar.avatar);
+    const res = await fetch(url['1024x1024']);
+    const openAiUrls = await createAvatarVariant(res);
     if (!openAiUrls) {
       throw new Error("couldn't generate avatars");
     }
@@ -31,16 +42,11 @@ async function createAvatarModels(prompt: string, email: string) {
      * Create avatars in MongoDB
      */
     const createdAvatars = await createAvatars({
-      email,
       avatars: avatarIds,
-      promptOptions: {
-        custom: true,
-        characteristics: null,
-        gender: null,
-        traits: null,
-      },
-      parentId: null,
-      prompt,
+      email,
+      prompt: avatar.prompt,
+      promptOptions: avatar.promptOptions,
+      parentId: new ObjectId(id),
     });
     if (!createdAvatars) {
       throw new Error("couldn't create avatars");
@@ -57,15 +63,10 @@ async function createAvatarModels(prompt: string, email: string) {
         return {
           createdAt: Date.now(),
           id: insertedKeys[i].toString(),
-          promptOptions: {
-            custom: true,
-            characteristics: null,
-            gender: null,
-            traits: null,
-          },
+          prompt: avatar.prompt,
+          parentId: id,
+          promptOptions: avatar.promptOptions,
           urls,
-          prompt,
-          parentId: null,
         };
       }),
     );
@@ -82,7 +83,7 @@ async function createAvatarModels(prompt: string, email: string) {
   }
 }
 
-async function create(req: NextApiRequest, res: NextApiResponse) {
+async function createVariant(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
@@ -97,7 +98,7 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
       throw new Error('cannot generate avatar user is null');
     }
 
-    const avatarModels = await createAvatarModels(req.body.options, user.email);
+    const avatarModels = await createAvatarVariants(req.body.id, user.email);
     if (!avatarModels) {
       throw new Error('cannot generate avatar avatarModels is null');
     }
@@ -109,4 +110,4 @@ async function create(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withApiAuthRequired(create);
+export default withApiAuthRequired(createVariant);

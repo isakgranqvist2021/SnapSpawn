@@ -1,89 +1,132 @@
+import { Storage } from '@google-cloud/storage';
 import 'dotenv/config';
-import { MongoClient, BSON } from 'mongodb';
+import { MongoClient } from 'mongodb';
+import sharp from 'sharp';
 
-const MONGO_URL_PROD = process.env.MONGO_DB_DATABASE_URL_PROD;
-const MONGO_URL_DEV = process.env.MONGO_DB_DATABASE_URL_DEV;
+const client = new MongoClient(process.env.MONGO_DB_DATABASE_URL_DEV!);
 
-if (!MONGO_URL_PROD || !MONGO_URL_DEV) {
-	throw new Error('Missing MONGO_URL_PROD or MONGO_URL_DEV');
+export const fileSizes = [
+  '1024x1024',
+  '512x512',
+  '256x256',
+  '128x128',
+] as const;
+
+const storage = new Storage({
+  projectId: process.env.GCP_PROJECT_ID,
+  credentials: {
+    type: 'service_account',
+    private_key: process.env.GCP_PRIVATE_KEY,
+    client_email: process.env.GCP_CLIENT_EMAIL,
+    client_id: process.env.GCP_CLIENT_ID,
+  },
+});
+
+const bucket = storage.bucket(process.env.GCP_BUCKET_NAME!);
+
+export function getImageFromUrl(url: string) {
+  return fetch(url).then((res) => res.blob());
 }
 
-const client = new MongoClient(MONGO_URL_PROD);
+async function createPictureSizes(ids: string[]) {
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
 
-type PromptOptions = Record<string, any> | null;
+    try {
+      const url = await bucket.file(`${id}.png`).getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+      });
 
-interface DepAvatarDocument {
-	_id: BSON.ObjectId;
-	avatar: string;
-	createdAt: number;
-	email: string;
-	prompt: string;
+      if (!url) {
+        continue;
+      }
+
+      const blob = await getImageFromUrl(url[0]);
+
+      const arrayBuffer = await blob.arrayBuffer();
+
+      await Promise.all(
+        fileSizes.map(async (size) => {
+          const [width, height] = size.split('x');
+
+          const resizedBuffer = await sharp(arrayBuffer)
+            .resize(parseInt(width), parseInt(height))
+            .png()
+            .toBuffer();
+
+          await bucket.file(`${id}-${size}.png`).save(resizedBuffer);
+        }),
+      );
+    } catch (err) {
+      console.log(id, err);
+      continue;
+    }
+  }
 }
 
-interface AvatarDocument {
-	_id: BSON.ObjectId;
-	avatar: string;
-	createdAt: number;
-	email: string;
-	prompt: string;
-	promptOptions: PromptOptions;
+async function fillGaps(ids: string[]) {
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+
+    const url = await bucket.file(`${id}.png`).getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    });
+
+    const blob = await getImageFromUrl(url[0]);
+
+    const arrayBuffer = await blob.arrayBuffer();
+
+    for (let j = 0; j < fileSizes.length; j++) {
+      const size = fileSizes[j];
+      const [exists] = await bucket.file(`${id}-${size}.png`).exists();
+
+      if (exists) {
+        continue;
+      }
+
+      const [width, height] = size.split('x');
+
+      const resizedBuffer = await sharp(arrayBuffer)
+        .resize(parseInt(width), parseInt(height))
+        .png()
+        .toBuffer();
+
+      console.log('Saving', `${id}-${size}.png`);
+
+      await bucket.file(`${id}-${size}.png`).save(resizedBuffer);
+    }
+  }
 }
 
-function getPrompt(promptOptions: PromptOptions) {
-	const parts = [
-		'circle shaped',
-		'close up',
-		'medium light',
-		'fictional',
-		'digital social media profile avatar',
-		'colourful lighting',
-		'vector art',
-	];
+async function deleteAvatars(ids: string[]) {
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
 
-	if (promptOptions) {
-		const values = Object.values(promptOptions).filter(
-			(value) => value !== "'rather not say'"
-		);
+    const [exists] = await bucket.file(`${id}.png`).exists();
 
-		parts.push(...values);
-	}
+    if (!exists) {
+      continue;
+    }
 
-	return parts.join(', ');
+    console.log('Deleting', `${id}.png`);
+    await bucket.file(`${id}.png`).delete();
+  }
 }
 
 async function main() {
-	await client.connect();
+  const files = await bucket.getFiles({});
 
-	const collection = client.db().collection('avatars');
+  const x: any[] = [];
 
-	const docs = await collection
-		.find<DepAvatarDocument>({
-			promptOptions: { $exists: false },
-		})
-		.toArray();
+  files[0].forEach((file) => {
+    if (!file.id?.includes('-')) {
+      x.push(file.id?.replace('.png', ''));
+    }
+  });
 
-	let queue = 0;
-	await Promise.all(
-		docs.map((doc) => {
-			queue++;
-			console.log('Queue', queue);
-
-			const parts = doc.prompt.split('&').map((part) => part.split('='));
-
-			const promptOptions: PromptOptions = {};
-
-			for (const [key, value] of parts) {
-				promptOptions[key] = value;
-			}
-
-			return collection.updateOne(
-				{ _id: doc._id },
-				{ $set: { promptOptions, prompt: getPrompt(promptOptions) } }
-			);
-		})
-	);
-
-	await client.close();
+  await deleteAvatars(x);
 }
 
 main();
