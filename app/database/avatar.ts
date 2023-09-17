@@ -24,14 +24,6 @@ export interface AvatarDocument {
 
 export type CreateAvatarDocument = Omit<AvatarDocument, '_id'>;
 
-export interface CreateAvatarsOptions {
-  avatars: string[];
-  email: string;
-  parentId: ObjectId | null;
-  prompt: string;
-  promptOptions: PromptOptions;
-}
-
 export const AVATARS_COLLECTION_NAME = 'avatars';
 
 export async function getAvatars(options: { email: string }) {
@@ -169,7 +161,13 @@ export async function getAvatar(options: { id: string }) {
   }
 }
 
-export async function createAvatars(options: CreateAvatarsOptions) {
+export async function createAvatars(options: {
+  avatars: string[];
+  email: string;
+  parentId: ObjectId | null;
+  prompt: string;
+  promptOptions: PromptOptions;
+}) {
   try {
     const { avatars, email, prompt, promptOptions, parentId } = options;
 

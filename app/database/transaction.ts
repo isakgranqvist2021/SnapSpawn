@@ -12,14 +12,12 @@ export interface TransactionDocument {
 
 export type CreateTransactionDocument = Omit<TransactionDocument, '_id'>;
 
-export interface CreateTransactionOptions {
-  credits: number;
-  email: string;
-}
-
 export const TRANSACTION_COLLECTION_NAME = 'transactions';
 
-export async function createTransaction(options: CreateTransactionOptions) {
+export async function createTransaction(options: {
+  credits: number;
+  email: string;
+}) {
   try {
     const { credits, email } = options;
 

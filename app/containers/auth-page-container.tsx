@@ -88,10 +88,10 @@ function PageSnackbar() {
 }
 
 export function AuthPageContainer(props: AuthPageContainerProps) {
-  const { avatars, credits, children, title } = props;
+  const { avatars, credits, referrals, children, title } = props;
 
   return (
-    <AppProvider avatars={avatars} credits={credits}>
+    <AppProvider avatars={avatars} credits={credits} referrals={referrals}>
       <DefaultHead title={title} />
       <PageSnackbar />
 

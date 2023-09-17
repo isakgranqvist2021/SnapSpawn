@@ -1,6 +1,8 @@
 import { AvatarDocument, PromptOptions, getAvatars } from '@aa/database/avatar';
+import { ReferralDocument, getReferrals } from '@aa/database/referral';
 import { createUser, getUser } from '@aa/database/user';
 import { AvatarModel } from '@aa/models/avatar';
+import { ReferralModel } from '@aa/models/referral';
 import { getSignedUrls } from '@aa/services/gcp';
 import { Logger } from '@aa/services/logger';
 import { Session, getSession } from '@auth0/nextjs-auth0';
@@ -28,39 +30,68 @@ async function prepareAvatarModel(
   }
 }
 
-export async function loadServerSideProps(ctx: GetServerSidePropsContext) {
-  const session = await getSession(ctx.req, ctx.res);
+function prepareReferral(
+  avatarDocument: ReferralDocument,
+): ReferralModel | null {
+  try {
+    const { _id, createdAt, toEmail, status } = avatarDocument;
 
-  if (!session?.user.email) {
-    Logger.log('warning', session);
-    return { props: { credits: 0, avatars: [] } };
+    return {
+      createdAt,
+      creditsEarned: 0,
+      email: toEmail,
+      id: _id.toHexString(),
+      status,
+    };
+  } catch {
+    return null;
   }
+}
 
-  const email = session.user.email;
-
-  const user = await getUser({ email });
-
-  if (user === null) {
-    await createUser({ email });
-    return { props: { credits: 0, avatars: [] } };
-  }
-
+async function getAndPrepareAvatars(email: string) {
   const avatarDocuments = await getAvatars({ email });
-
   if (!avatarDocuments) {
     Logger.log('warning', avatarDocuments);
-    return { props: { credits: user.credits, avatars: [] } };
+    return [];
   }
 
   const avatarModels = await Promise.all(
     avatarDocuments.map(prepareAvatarModel),
   );
-
-  const avatars = avatarModels.filter(
+  return avatarModels.filter(
     (avatarModel): avatarModel is AvatarModel => avatarModel !== null,
   );
+}
 
-  return { props: { credits: user.credits, avatars } };
+async function getAndPrepareReferrals(email: string) {
+  const referralDocuments = await getReferrals({ fromEmail: email });
+  if (!referralDocuments) {
+    return [];
+  }
+
+  const referralModels = referralDocuments.map(prepareReferral);
+  return referralModels.filter(
+    (referralModel): referralModel is ReferralModel => referralModel !== null,
+  );
+}
+
+export async function loadServerSideProps(ctx: GetServerSidePropsContext) {
+  const session = await getSession(ctx.req, ctx.res);
+  if (!session?.user.email) {
+    Logger.log('warning', session);
+    return { props: { credits: 0, avatars: [], referrals: [] } };
+  }
+
+  const user = await getUser({ email: session.user.email });
+  if (user === null) {
+    await createUser({ email: session.user.email });
+    return { props: { credits: 0, avatars: [], referrals: [] } };
+  }
+
+  const avatars = await getAndPrepareAvatars(session.user.email);
+  const referrals = await getAndPrepareReferrals(session.user.email);
+
+  return { props: { credits: user.credits, avatars, referrals } };
 }
 
 export async function getUserAndValidateCredits(session?: Session | null) {

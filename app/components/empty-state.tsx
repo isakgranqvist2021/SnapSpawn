@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export function EmptyState(props: {
   message: string;
-  buttonText: string;
+  buttonText?: string;
   buttonHref?: string;
 }) {
   const { message, buttonText, buttonHref } = props;

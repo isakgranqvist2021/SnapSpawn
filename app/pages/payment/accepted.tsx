@@ -3,7 +3,6 @@ import { MainContainer } from '@aa/containers/main-container';
 import { verifyAndCompletePayment } from '@aa/services/payment';
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { NextResponse } from 'next/server';
 import { Fragment } from 'react';
 
 export default function Accepted() {
@@ -12,17 +11,15 @@ export default function Accepted() {
       <DefaultHead title="Payment Accepted" />
 
       <MainContainer>
-        <div className="flex flex-col gap-3 items-center mt-10">
-          <h1 className="text-xl text-green-600">
-            Your payment has been accepted
-          </h1>
+        <div className="flex flex-col gap-3 p-5 items-center mt-10">
+          <h1 className="text-3xl">Your payment has been accepted</h1>
           <p className="text-center max-w-prose">
             We are pleased to confirm that your payment has been received
             successfully. Your account will be credited with the coins
             immediately.
           </p>
 
-          <Link className="btn btn-success" href="/account">
+          <Link className="btn btn-primary" href="/account">
             Continue to your account
           </Link>
         </div>

@@ -42,9 +42,27 @@ export function Footer() {
       </nav>
 
       <nav>
+        <header className="footer-title">Resources</header>
+        <a
+          className="link link-hover"
+          target="_blank"
+          href="/The-DALL·E-2-prompt-book-v1.02.pdf"
+        >
+          The Dall-E prompt Book
+        </a>
+        <a
+          className="link link-hover"
+          target="_blank"
+          href="https://mspoweruser.com/best-dall-e-2-prompts/"
+        >
+          Best Dall-E prompts
+        </a>
+      </nav>
+
+      <nav>
         <header className="footer-title">Social</header>
 
-        <a href="https://www.facebook.com/profile.php?id=100090161863246">
+        <a href="https://www.facebook.com/profile.php?id=61551602660419">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

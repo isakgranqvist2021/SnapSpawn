@@ -1,4 +1,5 @@
 import { AvatarModel } from '@aa/models/avatar';
+import { ReferralModel } from '@aa/models/referral';
 import { Alert } from '@aa/types';
 import { Dispatch, Reducer, createContext, useReducer } from 'react';
 import { uid } from 'uid';
@@ -12,6 +13,7 @@ interface AppContextState {
   alerts: Alert[];
   avatars: ApiState<AvatarModel[]>;
   credits: ApiState<number>;
+  referrals: ApiState<ReferralModel[]>;
   upload: ApiState<null>;
 }
 
@@ -19,6 +21,7 @@ interface AppProviderProps {
   avatars: AvatarModel[];
   children: React.ReactNode;
   credits: number;
+  referrals: ReferralModel[];
 }
 
 type AlertReducerAction =
@@ -33,6 +36,10 @@ type AvatarsReducerAction =
   | { type: 'avatars:add'; avatars: AvatarModel[] }
   | { type: 'avatars:set-is-loading'; isLoading: boolean };
 
+type ReferralsReducerAction =
+  | { type: 'referrals:add'; referrals: ReferralModel[] }
+  | { type: 'referrals:set-is-loading'; isLoading: boolean };
+
 type UploadReducerAction = {
   type: 'upload:set-is-loading';
   isLoading: boolean;
@@ -42,7 +49,8 @@ type ReducerAction =
   | AlertReducerAction
   | CreditsReducerAction
   | AvatarsReducerAction
-  | UploadReducerAction;
+  | UploadReducerAction
+  | ReferralsReducerAction;
 
 interface AppContextType {
   dispatch: Dispatch<ReducerAction>;
@@ -55,6 +63,7 @@ export const AppContext = createContext<AppContextType>({
     alerts: [],
     avatars: { data: [], isLoading: false },
     credits: { data: 0, isLoading: false },
+    referrals: { data: [], isLoading: false },
     upload: { data: null, isLoading: false },
   },
 });
@@ -97,6 +106,24 @@ function apiReducer(
         },
       };
 
+    case 'referrals:add':
+      return {
+        ...state,
+        referrals: {
+          ...state.referrals,
+          data: [...action.referrals, ...state.referrals.data],
+        },
+      };
+
+    case 'referrals:set-is-loading':
+      return {
+        ...state,
+        referrals: {
+          ...state.referrals,
+          isLoading: action.isLoading,
+        },
+      };
+
     case 'alerts:add':
       return {
         ...state,
@@ -124,12 +151,13 @@ function apiReducer(
 }
 
 export function AppProvider(props: AppProviderProps) {
-  const { avatars, children, credits } = props;
+  const { avatars, children, referrals, credits } = props;
 
   const initialState: AppContextState = {
     alerts: [],
     avatars: { data: avatars, isLoading: false },
     credits: { data: credits, isLoading: false },
+    referrals: { data: referrals, isLoading: false },
     upload: { data: null, isLoading: false },
   };
 

@@ -14,18 +14,14 @@ export interface PaymentDocument {
 
 export type CreatePaymentDocument = Omit<PaymentDocument, '_id'>;
 
-export interface CreatePaymentDocumentOptions {
+export const PAYMENT_COLLECTION_NAME = 'payments';
+
+export async function createPayment(options: {
   amount: number;
   checkoutSessionId: string;
   credits: number;
   email: string;
-}
-
-export const PAYMENT_COLLECTION_NAME = 'payments';
-
-export async function createPaymentDocument(
-  options: CreatePaymentDocumentOptions,
-) {
+}) {
   try {
     const { amount, credits, email, checkoutSessionId } = options;
 
@@ -55,7 +51,7 @@ export async function createPaymentDocument(
   }
 }
 
-export async function getPaymentDocumentByCheckoutSessionId(options: {
+export async function getPaymentByCheckoutSessionId(options: {
   checkoutSessionId: string;
 }) {
   try {

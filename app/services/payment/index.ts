@@ -1,10 +1,9 @@
 import { STRIPE_SECRET_KEY } from '@aa/config';
-import { getCollection } from '@aa/database/database';
 import {
-  createPaymentDocument,
-  getPaymentDocumentByCheckoutSessionId,
+  createPayment,
+  getPaymentByCheckoutSessionId,
 } from '@aa/database/payments';
-import { USERS_COLLECTION_NAME, UserDocument } from '@aa/database/user';
+import { increaseUserCredits } from '@aa/database/user';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(STRIPE_SECRET_KEY, {
@@ -19,7 +18,7 @@ export async function verifyAndCompletePayment(
       checkoutSessionId,
     );
 
-    const paymentDocument = await getPaymentDocumentByCheckoutSessionId({
+    const paymentDocument = await getPaymentByCheckoutSessionId({
       checkoutSessionId,
     });
     if (paymentDocument) {
@@ -40,20 +39,15 @@ export async function verifyAndCompletePayment(
       throw new Error('Email is null');
     }
 
-    const collection = await getCollection<UserDocument>(USERS_COLLECTION_NAME);
-    if (!collection) {
-      throw new Error('Collection is null');
-    }
-
-    const updateResult = await collection.updateOne(
-      { email },
-      { $inc: { credits } },
-    );
+    const updateResult = await increaseUserCredits({
+      credits,
+      email,
+    });
     if (updateResult?.modifiedCount !== 1) {
       throw new Error('Charge successful, but user not found');
     }
 
-    const createPaymentDocumentResult = await createPaymentDocument({
+    const createPaymentDocumentResult = await createPayment({
       checkoutSessionId,
       email,
       credits,

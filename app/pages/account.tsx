@@ -1,24 +1,17 @@
+import { EmptyState } from '@aa/components/empty-state';
 import {
   AuthPageContainer,
   DefaultProps,
 } from '@aa/containers/auth-page-container';
 import { AppContext } from '@aa/context';
+import { completeReferral } from '@aa/database/referral';
 import { AvatarModel } from '@aa/models/avatar';
 import { loadServerSideProps } from '@aa/utils';
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
+import { getSession, withPageAuthRequired } from '@auth0/nextjs-auth0';
+import dayjs from 'dayjs';
+import { GetServerSidePropsContext } from 'next';
 import Image from 'next/image';
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
-
-function formatTimestampWithIntl(timestamp: number) {
-  const date = new Date(timestamp);
-
-  const locale = globalThis.navigator?.language ?? 'en-US';
-
-  return new Intl.DateTimeFormat(locale, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(date);
-}
 
 function constructTreeAsList(avatars: AvatarModel[]): AvatarModel[] {
   const flatTree: AvatarModel[] = [];
@@ -186,7 +179,7 @@ function AvatarCard(props: AvatarModel) {
 
               <div className="max-w-prose text-center flex flex-col gap-2">
                 <p className="content-base-300">
-                  {formatTimestampWithIntl(createdAt)}
+                  {dayjs(createdAt).format('YYYY-MM-DD HH:mm')}
                 </p>
 
                 <p className="content-base-200">{prompt}</p>
@@ -248,6 +241,22 @@ function Avatars() {
     [appContext.state.avatars.data],
   );
 
+  if (!appContext.state.credits.data) {
+    return (
+      <div className="p-5 w-full">
+        <EmptyState message="No credits. Add credits to generate pictures." />
+      </div>
+    );
+  }
+
+  if (!appContext.state.avatars.data.length) {
+    return (
+      <div className="p-5 w-full">
+        <EmptyState message="No photos. Click generate picture to get started" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-wrap gap-4 justify-center p-5">
       {flatTree.map(renderAvatar)}
@@ -265,5 +274,19 @@ export default function Account(props: DefaultProps) {
 
 export const getServerSideProps = withPageAuthRequired({
   returnTo: '/account',
-  getServerSideProps: loadServerSideProps,
+  getServerSideProps: async (ctx: GetServerSidePropsContext) => {
+    if (typeof ctx.query.referral === 'string') {
+      const session = await getSession(ctx.req, ctx.res);
+      if (!session?.user.email) {
+        return loadServerSideProps(ctx);
+      }
+
+      await completeReferral({
+        referral: ctx.query.referral,
+        toEmail: session.user.email,
+      });
+    }
+
+    return loadServerSideProps(ctx);
+  },
 });
