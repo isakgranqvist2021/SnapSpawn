@@ -46,6 +46,7 @@ export function Footer() {
         <a
           className="link link-hover"
           target="_blank"
+          rel="noreferrer"
           href="/The-DALL·E-2-prompt-book-v1.02.pdf"
         >
           The Dall-E prompt Book
@@ -53,6 +54,7 @@ export function Footer() {
         <a
           className="link link-hover"
           target="_blank"
+          rel="noreferrer"
           href="https://mspoweruser.com/best-dall-e-2-prompts/"
         >
           Best Dall-E prompts
