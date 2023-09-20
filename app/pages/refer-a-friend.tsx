@@ -10,7 +10,7 @@ import { ReferralModel } from '@aa/models/referral';
 import { loadServerSideProps } from '@aa/utils';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import dayjs from 'dayjs';
-import { useContext, useState } from 'react';
+import { Fragment, useContext, useState } from 'react';
 
 function InviteForm() {
   const appContext = useContext(AppContext);
@@ -27,40 +27,54 @@ function InviteForm() {
     e.preventDefault();
 
     sendReferral(email);
+
+    setEmail('');
   };
 
+  const alreadyInvited = appContext.state.referrals.data.some(
+    (referral) => referral.email === email,
+  );
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-wrap gap-3">
-      <div className="form-control w-full max-w-xs">
-        <input
-          disabled={appContext.state.referrals.isLoading}
-          className="input input-bordered w-full max-w-xs"
-          onChange={handleEmailChange}
-          placeholder="Email"
-          required
-          type="email"
-          value={email}
-        />
-      </div>
+    <Fragment>
+      <form onSubmit={handleSubmit} className="flex flex-wrap gap-3">
+        <div className="form-control w-full max-w-xs">
+          <input
+            disabled={appContext.state.referrals.isLoading}
+            className="input input-bordered w-full max-w-xs"
+            onChange={handleEmailChange}
+            placeholder="Email"
+            required
+            type="email"
+            value={email}
+          />
+        </div>
 
-      <button
-        className="btn btn-primary"
-        disabled={appContext.state.referrals.isLoading}
-        type="submit"
-      >
-        {appContext.state.referrals.isLoading && (
-          <div className="absolute z-10">
-            <Spinner />
-          </div>
-        )}
-
-        <span
-          className={appContext.state.referrals.isLoading ? 'opacity-0' : ''}
+        <button
+          className="btn btn-primary"
+          disabled={appContext.state.referrals.isLoading || alreadyInvited}
+          type="submit"
         >
-          Send invitation
-        </span>
-      </button>
-    </form>
+          {appContext.state.referrals.isLoading && (
+            <div className="absolute z-10">
+              <Spinner />
+            </div>
+          )}
+
+          <span
+            className={appContext.state.referrals.isLoading ? 'opacity-0' : ''}
+          >
+            Send invitation
+          </span>
+        </button>
+      </form>
+
+      {alreadyInvited && (
+        <p className="text-error">
+          You have already invited this email address.
+        </p>
+      )}
+    </Fragment>
   );
 }
 

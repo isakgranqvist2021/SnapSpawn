@@ -3,6 +3,7 @@ import {
   createPayment,
   getPaymentByCheckoutSessionId,
 } from '@aa/database/payments';
+import { getCompletedReferralByToEmail } from '@aa/database/referral';
 import { increaseUserCredits } from '@aa/database/user';
 import Stripe from 'stripe';
 
@@ -55,6 +56,14 @@ export async function verifyAndCompletePayment(
     });
     if (!createPaymentDocumentResult?.acknowledged) {
       throw new Error('Payment document not created');
+    }
+
+    const referral = await getCompletedReferralByToEmail({ toEmail: email });
+    if (referral) {
+      await increaseUserCredits({
+        credits: Math.floor(credits / 10),
+        email: referral.fromEmail,
+      });
     }
 
     return null;

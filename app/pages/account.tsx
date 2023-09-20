@@ -10,7 +10,6 @@ import { loadServerSideProps } from '@aa/utils';
 import { getSession, withPageAuthRequired } from '@auth0/nextjs-auth0';
 import dayjs from 'dayjs';
 import { GetServerSidePropsContext } from 'next';
-import Image from 'next/image';
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
 
 function constructTreeAsList(avatars: AvatarModel[]): AvatarModel[] {
@@ -255,7 +254,7 @@ function Avatars() {
   if (!appContext.state.avatars.data.length) {
     return (
       <div className="p-5 w-full">
-        <EmptyState message="No photos. Click generate picture to get started" />
+        <EmptyState message="No pictures. Click generate picture to get started" />
       </div>
     );
   }

@@ -56,7 +56,7 @@ export async function createReferral(options: {
   }
 }
 
-export async function referralAlreadyExists(options: {
+export async function referralByFromEmailAndToEmail(options: {
   fromEmail: string;
   toEmail: string;
 }) {
@@ -72,7 +72,29 @@ export async function referralAlreadyExists(options: {
 
     const result = await collection.findOne({ fromEmail, toEmail });
 
-    return !!result;
+    return result;
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
+}
+
+export async function getCompletedReferralByToEmail(options: {
+  toEmail: string;
+}) {
+  try {
+    const { toEmail } = options;
+
+    const collection = await getCollection<ReferralDocument>(
+      REFERRAL_COLLECTION_NAME,
+    );
+    if (!collection) {
+      return null;
+    }
+
+    const result = await collection.findOne({ toEmail, status: 'success' });
+
+    return result;
   } catch (err) {
     Logger.log('error', err);
     return null;
@@ -134,7 +156,7 @@ export async function completeReferral(options: {
     }
 
     const result = await collection.updateOne(
-      { _id: new ObjectId(referral), toEmail },
+      { _id: new ObjectId(referral), toEmail, status: 'pending' },
       {
         $set: {
           status: 'success',

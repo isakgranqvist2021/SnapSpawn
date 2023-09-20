@@ -38,26 +38,6 @@ export async function getUser(options: { email: string }) {
   }
 }
 
-export async function userExists(options: { email: string }) {
-  try {
-    const { email } = options;
-
-    const collection = await getCollection<UserDocument>(USERS_COLLECTION_NAME);
-
-    if (!collection) {
-      Logger.log('error', 'Collection is null');
-      return null;
-    }
-
-    const user = await collection.findOne({ email });
-
-    return !!user;
-  } catch (err) {
-    Logger.log('error', err);
-    return null;
-  }
-}
-
 export async function createUser(options: { email: string }) {
   try {
     const { email } = options;

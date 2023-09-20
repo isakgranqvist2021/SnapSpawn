@@ -1,5 +1,8 @@
-import { createReferral, referralAlreadyExists } from '@aa/database/referral';
-import { userExists } from '@aa/database/user';
+import {
+  createReferral,
+  referralByFromEmailAndToEmail,
+} from '@aa/database/referral';
+import { getUser } from '@aa/database/user';
 import { ReferralModel } from '@aa/models/referral';
 import { Logger } from '@aa/services/logger';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
@@ -8,28 +11,24 @@ import { NextApiRequest, NextApiResponse } from 'next';
 async function sendReferral(
   fromEmail: string,
   toEmail: string,
-): Promise<ReferralModel | null> {
+): Promise<ReferralModel | Error> {
   try {
-    const userExistsResult = await userExists({ email: toEmail });
-    if (typeof userExistsResult !== 'boolean') {
-      throw new Error('UserExistsResult is not boolean');
-    } else if (userExistsResult) {
+    const user = await getUser({ email: toEmail });
+    if (user) {
       throw new Error('User already exists');
     }
 
-    const referralExistsResult = await referralAlreadyExists({
+    const referral = await referralByFromEmailAndToEmail({
       fromEmail,
       toEmail,
     });
-    if (typeof referralExistsResult !== 'boolean') {
-      throw new Error('ReferralExistsResult is not boolean');
-    } else if (referralExistsResult) {
+    if (referral) {
       throw new Error('Referral already exists');
     }
 
     const res = await createReferral({ fromEmail, toEmail });
     if (!res) {
-      throw new Error('cannot create referral');
+      throw new Error("You've already sent a referral to this email");
     }
 
     // send email
@@ -43,7 +42,7 @@ async function sendReferral(
     };
   } catch (err) {
     Logger.log('error', err);
-    return null;
+    return err instanceof Error ? err : new Error('Unknown error');
   }
 }
 
@@ -58,21 +57,24 @@ async function referAFriend(req: NextApiRequest, res: NextApiResponse) {
 
     const session = await getSession(req, res);
     if (!session?.user.email) {
-      throw new Error('cannot send referral user is null');
+      throw new Error('Cannot send referral while signed out');
     }
 
     const sendReferralResult = await sendReferral(
       session.user.email,
       req.body.toEmail,
     );
-    if (!sendReferralResult) {
-      throw new Error('cannot send referral');
+    if (sendReferralResult instanceof Error) {
+      throw sendReferralResult;
     }
 
     return res.status(200).json({ referral: sendReferralResult });
   } catch (err) {
     Logger.log('error', err);
-    return res.status(500).send({ referral: null });
+    return res.status(500).send({
+      referral: null,
+      message: err instanceof Error ? err.message : 'Unknown error',
+    });
   }
 }
 
