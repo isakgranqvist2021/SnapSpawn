@@ -215,15 +215,18 @@ function AvatarCard(props: AvatarModel) {
         </div>
       )}
 
-      <Image
-        alt="Ai generated avatar"
+      <div
+        style={{
+          backgroundImage: `url(${urls['128x128']})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          minWidth: 128,
+          minHeight: 128,
+          borderRadius: 16,
+        }}
         className="cursor-pointer ease-in-out transition-all duration-200 rounded-lg outline outline-4 outline-transparent hover:outline-primary"
-        height={128}
-        loading="lazy"
         onClick={openFullscreen}
-        src={urls['128x128']}
-        width={128}
-        style={{ maxWidth: 128, maxHeight: 128 }}
       />
     </Fragment>
   );
@@ -258,7 +261,14 @@ function Avatars() {
   }
 
   return (
-    <div className="flex flex-wrap gap-4 justify-center p-5">
+    <div
+      className="p-5 w-full"
+      style={{
+        display: 'grid',
+        gap: 16,
+        gridTemplateColumns: 'repeat(auto-fill, minmax(128px, 1fr))',
+      }}
+    >
       {flatTree.map(renderAvatar)}
     </div>
   );
