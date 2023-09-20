@@ -17,13 +17,10 @@ export function useSendReferral() {
         method: 'POST',
       });
 
-      if (res.status !== 200) {
-        throw new Error('Invalid response');
-      }
-
-      const data: { referral: ReferralModel } | undefined = await res.json();
+      const data: { referral: ReferralModel; message?: string } | undefined =
+        await res.json();
       if (!data?.referral) {
-        throw new Error('Invalid response');
+        throw new Error(data?.message ?? 'Unknown error');
       }
 
       appContext.dispatch({
@@ -46,7 +43,10 @@ export function useSendReferral() {
         type: 'alerts:add',
         alert: {
           severity: 'error',
-          message: 'Something went wrong. Please try again later.',
+          message:
+            err instanceof Error
+              ? err.message
+              : 'Something went wrong. Please try again later.',
         },
       });
       appContext.dispatch({
