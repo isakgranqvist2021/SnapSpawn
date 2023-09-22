@@ -5,6 +5,7 @@ import {
   DefaultProps,
 } from '@aa/containers/auth-page-container';
 import { AppContext } from '@aa/context';
+import { useDeleteReferral } from '@aa/hooks/use-delete-referral';
 import { useSendReferral } from '@aa/hooks/use-send-referral';
 import { ReferralModel } from '@aa/models/referral';
 import { loadServerSideProps } from '@aa/utils';
@@ -78,35 +79,72 @@ function InviteForm() {
   );
 }
 
-function renderReferralTableRow(referral: ReferralModel, index: number) {
-  const getReferralBadge = () => {
-    switch (referral.status) {
-      case 'success':
-        return <span className="badge badge-success">Active</span>;
-      case 'pending':
-        return <span className="badge badge-warning">Pending</span>;
-      case 'failure':
-        return <span className="badge badge-error">Failed</span>;
-    }
-  };
-
-  return (
-    <tr key={referral.id}>
-      <th>{index + 1}</th>
-      <td>{referral.email}</td>
-      <td>{dayjs(referral.createdAt).format('YYYY-MM-DD HH:mm')}</td>
-      <td>{referral.creditsEarned}</td>
-      <td>{getReferralBadge()}</td>
-    </tr>
-  );
-}
-
 function ReferralsTable() {
   const appContext = useContext(AppContext);
+
+  const deleteReferral = useDeleteReferral();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!appContext.state.referrals.data.length) {
     return <EmptyState message="No referrals" />;
   }
+
+  const renderReferralTableRow = (referral: ReferralModel, index: number) => {
+    const handleDeleteReferral = async () => {
+      setIsLoading(true);
+
+      await deleteReferral(referral.id);
+
+      setIsLoading(false);
+    };
+
+    const getReferralBadge = () => {
+      switch (referral.status) {
+        case 'success':
+          return <span className="badge badge-success">Active</span>;
+        case 'pending':
+          return <span className="badge badge-warning">Pending</span>;
+        case 'failure':
+          return <span className="badge badge-error">Failed</span>;
+      }
+    };
+
+    return (
+      <tr key={referral.id}>
+        <th>{index + 1}</th>
+        <td>{referral.email}</td>
+        <td>{dayjs(referral.createdAt).format('YYYY-MM-DD HH:mm')}</td>
+        <td>{referral.creditsEarned}</td>
+        <td>{getReferralBadge()}</td>
+        <td>
+          {referral.status === 'pending' && (
+            <Fragment>
+              {!isLoading ? (
+                <svg
+                  className="w-6 h-6 cursor-pointer"
+                  fill="none"
+                  onClick={handleDeleteReferral}
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <Spinner />
+              )}
+            </Fragment>
+          )}
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -118,6 +156,7 @@ function ReferralsTable() {
             <th>Created At</th>
             <th>Earned Credits</th>
             <th>Status</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>

@@ -15,6 +15,7 @@ interface AppContextState {
   credits: ApiState<number>;
   referrals: ApiState<ReferralModel[]>;
   upload: ApiState<null>;
+  deleteReferral: ApiState<null>;
 }
 
 interface AppProviderProps {
@@ -38,7 +39,9 @@ type AvatarsReducerAction =
 
 type ReferralsReducerAction =
   | { type: 'referrals:add'; referrals: ReferralModel[] }
-  | { type: 'referrals:set-is-loading'; isLoading: boolean };
+  | { type: 'referrals:set-is-loading'; isLoading: boolean }
+  | { type: 'referrals:remove'; id: string }
+  | { type: 'delete-referral:set-is-loading'; isLoading: boolean };
 
 type UploadReducerAction = {
   type: 'upload:set-is-loading';
@@ -65,6 +68,7 @@ export const AppContext = createContext<AppContextType>({
     credits: { data: 0, isLoading: false },
     referrals: { data: [], isLoading: false },
     upload: { data: null, isLoading: false },
+    deleteReferral: { data: null, isLoading: false },
   },
 });
 
@@ -139,6 +143,26 @@ function apiReducer(
         },
       };
 
+    case 'referrals:remove':
+      return {
+        ...state,
+        referrals: {
+          ...state.referrals,
+          data: state.referrals.data.filter(
+            (referral) => referral.id !== action.id,
+          ),
+        },
+      };
+
+    case 'delete-referral:set-is-loading':
+      return {
+        ...state,
+        deleteReferral: {
+          ...state.deleteReferral,
+          isLoading: action.isLoading,
+        },
+      };
+
     case 'alerts:remove':
       const alerts = [...state.alerts];
       const index = alerts.findIndex((alert) => alert.id === action.id);
@@ -159,6 +183,7 @@ export function AppProvider(props: AppProviderProps) {
     credits: { data: credits, isLoading: false },
     referrals: { data: referrals, isLoading: false },
     upload: { data: null, isLoading: false },
+    deleteReferral: { data: null, isLoading: false },
   };
 
   const [state, dispatch] = useReducer<Reducer<AppContextState, ReducerAction>>(

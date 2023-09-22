@@ -173,3 +173,33 @@ export async function completeReferral(options: {
     return null;
   }
 }
+
+export async function deleteReferralById(options: {
+  email: string;
+  id: string;
+}): Promise<Error | null> {
+  try {
+    const { id, email } = options;
+
+    const collection = await getCollection<ReferralDocument>(
+      REFERRAL_COLLECTION_NAME,
+    );
+    if (!collection) {
+      return null;
+    }
+
+    const result = await collection.deleteOne({
+      _id: new ObjectId(id),
+      fromEmail: email,
+      $or: [{ status: 'pending' }, { status: 'failure' }],
+    });
+    if (!result.deletedCount) {
+      throw new Error('Failed to delete referral');
+    }
+
+    return null;
+  } catch (err) {
+    Logger.log('error', err);
+    return err instanceof Error ? err : new Error('Unknown error');
+  }
+}
