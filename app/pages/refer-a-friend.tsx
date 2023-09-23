@@ -1,4 +1,3 @@
-import { EmptyState } from '@aa/components/empty-state';
 import { Spinner } from '@aa/components/spinner';
 import {
   AuthPageContainer,
@@ -87,7 +86,7 @@ function ReferralsTable() {
   const [isLoading, setIsLoading] = useState(false);
 
   if (!appContext.state.referrals.data.length) {
-    return <EmptyState message="No referrals" />;
+    return null;
   }
 
   const renderReferralTableRow = (referral: ReferralModel, index: number) => {

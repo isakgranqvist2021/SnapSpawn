@@ -730,15 +730,6 @@ function GeneratePictureDrawer() {
           <UserCreditsText />
 
           <Form />
-
-          <a
-            className="link link-primary text-center"
-            target="_blank"
-            rel="noreferrer"
-            href="/The-DALL·E-2-prompt-book-v1.02.pdf"
-          >
-            The Dall-E prompt Book
-          </a>
         </DrawerContent>
 
         <FormFooter />

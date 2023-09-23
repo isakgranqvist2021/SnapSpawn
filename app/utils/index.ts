@@ -34,11 +34,11 @@ function prepareReferral(
   avatarDocument: ReferralDocument,
 ): ReferralModel | null {
   try {
-    const { _id, createdAt, toEmail, status } = avatarDocument;
+    const { _id, createdAt, toEmail, status, creditsEarned } = avatarDocument;
 
     return {
       createdAt,
-      creditsEarned: 0,
+      creditsEarned,
       email: toEmail,
       id: _id.toHexString(),
       status,

@@ -6,6 +6,7 @@ import { getCollection } from './database';
 export interface ReferralDocument {
   _id: ObjectId;
   createdAt: number;
+  creditsEarned: number;
   fromEmail: string;
   status: 'pending' | 'success' | 'failure';
   toEmail: string;
@@ -36,6 +37,7 @@ export async function createReferral(options: {
       fromEmail,
       status: 'pending',
       toEmail,
+      creditsEarned: 0,
     };
 
     const result = await collection.insertOne(document);
@@ -49,6 +51,7 @@ export async function createReferral(options: {
       status: 'pending',
       toEmail,
       fromEmail,
+      creditsEarned: 0,
     };
   } catch (err) {
     Logger.log('error', err);
@@ -56,7 +59,7 @@ export async function createReferral(options: {
   }
 }
 
-export async function referralByFromEmailAndToEmail(options: {
+export async function getReferralByFromEmailAndToEmail(options: {
   fromEmail: string;
   toEmail: string;
 }) {
@@ -195,6 +198,35 @@ export async function deleteReferralById(options: {
     });
     if (!result.deletedCount) {
       throw new Error('Failed to delete referral');
+    }
+
+    return null;
+  } catch (err) {
+    Logger.log('error', err);
+    return err instanceof Error ? err : new Error('Unknown error');
+  }
+}
+
+export async function incrementReferralCreditsEarnedById(options: {
+  id: string;
+  credits: number;
+}): Promise<Error | null> {
+  try {
+    const { id, credits } = options;
+
+    const collection = await getCollection<ReferralDocument>(
+      REFERRAL_COLLECTION_NAME,
+    );
+    if (!collection) {
+      return null;
+    }
+
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $inc: { creditsEarned: credits } },
+    );
+    if (!result.modifiedCount) {
+      throw new Error('Failed to update referral credits earned');
     }
 
     return null;

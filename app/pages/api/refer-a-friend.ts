@@ -1,7 +1,7 @@
 import { AUTH0_BASE_URL } from '@aa/config';
 import {
   createReferral,
-  referralByFromEmailAndToEmail,
+  getReferralByFromEmailAndToEmail,
 } from '@aa/database/referral';
 import { getUser } from '@aa/database/user';
 import { ReferralModel } from '@aa/models/referral';
@@ -20,7 +20,7 @@ async function sendReferral(
       throw new Error('User already exists');
     }
 
-    const referral = await referralByFromEmailAndToEmail({
+    const referral = await getReferralByFromEmailAndToEmail({
       fromEmail,
       toEmail,
     });
@@ -36,7 +36,7 @@ async function sendReferral(
     await sendEmail(
       res.toEmail,
       'You have a referral!',
-      `${AUTH0_BASE_URL}/api/auth/login?referralId=${res._id}`,
+      `${AUTH0_BASE_URL}/api/auth/login?referral=${res._id}`,
     );
 
     return {

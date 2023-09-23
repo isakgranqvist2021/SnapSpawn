@@ -3,7 +3,10 @@ import {
   createPayment,
   getPaymentByCheckoutSessionId,
 } from '@aa/database/payments';
-import { getCompletedReferralByToEmail } from '@aa/database/referral';
+import {
+  getCompletedReferralByToEmail,
+  incrementReferralCreditsEarnedById,
+} from '@aa/database/referral';
 import { increaseUserCredits } from '@aa/database/user';
 import Stripe from 'stripe';
 
@@ -60,10 +63,16 @@ export async function verifyAndCompletePayment(
 
     const referral = await getCompletedReferralByToEmail({ toEmail: email });
     if (referral) {
-      // send email
+      const creditsEarnedByReferring = Math.floor(credits / 10);
+
       await increaseUserCredits({
-        credits: Math.floor(credits / 10),
+        credits: creditsEarnedByReferring,
         email: referral.fromEmail,
+      });
+
+      await incrementReferralCreditsEarnedById({
+        id: referral._id.toHexString(),
+        credits: creditsEarnedByReferring,
       });
     }
 
