@@ -42,6 +42,10 @@ steps:
         'STRIPE_SECRET_KEY=$_STRIPE_SECRET_KEY',
         '--build-arg',
         'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$_NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
+        '--build-arg',
+        'GMAIL_EMAIL=$_GMAIL_EMAIL',
+        '--build-arg',
+        'GMAIL_PASSWORD=$_GMAIL_PASSWORD',
         '.',
       ]
 
