@@ -1,3 +1,4 @@
+import { AUTH0_BASE_URL } from '@aa/config';
 import {
   createReferral,
   referralByFromEmailAndToEmail,
@@ -5,6 +6,7 @@ import {
 import { getUser } from '@aa/database/user';
 import { ReferralModel } from '@aa/models/referral';
 import { Logger } from '@aa/services/logger';
+import { sendEmail } from '@aa/services/nodemailer';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -31,7 +33,11 @@ async function sendReferral(
       throw new Error("You've already sent a referral to this email");
     }
 
-    // send email
+    await sendEmail(
+      res.toEmail,
+      'You have a referral!',
+      `${AUTH0_BASE_URL}/api/auth/login?referralId=${res._id}`,
+    );
 
     return {
       createdAt: res.createdAt,

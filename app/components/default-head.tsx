@@ -1,3 +1,4 @@
+import { NODE_ENV } from '@aa/config';
 import Head from 'next/head';
 import Script from 'next/script';
 import { Fragment } from 'react';
@@ -24,19 +25,23 @@ export function DefaultHead(props: { title: string }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-ZJBEKLJEGY"
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
+      {NODE_ENV === 'production' && (
+        <Fragment>
+          <Script
+            src="https://www.googletagmanager.com/gtag/js?id=G-ZJBEKLJEGY"
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){window.dataLayer.push(arguments);}
           gtag('js', new Date());
 
           gtag('config', 'G-ZJBEKLJEGY');
         `}
-      </Script>
+          </Script>
+        </Fragment>
+      )}
     </Fragment>
   );
 }

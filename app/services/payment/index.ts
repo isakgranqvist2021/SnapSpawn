@@ -60,6 +60,7 @@ export async function verifyAndCompletePayment(
 
     const referral = await getCompletedReferralByToEmail({ toEmail: email });
     if (referral) {
+      // send email
       await increaseUserCredits({
         credits: Math.floor(credits / 10),
         email: referral.fromEmail,

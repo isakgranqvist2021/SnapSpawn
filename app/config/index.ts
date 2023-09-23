@@ -20,6 +20,9 @@ const env = {
   OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY as string,
 
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
+
+  GMAIL_EMAIL: process.env.GMAIL_EMAIL as string,
+  GMAIL_PASSWORD: process.env.GMAIL_PASSWORD as string,
 };
 
 const errors = [];
@@ -38,6 +41,8 @@ export const NODE_ENV = env.NODE_ENV;
 
 export const MONGO_DB_DATABASE_URL = env.MONGO_DB_DATABASE_URL;
 
+export const AUTH0_BASE_URL = env.AUTH0_BASE_URL;
+
 export const GCP_BUCKET_NAME = env.GCP_BUCKET_NAME;
 export const GCP_CLIENT_EMAIL = env.GCP_CLIENT_EMAIL;
 export const GCP_CLIENT_ID = env.GCP_CLIENT_ID;
@@ -47,3 +52,6 @@ export const GCP_PROJECT_ID = env.GCP_PROJECT_ID;
 export const OPEN_AI_API_KEY = env.OPEN_AI_API_KEY;
 
 export const STRIPE_SECRET_KEY = env.STRIPE_SECRET_KEY;
+
+export const GMAIL_EMAIL = env.GMAIL_EMAIL;
+export const GMAIL_PASSWORD = env.GMAIL_PASSWORD;
