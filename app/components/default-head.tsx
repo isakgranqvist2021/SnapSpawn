@@ -25,23 +25,19 @@ export function DefaultHead(props: { title: string }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {NODE_ENV === 'production' && (
-        <Fragment>
-          <Script
-            src="https://www.googletagmanager.com/gtag/js?id=G-ZJBEKLJEGY"
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-ZJBEKLJEGY"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){window.dataLayer.push(arguments);}
           gtag('js', new Date());
 
           gtag('config', 'G-ZJBEKLJEGY');
         `}
-          </Script>
-        </Fragment>
-      )}
+      </Script>
     </Fragment>
   );
 }
