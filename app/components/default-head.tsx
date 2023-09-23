@@ -1,4 +1,3 @@
-import { NODE_ENV } from '@aa/config';
 import Head from 'next/head';
 import Script from 'next/script';
 import { Fragment } from 'react';
