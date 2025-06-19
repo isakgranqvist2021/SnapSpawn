@@ -13,6 +13,7 @@ export async function generateAvatars(prompt: string) {
       prompt,
       n: 1,
       size: '1024x1024',
+      model: 'dall-e-3',
     };
 
     const res = await openai.images.generate(options);

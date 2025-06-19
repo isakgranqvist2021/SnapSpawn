@@ -1,5 +1,9 @@
 import { EmptyState } from '@aa/components/empty-state';
 import {
+  AddCreditsDrawerContext,
+  GeneratePictureDrawerContext,
+} from '@aa/components/nav';
+import {
   AuthPageContainer,
   DefaultProps,
 } from '@aa/containers/auth-page-container';
@@ -237,6 +241,8 @@ function renderAvatar(avatar: AvatarModel) {
 
 function Avatars() {
   const appContext = useContext(AppContext);
+  const creditsDrawerContext = useContext(AddCreditsDrawerContext);
+  const generatePictureContext = useContext(GeneratePictureDrawerContext);
 
   const flatTree = useMemo(
     () => constructTreeAsList(appContext.state.avatars.data),
@@ -246,7 +252,11 @@ function Avatars() {
   if (!appContext.state.credits.data) {
     return (
       <div className="p-5 w-full">
-        <EmptyState message="No credits. Add credits to generate pictures." />
+        <EmptyState
+          buttonOnClick={() => creditsDrawerContext.openDrawer()}
+          buttonText="Add credits"
+          message="No credits. Add credits to generate pictures."
+        />
       </div>
     );
   }
@@ -254,7 +264,11 @@ function Avatars() {
   if (!appContext.state.avatars.data.length) {
     return (
       <div className="p-5 w-full">
-        <EmptyState message="No pictures. Click generate picture to get started" />
+        <EmptyState
+          buttonOnClick={() => generatePictureContext.openDrawer()}
+          buttonText="Generate picture"
+          message="No pictures. Click generate picture to get started"
+        />
       </div>
     );
   }

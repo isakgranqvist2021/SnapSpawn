@@ -818,38 +818,36 @@ export function Nav(props: React.ComponentPropsWithoutRef<'div'>) {
   const { user } = useUser();
 
   return (
-    <AddCreditsDrawerProvider>
-      <GeneratePictureDrawerProvider>
-        <div className="navbar bg-base-200 flex fixed top-0 w-100" {...props}>
-          <div className="flex-1">
-            <Link
-              href={!user ? '/' : '/account'}
-              className="btn btn-ghost normal-case text-xl hidden lg:flex"
-            >
-              AI Portrait Studio
-            </Link>
+    <React.Fragment>
+      <div className="navbar bg-base-200 flex fixed top-0 w-100" {...props}>
+        <div className="flex-1">
+          <Link
+            href={!user ? '/' : '/account'}
+            className="btn btn-ghost normal-case text-xl hidden lg:flex"
+          >
+            AI Portrait Studio
+          </Link>
 
-            {user && (
-              <div className="flex-none gap-2">
-                <ul className="menu menu-horizontal px-1">
-                  <GeneratePictureNavItem />
-                  <UploadPictureNavItem />
-                </ul>
-              </div>
-            )}
-          </div>
-
-          <div className="flex-none gap-2">
-            <ul className="menu menu-horizontal px-1">
-              <NavMenu />
-              <NavMenuDropDown />
-            </ul>
-          </div>
+          {user && (
+            <div className="flex-none gap-2">
+              <ul className="menu menu-horizontal px-1">
+                <GeneratePictureNavItem />
+                <UploadPictureNavItem />
+              </ul>
+            </div>
+          )}
         </div>
 
-        <AddCreditsDrawer />
-        <GeneratePictureDrawer />
-      </GeneratePictureDrawerProvider>
-    </AddCreditsDrawerProvider>
+        <div className="flex-none gap-2">
+          <ul className="menu menu-horizontal px-1">
+            <NavMenu />
+            <NavMenuDropDown />
+          </ul>
+        </div>
+      </div>
+
+      <AddCreditsDrawer />
+      <GeneratePictureDrawer />
+    </React.Fragment>
   );
 }

@@ -4,6 +4,7 @@ export function EmptyState(props: {
   message: string;
   buttonText?: string;
   buttonHref?: string;
+  buttonOnClick?: () => void;
 }) {
   const { message, buttonText, buttonHref } = props;
 
@@ -15,6 +16,12 @@ export function EmptyState(props: {
         <Link className="btn btn-primary" href={buttonHref}>
           {buttonText}
         </Link>
+      )}
+
+      {props.buttonOnClick && (
+        <button className="btn btn-primary" onClick={props.buttonOnClick}>
+          {buttonText}
+        </button>
       )}
     </div>
   );
