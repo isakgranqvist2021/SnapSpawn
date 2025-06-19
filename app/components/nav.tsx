@@ -791,7 +791,7 @@ function UploadPictureNavItem() {
         </li>
         <li className="opacity-50 md:hidden">
           <a role="button">
-            Uploading <Spinner />
+            Uploadin <Spinner />
           </a>
         </li>
       </Fragment>
