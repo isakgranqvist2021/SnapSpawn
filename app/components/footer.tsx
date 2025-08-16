@@ -6,32 +6,25 @@ export function Footer() {
     <footer className="footer p-10 bg-neutral text-neutral-content">
       <div>
         <Image
-          width={64}
-          height={64}
+          width={128}
+          height={128}
           className="rounded-full"
           alt=""
           src="/logo.png"
         />
 
         <div>
-          <header>Ai Portrait Studio.</header>
+          <header>SnapSpawn.</header>
 
-          <p>Bringing your vision to life with AI Portraits.</p>
-
-          <a
-            className="link link-secondary"
-            href="mailto:contact@granqvist.dev"
-          >
-            contact@granqvist.dev
-          </a>
+          <p>Bringing your vision to life with AI.</p>
         </div>
       </div>
 
       <nav>
         <header className="footer-title">Quick links</header>
 
-        <Link className="link link-hover" href="/account">
-          Avatar studio
+        <Link className="link link-hover" href="/studio">
+          Studio
         </Link>
         <Link className="link link-hover" href="/refer-a-friend">
           Refer a friend

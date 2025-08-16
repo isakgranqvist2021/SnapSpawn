@@ -33,12 +33,6 @@ async function createAvatarModels(prompt: string, email: string) {
     const createdAvatars = await createAvatars({
       email,
       avatars: avatarIds,
-      promptOptions: {
-        custom: true,
-        characteristics: null,
-        gender: null,
-        traits: null,
-      },
       parentId: null,
       prompt,
     });
@@ -57,12 +51,6 @@ async function createAvatarModels(prompt: string, email: string) {
         return {
           createdAt: Date.now(),
           id: insertedKeys[i].toString(),
-          promptOptions: {
-            custom: true,
-            characteristics: null,
-            gender: null,
-            traits: null,
-          },
           urls,
           prompt,
           parentId: null,

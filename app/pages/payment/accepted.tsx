@@ -3,11 +3,11 @@ import { MainContainer } from '@aa/containers/main-container';
 import { verifyAndCompletePayment } from '@aa/services/payment';
 import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import React from 'react';
 
 export default function Accepted() {
   return (
-    <Fragment>
+    <React.Fragment>
       <DefaultHead title="Payment Accepted" />
 
       <MainContainer>
@@ -19,12 +19,12 @@ export default function Accepted() {
             immediately.
           </p>
 
-          <Link className="btn btn-primary" href="/account">
-            Continue to your account
+          <Link className="btn btn-primary" href="/studio">
+            Continue to studio
           </Link>
         </div>
       </MainContainer>
-    </Fragment>
+    </React.Fragment>
   );
 }
 

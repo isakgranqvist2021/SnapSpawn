@@ -1,7 +1,7 @@
 import { AvatarModel } from '@aa/models/avatar';
 import { ReferralModel } from '@aa/models/referral';
 import { Alert } from '@aa/types';
-import { Dispatch, Reducer, createContext, useReducer } from 'react';
+import React from 'react';
 import { uid } from 'uid';
 
 interface ApiState<T> {
@@ -56,11 +56,11 @@ type ReducerAction =
   | ReferralsReducerAction;
 
 interface AppContextType {
-  dispatch: Dispatch<ReducerAction>;
+  dispatch: React.Dispatch<ReducerAction>;
   state: AppContextState;
 }
 
-export const AppContext = createContext<AppContextType>({
+export const AppContext = React.createContext<AppContextType>({
   dispatch: () => {},
   state: {
     alerts: [],
@@ -186,10 +186,9 @@ export function AppProvider(props: AppProviderProps) {
     deleteReferral: { data: null, isLoading: false },
   };
 
-  const [state, dispatch] = useReducer<Reducer<AppContextState, ReducerAction>>(
-    apiReducer,
-    initialState,
-  );
+  const [state, dispatch] = React.useReducer<
+    React.Reducer<AppContextState, ReducerAction>
+  >(apiReducer, initialState);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

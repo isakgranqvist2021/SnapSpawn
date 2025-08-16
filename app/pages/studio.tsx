@@ -1,4 +1,5 @@
 import { EmptyState } from '@aa/components/empty-state';
+import { GenerateImageForm } from '@aa/components/forms';
 import {
   AddCreditsDrawerContext,
   GeneratePictureDrawerContext,
@@ -7,14 +8,14 @@ import {
   AuthPageContainer,
   DefaultProps,
 } from '@aa/containers/auth-page-container';
-import { AppContext } from '@aa/context';
+import { AppContext, AppProvider } from '@aa/context';
 import { completeReferral } from '@aa/database/referral';
 import { AvatarModel } from '@aa/models/avatar';
 import { loadServerSideProps } from '@aa/utils';
 import { getSession, withPageAuthRequired } from '@auth0/nextjs-auth0';
 import dayjs from 'dayjs';
 import { GetServerSidePropsContext } from 'next';
-import { Fragment, useContext, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 
 function constructTreeAsList(avatars: AvatarModel[]): AvatarModel[] {
   const flatTree: AvatarModel[] = [];
@@ -39,20 +40,9 @@ function constructTreeAsList(avatars: AvatarModel[]): AvatarModel[] {
 function AvatarCard(props: AvatarModel) {
   const { id, urls, createdAt, prompt } = props;
 
-  const appContext = useContext(AppContext);
-
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const closeFullscreen = () => {
-    setIsFullscreen(false);
-  };
-
-  const openFullscreen = () => {
-    setIsFullscreen(true);
-  };
+  const appContext = React.useContext(AppContext);
 
   const generateVariant = async () => {
-    closeFullscreen();
     window.scrollTo(0, 0);
 
     try {
@@ -117,121 +107,69 @@ function AvatarCard(props: AvatarModel) {
     );
   };
 
-  useEffect(() => {
-    const onKeyDownHandler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        closeFullscreen();
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDownHandler);
-
-    return () => {
-      window.removeEventListener('keydown', onKeyDownHandler);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isFullscreen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [isFullscreen]);
-
   return (
-    <Fragment>
-      {isFullscreen && (
-        <div>
-          <button
-            onClick={closeFullscreen}
-            className="btn btn-circle btn-primary fixed top-10 right-10 z-30"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+    <React.Fragment>
+      <input type="checkbox" id={id} className="modal-toggle" />
 
-          <div
-            onClick={closeFullscreen}
-            className="z-10 fixed inset-0"
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            }}
-          ></div>
+      <label htmlFor={id} className="modal">
+        <div className="modal-box">
+          <p className="content-base-300 text-center mb-2">
+            {dayjs(createdAt).format('YYYY-MM-DD HH:mm')}
+          </p>
 
-          <div className="fixed inset-8 z-20 p-5 bg-base-200 flex flex-col items-center overflow-auto">
-            <div className="flex flex-col items-center gap-3">
-              <img
-                className="object-fit max-h-full"
-                alt="Ai generated avatar"
-                loading="lazy"
-                src={urls['1024x1024']}
-              />
+          <img
+            className="object-fit"
+            alt="Ai generated avatar"
+            loading="lazy"
+            src={urls['1024x1024']}
+          />
 
-              <div className="max-w-prose text-center flex flex-col gap-2">
-                <p className="content-base-300">
-                  {dayjs(createdAt).format('YYYY-MM-DD HH:mm')}
-                </p>
+          <div className="max-w-prose text-center flex flex-col gap-2 p-4">
+            <p className="content-base-200">{prompt}</p>
+          </div>
 
-                <p className="content-base-200">{prompt}</p>
-              </div>
+          <div className="flex flex-col gap-5">
+            <div className="flex gap-5 flex-wrap justify-center">
+              {Object.keys(urls)
+                .sort((a, b) => {
+                  const aSize = parseInt(a.split('x')[0]);
+                  const bSize = parseInt(b.split('x')[0]);
 
-              <div className="flex flex-col gap-5">
-                <div className="flex gap-5 flex-wrap justify-center">
-                  {Object.keys(urls)
-                    .sort((a, b) => {
-                      const aSize = parseInt(a.split('x')[0]);
-                      const bSize = parseInt(b.split('x')[0]);
-
-                      return bSize - aSize;
-                    })
-                    .map(renderDownloadLink)}
-                </div>
-
-                <button
-                  onClick={generateVariant}
-                  className="btn btn-primary"
-                  disabled={
-                    !appContext.state.credits.data ||
-                    appContext.state.avatars.isLoading
-                  }
-                >
-                  {!appContext.state.credits.data
-                    ? 'You have no credits'
-                    : 'Generate variant'}
-                </button>
-              </div>
+                  return bSize - aSize;
+                })
+                .map(renderDownloadLink)}
             </div>
+
+            <button
+              onClick={generateVariant}
+              className="btn btn-primary"
+              disabled={
+                !appContext.state.credits.data ||
+                appContext.state.avatars.isLoading
+              }
+            >
+              {!appContext.state.credits.data
+                ? 'You have no credits'
+                : 'Generate variant'}
+            </button>
           </div>
         </div>
-      )}
+      </label>
 
-      <div
+      <label
+        htmlFor={id}
         style={{
+          display: 'block',
           backgroundImage: `url(${urls['128x128']})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           minWidth: 128,
           minHeight: 128,
-          borderRadius: 16,
         }}
-        className="cursor-pointer ease-in-out transition-all duration-200 rounded-lg outline outline-4 outline-transparent hover:outline-primary"
-        onClick={openFullscreen}
+        className="cursor-pointer ease-in-out transition-all duration-200"
       />
-    </Fragment>
+    </React.Fragment>
   );
 }
 
@@ -240,18 +178,18 @@ function renderAvatar(avatar: AvatarModel) {
 }
 
 function Avatars() {
-  const appContext = useContext(AppContext);
-  const creditsDrawerContext = useContext(AddCreditsDrawerContext);
-  const generatePictureContext = useContext(GeneratePictureDrawerContext);
+  const appContext = React.useContext(AppContext);
+  const creditsDrawerContext = React.useContext(AddCreditsDrawerContext);
+  const generatePictureContext = React.useContext(GeneratePictureDrawerContext);
 
-  const flatTree = useMemo(
+  const flatTree = React.useMemo(
     () => constructTreeAsList(appContext.state.avatars.data),
     [appContext.state.avatars.data],
   );
 
   if (!appContext.state.credits.data) {
     return (
-      <div className="p-5 w-full">
+      <div className="w-full p-5">
         <EmptyState
           buttonOnClick={() => creditsDrawerContext.openDrawer()}
           buttonText="Add credits"
@@ -263,7 +201,7 @@ function Avatars() {
 
   if (!appContext.state.avatars.data.length) {
     return (
-      <div className="p-5 w-full">
+      <div className="w-full p-5">
         <EmptyState
           buttonOnClick={() => generatePictureContext.openDrawer()}
           buttonText="Generate picture"
@@ -275,10 +213,9 @@ function Avatars() {
 
   return (
     <div
-      className="p-5 w-full"
+      className="w-full p-5"
       style={{
         display: 'grid',
-        gap: 16,
         gridTemplateColumns: 'repeat(auto-fill, minmax(128px, 1fr))',
       }}
     >
@@ -287,16 +224,20 @@ function Avatars() {
   );
 }
 
-export default function Account(props: DefaultProps) {
+export default function Studio(props: DefaultProps) {
   return (
-    <AuthPageContainer title="Account" {...props}>
-      <Avatars />
-    </AuthPageContainer>
+    <AppProvider {...props}>
+      <AuthPageContainer title="Studio" {...props}>
+        <GenerateImageForm />
+
+        <Avatars />
+      </AuthPageContainer>
+    </AppProvider>
   );
 }
 
 export const getServerSideProps = withPageAuthRequired({
-  returnTo: '/account',
+  returnTo: '/studio',
   getServerSideProps: async (ctx: GetServerSidePropsContext) => {
     if (typeof ctx.query.referral === 'string') {
       const session = await getSession(ctx.req, ctx.res);

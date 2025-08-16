@@ -18,17 +18,17 @@ async function callback(req: NextApiRequest, res: NextApiResponse) {
     Logger.log('error', err);
 
     if (err instanceof Error) {
-      return res.redirect('/account');
+      return res.redirect('/studio');
     }
 
-    return res.redirect('/account');
+    return res.redirect('/studio');
   }
 }
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
   try {
     if (typeof req.query.referral !== 'string') {
-      await handleLogin(req, res, { returnTo: '/account' });
+      await handleLogin(req, res, { returnTo: '/studio' });
 
       return;
     }
@@ -41,7 +41,7 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
     }
 
     await handleLogin(req, res, {
-      returnTo: `/account?referral=${req.query.referral}`,
+      returnTo: `/studio?referral=${req.query.referral}`,
     });
   } catch (err) {
     Logger.log('error', err);

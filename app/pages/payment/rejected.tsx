@@ -1,11 +1,11 @@
 import { DefaultHead } from '@aa/components/default-head';
 import { MainContainer } from '@aa/containers/main-container';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import React from 'react';
 
 export default function Rejected() {
   return (
-    <Fragment>
+    <React.Fragment>
       <DefaultHead title="Payment Rejected" />
 
       <MainContainer>
@@ -17,11 +17,11 @@ export default function Rejected() {
             payment again.
           </p>
 
-          <Link className="btn btn-primary" href="/account">
-            Continue to your account
+          <Link className="btn btn-primary" href="/studio">
+            Continue to studio
           </Link>
         </div>
       </MainContainer>
-    </Fragment>
+    </React.Fragment>
   );
 }

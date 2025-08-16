@@ -3,19 +3,19 @@ import {
   AuthPageContainer,
   DefaultProps,
 } from '@aa/containers/auth-page-container';
-import { AppContext } from '@aa/context';
+import { AppContext, AppProvider } from '@aa/context';
 import { useDeleteReferral } from '@aa/hooks/use-delete-referral';
 import { useSendReferral } from '@aa/hooks/use-send-referral';
 import { ReferralModel } from '@aa/models/referral';
 import { loadServerSideProps } from '@aa/utils';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import dayjs from 'dayjs';
-import { Fragment, useContext, useState } from 'react';
+import React from 'react';
 
 function InviteForm() {
-  const appContext = useContext(AppContext);
+  const appContext = React.useContext(AppContext);
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = React.useState('');
 
   const sendReferral = useSendReferral();
 
@@ -36,7 +36,7 @@ function InviteForm() {
   );
 
   return (
-    <Fragment>
+    <React.Fragment>
       <form onSubmit={handleSubmit} className="flex flex-wrap gap-3">
         <div className="form-control w-full max-w-xs">
           <input
@@ -74,16 +74,16 @@ function InviteForm() {
           You have already invited this email address.
         </p>
       )}
-    </Fragment>
+    </React.Fragment>
   );
 }
 
 function ReferralsTable() {
-  const appContext = useContext(AppContext);
+  const appContext = React.useContext(AppContext);
 
   const deleteReferral = useDeleteReferral();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   if (!appContext.state.referrals.data.length) {
     return null;
@@ -118,7 +118,7 @@ function ReferralsTable() {
         <td>{getReferralBadge()}</td>
         <td>
           {referral.status === 'pending' && (
-            <Fragment>
+            <React.Fragment>
               {!isLoading ? (
                 <svg
                   className="w-6 h-6 cursor-pointer"
@@ -138,7 +138,7 @@ function ReferralsTable() {
               ) : (
                 <Spinner />
               )}
-            </Fragment>
+            </React.Fragment>
           )}
         </td>
       </tr>
@@ -168,25 +168,27 @@ function ReferralsTable() {
 
 export default function ReferAFriend(props: DefaultProps) {
   return (
-    <AuthPageContainer title="Refer a friend" {...props}>
-      <div className="flex flex-col gap-5 py-10 px-5">
-        <div>
-          <h1 className="text-xl">Refer a friend</h1>
-          <p className="max-w-prose">
-            Invite your friends to Ai Portrait Studio and earn credits when they
-            sign up and purchase credits.
-          </p>
+    <AppProvider {...props}>
+      <AuthPageContainer title="Refer a friend">
+        <div className="flex flex-col gap-5 py-10 px-5">
+          <div>
+            <h1 className="text-xl">Refer a friend</h1>
+            <p className="max-w-prose">
+              Invite your friends to SnapSpawn and earn credits when they sign
+              up and purchase credits.
+            </p>
+          </div>
+
+          <InviteForm />
+
+          <ReferralsTable />
         </div>
-
-        <InviteForm />
-
-        <ReferralsTable />
-      </div>
-    </AuthPageContainer>
+      </AuthPageContainer>
+    </AppProvider>
   );
 }
 
 export const getServerSideProps = withPageAuthRequired({
-  returnTo: '/account',
+  returnTo: '/studio',
   getServerSideProps: loadServerSideProps,
 });

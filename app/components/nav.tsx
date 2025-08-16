@@ -1,35 +1,10 @@
 import { COIN_FACTOR } from '@aa/constants';
 import { AppContext } from '@aa/context';
 import { useAddCredits } from '@aa/hooks/use-add-credits';
-import {
-  useGenerateAvatar,
-  useGenerateCustomPicture,
-} from '@aa/hooks/use-generate-avatar';
-import { useUploadFiles } from '@aa/hooks/use-upload-files';
-import {
-  Characteristic,
-  Gender,
-  GeneralAvatarModel,
-  Traits,
-  characteristics,
-  genders,
-  traits,
-} from '@aa/models/prompt';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, {
-  FormEvent,
-  Fragment,
-  PropsWithChildren,
-  Reducer,
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from 'react';
+import React from 'react';
 
 import { Drawer, DrawerContent, DrawerFooter } from './drawer';
 import { Spinner } from './spinner';
@@ -37,106 +12,16 @@ import { Spinner } from './spinner';
 const MAX_CREDITS = 10000000;
 const MIN_CREDITS = 20;
 
-type GenerateAvatarMode = 'custom' | 'generate';
-
-type ReducerAction =
-  | { isLoading: boolean; type: 'set:isLoading' }
-  | { traits: Traits; type: 'set:traits' }
-  | { gender: Gender; type: 'set:gender' }
-  | { characteristics: Characteristic; type: 'set:characteristics' }
-  | { type: 'toggle:custom-prompt' }
-  | { type: 'set:custom-prompt'; customPrompt: string }
-  | { type: 'set:mode'; mode: GenerateAvatarMode };
-
-const DEFAULT_FORM_STATE: GeneralAvatarModel = {
-  characteristics: '2014-era tumblr',
-  gender: 'male',
-  traits: 'baseball cap',
-};
-
-interface GenerateAvatarState {
-  customPrompt: string | null;
-  form: GeneralAvatarModel;
-  mode: GenerateAvatarMode;
-}
-
-interface GenerateAvatarContextType {
-  dispatch: React.Dispatch<ReducerAction>;
-  state: GenerateAvatarState;
-}
-
-const INITIAL_STATE: GenerateAvatarState = {
-  customPrompt: null,
-  form: DEFAULT_FORM_STATE,
-  mode: 'custom',
-};
-
-const GenerateAvatarContext = createContext<GenerateAvatarContextType>({
-  dispatch: () => {},
-  state: INITIAL_STATE,
-});
-
-function reducer(
-  state: GenerateAvatarState,
-  action: ReducerAction,
-): GenerateAvatarState {
-  switch (action.type) {
-    case 'set:traits':
-      return { ...state, form: { ...state.form, traits: action.traits } };
-
-    case 'set:gender':
-      return { ...state, form: { ...state.form, gender: action.gender } };
-
-    case 'set:characteristics':
-      return {
-        ...state,
-        form: { ...state.form, characteristics: action.characteristics },
-      };
-
-    case 'toggle:custom-prompt':
-      return {
-        ...state,
-        customPrompt: state.customPrompt === null ? '' : null,
-      };
-
-    case 'set:custom-prompt':
-      return {
-        ...state,
-        customPrompt: action.customPrompt.length ? action.customPrompt : null,
-      };
-
-    case 'set:mode':
-      return { ...state, mode: action.mode };
-
-    default:
-      return state;
-  }
-}
-
-function GenerateAvatarProvider(props: PropsWithChildren) {
-  const { children } = props;
-
-  const [state, dispatch] = useReducer<
-    Reducer<GenerateAvatarState, ReducerAction>
-  >(reducer, INITIAL_STATE);
-
-  return (
-    <GenerateAvatarContext.Provider value={{ dispatch, state }}>
-      {children}
-    </GenerateAvatarContext.Provider>
-  );
-}
-
-export const AddCreditsDrawerContext = createContext({
+export const AddCreditsDrawerContext = React.createContext({
   isOpen: false,
   closeDrawer: () => {},
   openDrawer: () => {},
 });
 
-export function AddCreditsDrawerProvider(props: PropsWithChildren) {
+export function AddCreditsDrawerProvider(props: React.PropsWithChildren) {
   const { children } = props;
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const closeDrawer = () => setIsOpen(false);
 
@@ -151,16 +36,16 @@ export function AddCreditsDrawerProvider(props: PropsWithChildren) {
   );
 }
 
-export const GeneratePictureDrawerContext = createContext({
+export const GeneratePictureDrawerContext = React.createContext({
   isOpen: false,
   closeDrawer: () => {},
   openDrawer: () => {},
 });
 
-export function GeneratePictureDrawerProvider(props: PropsWithChildren) {
+export function GeneratePictureDrawerProvider(props: React.PropsWithChildren) {
   const { children } = props;
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const closeDrawer = () => setIsOpen(false);
 
@@ -176,15 +61,15 @@ export function GeneratePictureDrawerProvider(props: PropsWithChildren) {
 }
 
 function AddCreditsForm() {
-  const addCreditsDrawerContext = useContext(AddCreditsDrawerContext);
+  const addCreditsDrawerContext = React.useContext(AddCreditsDrawerContext);
 
-  const appContext = useContext(AppContext);
+  const appContext = React.useContext(AppContext);
 
-  const [credits, setCredits] = useState(100);
+  const [credits, setCredits] = React.useState(100);
 
   const addCredits = useAddCredits();
 
-  const continueToCheckout = async (e: FormEvent<HTMLFormElement>) => {
+  const continueToCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     addCredits(credits);
@@ -319,7 +204,8 @@ function UserProfileImage() {
 
 function NavMenuDropDown() {
   const { user } = useUser();
-  const addCreditsDrawerContext = useContext(AddCreditsDrawerContext);
+  const addCreditsDrawerContext = React.useContext(AddCreditsDrawerContext);
+  const appContext = React.useContext(AppContext);
 
   return (
     <div className="dropdown dropdown-end md:hidden">
@@ -330,8 +216,8 @@ function NavMenuDropDown() {
         tabIndex={0}
       >
         <li className="text-base-content">
-          <Link className="w-full" href="/account">
-            Avatar Studio
+          <Link className="w-full" href="/studio">
+            Studio
           </Link>
         </li>
 
@@ -341,7 +227,7 @@ function NavMenuDropDown() {
             onClick={addCreditsDrawerContext.openDrawer}
           >
             <a role="button" className="w-full">
-              Add Credits
+              {appContext.state.credits.data} credits
             </a>
           </li>
         )}
@@ -363,7 +249,7 @@ function NavMenuDropDown() {
 }
 
 function AddCreditsDrawer() {
-  const addCreditsDrawerContext = useContext(AddCreditsDrawerContext);
+  const addCreditsDrawerContext = React.useContext(AddCreditsDrawerContext);
 
   return (
     <Drawer
@@ -379,19 +265,20 @@ function AddCreditsDrawer() {
 function NavMenu() {
   const { user } = useUser();
 
-  const addCreditsDrawerContext = useContext(AddCreditsDrawerContext);
+  const addCreditsDrawerContext = React.useContext(AddCreditsDrawerContext);
+  const appContext = React.useContext(AppContext);
 
   if (user) {
     return (
       <React.Fragment>
         <li className="hidden md:flex">
-          <Link href="/account">Avatar Studio</Link>
+          <Link href="/studio">Studio</Link>
         </li>
         <li
           className="hidden md:flex"
           onClick={addCreditsDrawerContext.openDrawer}
         >
-          <a role="button">Add Credits</a>
+          <a role="button">{appContext.state.credits.data} credits</a>
         </li>
         <li className="hidden md:flex">
           <Link href="/api/auth/logout">Logout</Link>
@@ -407,435 +294,17 @@ function NavMenu() {
   );
 }
 
-function PickGender() {
-  const generateAvatarContext = useContext(GenerateAvatarContext);
-
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    generateAvatarContext.dispatch({
-      gender: e.target.value as Gender,
-      type: 'set:gender',
-    });
-  };
-
-  const renderGenderOption = (gender: Gender) => {
-    return (
-      <option className="capitalize" value={gender} key={gender}>
-        {gender}
-      </option>
-    );
-  };
-
-  return (
-    <div className="form-control">
-      <label className="label">Pick Gender</label>
-      <select
-        value={generateAvatarContext.state.form.gender}
-        onChange={onChange}
-        className="select select-bordered capitalize"
-      >
-        {genders.map(renderGenderOption)}
-      </select>
-    </div>
-  );
-}
-
-function PickTraits() {
-  const generateAvatarContext = useContext(GenerateAvatarContext);
-
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    generateAvatarContext.dispatch({
-      traits: e.target.value as Traits,
-      type: 'set:traits',
-    });
-  };
-
-  const renderTraitOption = (trait: Traits) => {
-    return (
-      <option className="capitalize" value={trait} key={trait}>
-        {trait}
-      </option>
-    );
-  };
-
-  return (
-    <div className="form-control">
-      <label className="label">Pick Theme</label>
-      <select
-        value={generateAvatarContext.state.form.traits}
-        onChange={onChange}
-        className="select select-bordered capitalize"
-      >
-        {traits.map(renderTraitOption)}
-      </select>
-    </div>
-  );
-}
-
-function PickCharacteristics() {
-  const generateAvatarContext = useContext(GenerateAvatarContext);
-
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    generateAvatarContext.dispatch({
-      characteristics: e.target.value as Characteristic,
-      type: 'set:characteristics',
-    });
-  };
-
-  const renderCharacteristicOption = (characteristic: Characteristic) => {
-    return (
-      <option
-        className="capitalize"
-        value={characteristic}
-        key={characteristic}
-      >
-        {characteristic}
-      </option>
-    );
-  };
-
-  return (
-    <div className="form-control">
-      <label className="label">Pick Accessory</label>
-      <select
-        value={generateAvatarContext.state.form.characteristics}
-        onChange={onChange}
-        className="select select-bordered capitalize"
-      >
-        {characteristics.map(renderCharacteristicOption)}
-      </select>
-    </div>
-  );
-}
-
-function GenerateAvatarSubmitButton(props: { text: string }) {
-  const { text } = props;
-
-  const appContext = useContext(AppContext);
-  const generatePictureDrawerContext = useContext(GeneratePictureDrawerContext);
-  const generateAvatarContext = useContext(GenerateAvatarContext);
-
-  const generateAvatars = useGenerateAvatar();
-  const generateCustomPicture = useGenerateCustomPicture();
-
-  const handleSubmit = () => {
-    window.scrollTo(0, 0);
-    generatePictureDrawerContext.closeDrawer();
-
-    generateAvatarContext.state.mode === 'generate'
-      ? generateAvatars(generateAvatarContext.state.form)
-      : generateCustomPicture(generateAvatarContext.state.customPrompt!);
-  };
-
-  if (appContext.state.credits.data === 0) {
-    return (
-      <button className="btn btn-secondary" disabled>
-        You have no credits
-      </button>
-    );
-  }
-
-  return (
-    <button
-      className="btn btn-secondary relative"
-      disabled={appContext.state.avatars.isLoading}
-      onClick={handleSubmit}
-      type="submit"
-    >
-      {appContext.state.avatars.isLoading && (
-        <div className="absolute z-10">
-          <Spinner />
-        </div>
-      )}
-
-      <span className={appContext.state.avatars.isLoading ? 'opacity-0' : ''}>
-        {text}
-      </span>
-    </button>
-  );
-}
-
-function UserCreditsText() {
-  const appContext = useContext(AppContext);
-
-  if (!appContext.state.credits.data) {
-    return (
-      <h1 className="text-2xl mt-3 text-center">
-        You have <span className="text-secondary">0</span> credits
-      </h1>
-    );
-  }
-
-  return (
-    <h1 className="text-2xl text-center">
-      You have{' '}
-      <span className="text-secondary">{appContext.state.credits.data}</span>{' '}
-      credits
-    </h1>
-  );
-}
-
-const MAX_LENGTH = 1000;
-
-function CustomPromptTextarea() {
-  const appContext = useContext(AppContext);
-  const generateAvatarContext = useContext(GenerateAvatarContext);
-
-  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (e.target.value.length >= MAX_LENGTH) {
-      e.target.value = e.target.value.slice(0, MAX_LENGTH);
-    }
-
-    generateAvatarContext.dispatch({
-      type: 'set:custom-prompt',
-      customPrompt: e.target.value,
-    });
-  };
-
-  return (
-    <div className="form-control">
-      <textarea
-        maxLength={MAX_LENGTH}
-        className="textarea textarea-bordered h-24 resize w-full"
-        disabled={appContext.state.avatars.isLoading}
-        onChange={onChange}
-        placeholder="Enter custom prompt here"
-        value={generateAvatarContext.state.customPrompt ?? ''}
-      ></textarea>
-      <label className="label justify-end">
-        <span className="label-text-alt">
-          {generateAvatarContext.state.customPrompt?.length ?? 0}/{MAX_LENGTH}
-        </span>
-      </label>
-    </div>
-  );
-}
-
-function GenerateFromPreDefinedOptionsForm() {
-  return (
-    <Fragment>
-      <PickGender />
-
-      <PickTraits />
-
-      <PickCharacteristics />
-    </Fragment>
-  );
-}
-
-function CustomPromptForm() {
-  return (
-    <div className="flex flex-col gap-5">
-      <CustomPromptTextarea />
-    </div>
-  );
-}
-
-function TabHeader() {
-  const generateAvatarContext = useContext(GenerateAvatarContext);
-
-  const setModeAsCustom = () => {
-    generateAvatarContext.dispatch({ type: 'set:mode', mode: 'custom' });
-  };
-
-  const setModeAsGenerate = () => {
-    generateAvatarContext.dispatch({ type: 'set:mode', mode: 'generate' });
-  };
-
-  return (
-    <div className="flex gap-3 justify-center flex-wrap">
-      <button
-        className={
-          generateAvatarContext.state.mode === 'generate'
-            ? 'btn btn-sm btn-outline'
-            : 'btn btn-sm'
-        }
-        onClick={setModeAsGenerate}
-      >
-        Pre Defined Prompts
-      </button>
-      <button
-        className={
-          generateAvatarContext.state.mode === 'custom'
-            ? 'btn btn-sm btn-outline'
-            : 'btn btn-sm'
-        }
-        onClick={setModeAsCustom}
-      >
-        Custom Prompt
-      </button>
-    </div>
-  );
-}
-
-function FormFooter() {
-  const generatePictureDrawerContext = useContext(GeneratePictureDrawerContext);
-
-  return (
-    <DrawerFooter>
-      <button
-        onClick={generatePictureDrawerContext.closeDrawer}
-        type="button"
-        className="btn btn-outline btn-error"
-      >
-        Cancel
-      </button>
-
-      <GenerateAvatarSubmitButton text="Generate" />
-    </DrawerFooter>
-  );
-}
-
-function Form() {
-  const generateAvatarContext = useContext(GenerateAvatarContext);
-  const generatePictureDrawerContext = useContext(GeneratePictureDrawerContext);
-
-  const generateAvatars = useGenerateAvatar();
-  const generateCustomPicture = useGenerateCustomPicture();
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    window.scrollTo(0, 0);
-    generatePictureDrawerContext.closeDrawer();
-
-    generateAvatarContext.state.mode === 'generate'
-      ? generateAvatars(generateAvatarContext.state.form)
-      : generateCustomPicture(generateAvatarContext.state.customPrompt!);
-  };
-
-  return (
-    <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-      {generateAvatarContext.state.mode === 'generate' ? (
-        <GenerateFromPreDefinedOptionsForm />
-      ) : (
-        <CustomPromptForm />
-      )}
-    </form>
-  );
-}
-
-function GeneratePictureDrawer() {
-  const generatePictureDrawerContext = useContext(GeneratePictureDrawerContext);
-
-  return (
-    <Drawer
-      isOpen={generatePictureDrawerContext.isOpen}
-      onClose={generatePictureDrawerContext.closeDrawer}
-      position="left"
-    >
-      <GenerateAvatarProvider>
-        <DrawerContent>
-          <TabHeader />
-
-          <UserCreditsText />
-
-          <Form />
-        </DrawerContent>
-
-        <FormFooter />
-      </GenerateAvatarProvider>
-    </Drawer>
-  );
-}
-
-function GeneratePictureNavItem() {
-  const appContext = useContext(AppContext);
-  const generatePictureDrawerContext = useContext(GeneratePictureDrawerContext);
-
-  if (appContext.state.avatars.isLoading) {
-    return (
-      <Fragment>
-        <li className="opacity-50 hidden md:flex">
-          <a role="button">
-            Generate Picture <Spinner />
-          </a>
-        </li>
-        <li className="opacity-50 md:hidden">
-          <a role="button">
-            Generating <Spinner />
-          </a>
-        </li>
-      </Fragment>
-    );
-  }
-
-  return (
-    <li onClick={generatePictureDrawerContext.openDrawer}>
-      <a role="button">Generate Picture</a>
-    </li>
-  );
-}
-
-function UploadPictureNavItem() {
-  const appContext = useContext(AppContext);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const openFileInput = () => fileInputRef.current?.click();
-
-  const uploadFiles = useUploadFiles();
-
-  const onFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-
-    uploadFiles(e.target.files);
-  };
-
-  if (appContext.state.upload.isLoading) {
-    return (
-      <Fragment>
-        <li className="opacity-50 hidden md:flex">
-          <a role="button">
-            Upload Picture <Spinner />
-          </a>
-        </li>
-        <li className="opacity-50 md:hidden">
-          <a role="button">
-            Uploading <Spinner />
-          </a>
-        </li>
-      </Fragment>
-    );
-  }
-
-  return (
-    <Fragment>
-      <input
-        hidden
-        onChange={onFileInputChange}
-        ref={fileInputRef}
-        type="file"
-      />
-
-      <li onClick={openFileInput}>
-        <a role="button">Upload Picture</a>
-      </li>
-    </Fragment>
-  );
-}
-
 export function Nav(props: React.ComponentPropsWithoutRef<'div'>) {
-  const { user } = useUser();
-
   return (
     <React.Fragment>
       <div className="navbar bg-base-200 flex fixed top-0 w-100" {...props}>
         <div className="flex-1">
           <Link
-            href={!user ? '/' : '/account'}
+            href="/"
             className="btn btn-ghost normal-case text-xl hidden lg:flex"
           >
-            AI Portrait Studio
+            SnapSpawn
           </Link>
-
-          {user && (
-            <div className="flex-none gap-2">
-              <ul className="menu menu-horizontal px-1">
-                <GeneratePictureNavItem />
-                <UploadPictureNavItem />
-              </ul>
-            </div>
-          )}
         </div>
 
         <div className="flex-none gap-2">
@@ -847,7 +316,6 @@ export function Nav(props: React.ComponentPropsWithoutRef<'div'>) {
       </div>
 
       <AddCreditsDrawer />
-      <GeneratePictureDrawer />
     </React.Fragment>
   );
 }

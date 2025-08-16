@@ -1,19 +1,19 @@
 import Head from 'next/head';
 import Script from 'next/script';
-import { Fragment } from 'react';
+import React from 'react';
 
 export function DefaultHead(props: { title: string }) {
   const { title } = props;
 
-  const documentTitle = `AI Portrait Studio | ${title}`;
+  const documentTitle = `SnapSpawn | ${title}`;
 
   return (
-    <Fragment>
+    <React.Fragment>
       <Head>
         <title>{documentTitle}</title>
         <meta
           name="description"
-          content="Get instant, custom portraits at AI Portrait Studio. Our AI technology generates unique images based on your pictures. Create a personalized work of art in minutes. Generate images with Dall-E and Stable Diffusion."
+          content="Get instant, custom portraits at SnapSpawn. Our AI technology generates unique images based on your pictures. Create a personalized work of art in minutes. Generate images with Dall-E and Stable Diffusion."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
@@ -37,6 +37,6 @@ export function DefaultHead(props: { title: string }) {
           gtag('config', 'G-ZJBEKLJEGY');
         `}
       </Script>
-    </Fragment>
+    </React.Fragment>
   );
 }

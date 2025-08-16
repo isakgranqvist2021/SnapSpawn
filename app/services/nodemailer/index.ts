@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 export async function sendEmail(to: string, subject: string, html: string) {
   try {
     const res = await transporter.sendMail({
-      from: 'AI Portrait Studio',
+      from: 'SnapSpawn',
       to,
       subject,
       html,

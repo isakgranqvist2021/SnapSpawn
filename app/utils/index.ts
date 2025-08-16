@@ -1,4 +1,4 @@
-import { AvatarDocument, PromptOptions, getAvatars } from '@aa/database/avatar';
+import { AvatarDocument, getAvatars } from '@aa/database/avatar';
 import { ReferralDocument, getReferrals } from '@aa/database/referral';
 import { createUser, getUser } from '@aa/database/user';
 import { AvatarModel } from '@aa/models/avatar';
@@ -12,8 +12,7 @@ async function prepareAvatarModel(
   avatarDocument: AvatarDocument,
 ): Promise<AvatarModel | null> {
   try {
-    const { _id, avatar, createdAt, prompt, promptOptions, parentId } =
-      avatarDocument;
+    const { _id, avatar, createdAt, prompt, parentId } = avatarDocument;
 
     const urls = await getSignedUrls(avatar);
 
@@ -21,7 +20,6 @@ async function prepareAvatarModel(
       createdAt: new Date(createdAt).getTime(),
       id: _id.toHexString(),
       prompt,
-      promptOptions,
       urls,
       parentId: parentId?.toString() ?? null,
     };
@@ -115,26 +113,4 @@ export async function getUserAndValidateCredits(session?: Session | null) {
     Logger.log('error', err);
     return null;
   }
-}
-
-export function getPrompt(promptOptions: PromptOptions) {
-  const parts = [
-    'circle shaped',
-    'close up',
-    'medium light',
-    'fictional',
-    'digital social media profile avatar',
-    'colourful lighting',
-    'vector art',
-  ];
-
-  if (promptOptions) {
-    const values = Object.values(promptOptions).filter(
-      (value) => value !== "'none'",
-    );
-
-    parts.push(...values);
-  }
-
-  return parts.join(', ');
 }

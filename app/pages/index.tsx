@@ -1,9 +1,12 @@
 import { DefaultHead } from '@aa/components/default-head';
 import { Footer } from '@aa/components/footer';
 import { Nav } from '@aa/components/nav';
+import { DefaultProps } from '@aa/containers/auth-page-container';
 import { MainContainer } from '@aa/containers/main-container';
+import { AppProvider } from '@aa/context';
+import { loadServerSideProps } from '@aa/utils';
+import { GetServerSidePropsContext } from 'next';
 import Link from 'next/link';
-import { Fragment } from 'react';
 
 function HeroSection() {
   return (
@@ -16,14 +19,14 @@ function HeroSection() {
         />
         <div className="lg:mt-0 mt-4 flex flex-col lg:items-start items-center">
           <h1 className="lg:text-6xl text-4xl font-black lg:text-left text-center">
-            AI Portrait Studio
+            SnapSpawn
           </h1>
           <p className="py-6 max-w-prose lg:text-left text-center">
             Generate captivating pictures with ease. Our powerful tool lets you
             generate pictures with{' '}
-            <span className="text-secondary">custom prompts</span> or
-            pre-defined options. Unleash your creativity today! Our model is
-            based on <span className="text-secondary">DALL-E</span>.
+            <span className="text-secondary">custom prompts</span>. Unleash your
+            creativity today! Our model is based on{' '}
+            <span className="text-secondary">DALL-E</span>.
           </p>
           <Link href="/api/auth/login" className="btn btn-primary lg:mx-0">
             Get Started
@@ -149,24 +152,6 @@ function HowItWorksSection() {
                 d="M4.5 12.75l6 6 9-13.5"
               />
             </svg>
-            Pre defined options to ensure solid outcomes
-          </p>
-          <p className="text-center flex items-center gap-5 text-xs lg:text-base">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              aria-label="Green checkmark"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6 text-green-500"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4.5 12.75l6 6 9-13.5"
-              />
-            </svg>
             Upload your own images and generate variants
           </p>
           <p className="text-center flex items-center gap-5 text-xs lg:text-base">
@@ -263,9 +248,9 @@ function CallToActionFooterSection() {
   );
 }
 
-function Home() {
+export default function Home(props: DefaultProps) {
   return (
-    <Fragment>
+    <AppProvider {...props}>
       <DefaultHead title="Home" />
 
       <MainContainer>
@@ -283,8 +268,20 @@ function Home() {
 
         <Footer />
       </MainContainer>
-    </Fragment>
+    </AppProvider>
   );
 }
 
-export default Home;
+export const getServerSideProps = (ctx: GetServerSidePropsContext) => {
+  try {
+    return loadServerSideProps(ctx);
+  } catch {
+    return {
+      props: {
+        credits: 0,
+        avatars: [],
+        referrals: [],
+      },
+    };
+  }
+};

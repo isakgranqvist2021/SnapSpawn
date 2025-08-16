@@ -1,3 +1,3 @@
-# AI Portrait Studio
+# SnapSpawn
 
 ### generate avatars

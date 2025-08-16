@@ -5,7 +5,7 @@ import {
 import '@aa/styles/globals.css';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { AppProps } from 'next/app';
-import { useEffect, useState } from 'react';
+import React from 'react';
 
 function Menu(props: { isOpen: boolean }) {
   const { isOpen } = props;
@@ -50,13 +50,13 @@ function Menu(props: { isOpen: boolean }) {
 }
 
 export function ThemePicker() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleIsOpen = () => {
     setIsOpen((isOpen) => !isOpen);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const theme = localStorage.getItem('theme');
     if (theme) {
       document.documentElement.setAttribute('data-theme', theme);

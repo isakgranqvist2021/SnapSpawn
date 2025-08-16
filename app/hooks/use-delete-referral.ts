@@ -1,9 +1,8 @@
 import { AppContext } from '@aa/context';
-import { AvatarModel } from '@aa/models/avatar';
-import { useContext } from 'react';
+import React from 'react';
 
 export function useDeleteReferral() {
-  const appContext = useContext(AppContext);
+  const appContext = React.useContext(AppContext);
 
   return async (id: string) => {
     try {

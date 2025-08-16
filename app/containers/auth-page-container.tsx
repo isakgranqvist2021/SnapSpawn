@@ -1,10 +1,10 @@
 import { DefaultHead } from '@aa/components/default-head';
 import { Footer } from '@aa/components/footer';
 import { Nav } from '@aa/components/nav';
-import { AppContext, AppProvider } from '@aa/context';
+import { AppContext } from '@aa/context';
 import { Alert } from '@aa/types';
 import { loadServerSideProps } from '@aa/utils';
-import { Fragment, useContext, useEffect } from 'react';
+import React from 'react';
 
 import {
   MainContainer,
@@ -16,7 +16,7 @@ export type DefaultProps = Awaited<
   ReturnType<typeof loadServerSideProps>
 >['props'];
 
-interface AuthPageContainerProps extends DefaultProps {
+interface AuthPageContainerProps {
   children: React.ReactNode;
   title: string;
 }
@@ -56,9 +56,9 @@ function PageSnackbarAlert(props: Alert) {
 function PageSnackbarToast(props: Alert) {
   const { id } = props;
 
-  const appContext = useContext(AppContext);
+  const appContext = React.useContext(AppContext);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const timeout = setTimeout(() => {
       appContext.dispatch({ type: 'alerts:remove', id });
     }, 5000);
@@ -80,18 +80,20 @@ function renderPageSnackbarToast(alert: Alert, index: number) {
 }
 
 function PageSnackbar() {
-  const appContext = useContext(AppContext);
+  const appContext = React.useContext(AppContext);
 
   return (
-    <Fragment>{appContext.state.alerts.map(renderPageSnackbarToast)}</Fragment>
+    <React.Fragment>
+      {appContext.state.alerts.map(renderPageSnackbarToast)}
+    </React.Fragment>
   );
 }
 
 export function AuthPageContainer(props: AuthPageContainerProps) {
-  const { avatars, credits, referrals, children, title } = props;
+  const { children, title } = props;
 
   return (
-    <AppProvider avatars={avatars} credits={credits} referrals={referrals}>
+    <React.Fragment>
       <DefaultHead title={title} />
       <PageSnackbar />
 
@@ -104,6 +106,6 @@ export function AuthPageContainer(props: AuthPageContainerProps) {
 
         <Footer />
       </MainContainer>
-    </AppProvider>
+    </React.Fragment>
   );
 }

@@ -1,9 +1,9 @@
 import { AppContext } from '@aa/context';
 import { ReferralModel } from '@aa/models/referral';
-import { useContext } from 'react';
+import React from 'react';
 
 export function useSendReferral() {
-  const appContext = useContext(AppContext);
+  const appContext = React.useContext(AppContext);
 
   return async (toEmail: string) => {
     try {

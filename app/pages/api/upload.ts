@@ -32,12 +32,6 @@ async function createAvatarModels(
       avatars: avatarIds,
       email,
       prompt: '',
-      promptOptions: {
-        characteristics: null,
-        gender: null,
-        traits: null,
-        custom: true,
-      },
       parentId: null,
     });
     if (!createdAvatars) {
@@ -56,12 +50,6 @@ async function createAvatarModels(
           createdAt: Date.now(),
           id: insertedKeys[i].toString(),
           prompt: '',
-          promptOptions: {
-            characteristics: null,
-            gender: null,
-            traits: null,
-            custom: true,
-          },
           urls,
           parentId: null,
         };

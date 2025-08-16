@@ -1,5 +1,3 @@
-import { PromptOptions } from '@aa/database/avatar';
-
 export const avatarSizes = [
   '1024x1024',
   '512x512',
@@ -21,6 +19,5 @@ export interface AvatarModel {
   id: string;
   parentId: string | null;
   prompt: string;
-  promptOptions: PromptOptions;
   urls: AvatarURLs;
 }

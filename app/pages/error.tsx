@@ -2,13 +2,13 @@ import { DefaultHead } from '@aa/components/default-head';
 import { MainContainer } from '@aa/containers/main-container';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import React from 'react';
 
 export default function Error() {
   const { user } = useUser();
 
   return (
-    <Fragment>
+    <React.Fragment>
       <DefaultHead title="Error" />
 
       <MainContainer>
@@ -21,8 +21,8 @@ export default function Error() {
           </p>
 
           {user ? (
-            <Link className="btn btn-primary" href="/account">
-              Continue to your account
+            <Link className="btn btn-primary" href="/studio">
+              Continue to your studio
             </Link>
           ) : (
             <Link className="btn btn-primary" href="/">
@@ -31,6 +31,6 @@ export default function Error() {
           )}
         </div>
       </MainContainer>
-    </Fragment>
+    </React.Fragment>
   );
 }

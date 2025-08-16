@@ -1,12 +1,6 @@
-import {
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React from 'react';
 
-type DrawerProps = PropsWithChildren<{
+type DrawerProps = React.PropsWithChildren<{
   position: 'left' | 'right';
   isOpen: boolean;
   onClose: () => void;
@@ -32,7 +26,7 @@ function getDrawerClassNames(isOpen: boolean, position: 'left' | 'right') {
   return { backdrop, drawer };
 }
 
-export function DrawerContent(props: PropsWithChildren) {
+export function DrawerContent(props: React.PropsWithChildren) {
   const { children } = props;
 
   return (
@@ -42,7 +36,7 @@ export function DrawerContent(props: PropsWithChildren) {
   );
 }
 
-export function DrawerFooter(props: PropsWithChildren) {
+export function DrawerFooter(props: React.PropsWithChildren) {
   const { children } = props;
 
   return (
@@ -55,7 +49,7 @@ export function Drawer(props: DrawerProps) {
 
   const { backdrop, drawer } = getDrawerClassNames(isOpen, position);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {

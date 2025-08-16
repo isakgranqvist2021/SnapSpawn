@@ -1,16 +1,8 @@
 import { PaginateReturn } from '@aa/models/paginate';
-import { Characteristic, Gender, Traits } from '@aa/models/prompt';
 import { Logger } from '@aa/services/logger';
 import { ObjectId } from 'mongodb';
 
 import { getCollection } from './database';
-
-export interface PromptOptions {
-  characteristics: Characteristic | null;
-  custom: boolean;
-  gender: Gender | null;
-  traits: Traits | null;
-}
 
 export interface AvatarDocument {
   _id: ObjectId;
@@ -19,7 +11,6 @@ export interface AvatarDocument {
   email: string;
   parentId: ObjectId | null;
   prompt: string;
-  promptOptions: PromptOptions;
 }
 
 export type CreateAvatarDocument = Omit<AvatarDocument, '_id'>;
@@ -50,7 +41,6 @@ export async function getAvatars(options: { email: string }) {
         createdAt: avatarDocument.createdAt,
         email: avatarDocument.email,
         prompt: avatarDocument.prompt,
-        promptOptions: avatarDocument.promptOptions,
         parentId: avatarDocument.parentId,
       };
 
@@ -100,7 +90,6 @@ export async function paginateAvatars(options: {
         createdAt: avatarDocument.createdAt,
         email: avatarDocument.email,
         prompt: avatarDocument.prompt,
-        promptOptions: avatarDocument.promptOptions,
         parentId: avatarDocument.parentId,
       };
 
@@ -150,7 +139,6 @@ export async function getAvatar(options: { id: string }) {
       createdAt: result.createdAt,
       email: result.email,
       prompt: result.prompt,
-      promptOptions: result.promptOptions,
       parentId: result.parentId,
     };
 
@@ -166,10 +154,9 @@ export async function createAvatars(options: {
   email: string;
   parentId: ObjectId | null;
   prompt: string;
-  promptOptions: PromptOptions;
 }) {
   try {
-    const { avatars, email, prompt, promptOptions, parentId } = options;
+    const { avatars, email, prompt, parentId } = options;
 
     const collection = await getCollection<CreateAvatarDocument>(
       AVATARS_COLLECTION_NAME,
@@ -185,7 +172,6 @@ export async function createAvatars(options: {
         createdAt: Date.now(),
         email,
         prompt,
-        promptOptions,
         parentId,
       };
 

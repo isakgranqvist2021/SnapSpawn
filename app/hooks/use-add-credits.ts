@@ -1,9 +1,9 @@
 import { AppContext } from '@aa/context';
 import getStripe from '@aa/services/stripe';
-import { useContext } from 'react';
+import React from 'react';
 
 export function useAddCredits() {
-  const appContext = useContext(AppContext);
+  const appContext = React.useContext(AppContext);
 
   return async (credits: number) => {
     try {
@@ -20,10 +20,12 @@ export function useAddCredits() {
         method: 'POST',
       }).then((res) => res.json());
 
+      console.log(res.id);
+
       await stripe.redirectToCheckout({
         sessionId: res.id,
       });
-    } catch {
+    } catch (err) {
       appContext.dispatch({
         type: 'alerts:add',
         alert: {

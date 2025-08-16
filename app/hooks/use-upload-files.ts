@@ -1,10 +1,10 @@
 import { ONE_MB_IN_BYTES, acceptedMimeTypes } from '@aa/constants';
 import { AppContext } from '@aa/context';
 import { AvatarModel } from '@aa/models/avatar';
-import { useContext } from 'react';
+import React from 'react';
 
 export const useUploadFiles = () => {
-  const appContext = useContext(AppContext);
+  const appContext = React.useContext(AppContext);
 
   return async (files: FileList) => {
     if (files.length > 5) {

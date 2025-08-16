@@ -1,13 +1,13 @@
-import { useEffect, useRef } from 'react';
+import React from 'react';
 
 export function useDropzone(options: {
   onDrop: (e: DragEvent, ref: React.RefObject<HTMLDivElement>) => void;
   onDragEnter?: (e: DragEvent, ref: React.RefObject<HTMLDivElement>) => void;
   onDragLeave?: (e: DragEvent, ref: React.RefObject<HTMLDivElement>) => void;
 }) {
-  const dropzoneRef = useRef<HTMLDivElement>(null);
+  const dropzoneRef = React.useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const dropzone = dropzoneRef.current;
 
     if (!dropzone) {

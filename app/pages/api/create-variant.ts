@@ -45,7 +45,6 @@ async function createAvatarVariants(id: string, email: string) {
       avatars: avatarIds,
       email,
       prompt: avatar.prompt,
-      promptOptions: avatar.promptOptions,
       parentId: new ObjectId(id),
     });
     if (!createdAvatars) {
@@ -65,7 +64,6 @@ async function createAvatarVariants(id: string, email: string) {
           id: insertedKeys[i].toString(),
           prompt: avatar.prompt,
           parentId: id,
-          promptOptions: avatar.promptOptions,
           urls,
         };
       }),

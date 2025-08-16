@@ -1,8 +1,7 @@
 import { useDropzone } from '@aa/hooks/use-dropzone';
 import { useUploadFiles } from '@aa/hooks/use-upload-files';
-import { PropsWithChildren, useRef } from 'react';
 
-export function MainContainerContent(props: PropsWithChildren) {
+export function MainContainerContent(props: React.PropsWithChildren) {
   const { children } = props;
 
   return (
@@ -12,13 +11,13 @@ export function MainContainerContent(props: PropsWithChildren) {
   );
 }
 
-export function MainContainerLayout(props: PropsWithChildren) {
+export function MainContainerLayout(props: React.PropsWithChildren) {
   const { children } = props;
 
   return <div className="flex bg-white flex-auto mt-16">{children}</div>;
 }
 
-export function MainContainer(props: PropsWithChildren) {
+export function MainContainer(props: React.PropsWithChildren) {
   const { children } = props;
 
   const uploadFiles = useUploadFiles();
