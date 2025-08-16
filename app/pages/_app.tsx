@@ -1,7 +1,4 @@
-import {
-  AddCreditsDrawerProvider,
-  GeneratePictureDrawerProvider,
-} from '@aa/components/nav';
+import { AddCreditsDrawerProvider } from '@aa/components/nav';
 import '@aa/styles/globals.css';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { AppProps } from 'next/app';
@@ -113,9 +110,7 @@ function App(props: AppProps) {
   return (
     <UserProvider>
       <AddCreditsDrawerProvider>
-        <GeneratePictureDrawerProvider>
-          <Component {...pageProps} />
-        </GeneratePictureDrawerProvider>
+        <Component {...pageProps} />
       </AddCreditsDrawerProvider>
 
       <ThemePicker />

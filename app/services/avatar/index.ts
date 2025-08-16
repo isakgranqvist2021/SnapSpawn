@@ -38,7 +38,6 @@ export async function createAvatarVariant(
       image,
       n: 1,
       size: '1024x1024',
-      model: 'dall-e-3',
     };
 
     const res = await openai.images.createVariation(options);

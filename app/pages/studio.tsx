@@ -1,9 +1,7 @@
 import { EmptyState } from '@aa/components/empty-state';
 import { GenerateImageForm } from '@aa/components/forms';
-import {
-  AddCreditsDrawerContext,
-  GeneratePictureDrawerContext,
-} from '@aa/components/nav';
+import { AddCreditsDrawerContext } from '@aa/components/nav';
+import { Spinner } from '@aa/components/spinner';
 import {
   AuthPageContainer,
   DefaultProps,
@@ -141,16 +139,28 @@ function AvatarCard(props: AvatarModel) {
             </div>
 
             <button
-              onClick={generateVariant}
-              className="btn btn-primary"
+              className="btn btn-primary btn-sm relative"
               disabled={
                 !appContext.state.credits.data ||
                 appContext.state.avatars.isLoading
               }
+              onClick={generateVariant}
             >
-              {!appContext.state.credits.data
-                ? 'You have no credits'
-                : 'Generate variant'}
+              {appContext.state.avatars.isLoading && (
+                <div className="absolute z-10">
+                  <Spinner />
+                </div>
+              )}
+
+              <span
+                className={
+                  appContext.state.avatars.isLoading ? 'opacity-0' : ''
+                }
+              >
+                {!appContext.state.credits.data
+                  ? 'You have no credits'
+                  : 'Generate variant'}
+              </span>
             </button>
           </div>
         </div>
@@ -177,15 +187,9 @@ function renderAvatar(avatar: AvatarModel) {
   return <AvatarCard {...avatar} key={avatar.id} />;
 }
 
-function Avatars() {
-  const appContext = React.useContext(AppContext);
+function ZeroCoinsEmptyState() {
   const creditsDrawerContext = React.useContext(AddCreditsDrawerContext);
-  const generatePictureContext = React.useContext(GeneratePictureDrawerContext);
-
-  const flatTree = React.useMemo(
-    () => constructTreeAsList(appContext.state.avatars.data),
-    [appContext.state.avatars.data],
-  );
+  const appContext = React.useContext(AppContext);
 
   if (!appContext.state.credits.data) {
     return (
@@ -199,27 +203,26 @@ function Avatars() {
     );
   }
 
-  if (!appContext.state.avatars.data.length) {
-    return (
-      <div className="w-full p-5">
-        <EmptyState
-          buttonOnClick={() => generatePictureContext.openDrawer()}
-          buttonText="Generate picture"
-          message="No pictures. Click generate picture to get started"
-        />
-      </div>
-    );
-  }
+  return null;
+}
+
+function Avatars() {
+  const appContext = React.useContext(AppContext);
+
+  const flatTree = React.useMemo(
+    () => constructTreeAsList(appContext.state.avatars.data),
+    [appContext.state.avatars.data],
+  );
 
   return (
     <div
-      className="w-full p-5"
+      className="w-full px-5 pt-5"
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(128px, 1fr))',
       }}
     >
-      {flatTree.map(renderAvatar)}
+      {flatTree.reverse().map(renderAvatar)}
     </div>
   );
 }
@@ -228,9 +231,11 @@ export default function Studio(props: DefaultProps) {
   return (
     <AppProvider {...props}>
       <AuthPageContainer title="Studio" {...props}>
-        <GenerateImageForm />
-
         <Avatars />
+
+        <ZeroCoinsEmptyState />
+
+        <GenerateImageForm />
       </AuthPageContainer>
     </AppProvider>
   );

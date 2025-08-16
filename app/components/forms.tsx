@@ -14,6 +14,10 @@ export function GenerateImageForm() {
 
   const [prompt, setPrompt] = React.useState('');
 
+  if (!appContext.state.credits.data) {
+    return null;
+  }
+
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length >= MAX_LENGTH) {
       e.target.value = e.target.value.slice(0, MAX_LENGTH);
@@ -44,27 +48,30 @@ export function GenerateImageForm() {
 
   return (
     <div className="w-full p-5">
-      <form
-        className="flex flex-col gap-5 p-5 shadow-lg rounded-lg"
-        onSubmit={handleSubmit}
-      >
-        <input disabled={isLoading} onChange={onFileInputChange} type="file" />
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        <div>
+          <div className="form-control">
+            <textarea
+              autoFocus
+              maxLength={MAX_LENGTH}
+              className="textarea textarea-bordered h-24 resize-y w-full"
+              disabled={disableForm}
+              onChange={onChange}
+              placeholder="Enter prompt here"
+              value={prompt}
+            ></textarea>
+            <label className="label justify-end">
+              <span className="label-text-alt">
+                {prompt.length ?? 0}/{MAX_LENGTH}
+              </span>
+            </label>
+          </div>
 
-        <div className="form-control">
-          <textarea
-            autoFocus
-            maxLength={MAX_LENGTH}
-            className="textarea textarea-bordered h-24 resize-y w-full"
-            disabled={disableForm}
-            onChange={onChange}
-            placeholder="Enter prompt here"
-            value={prompt}
-          ></textarea>
-          <label className="label justify-end">
-            <span className="label-text-alt">
-              {prompt.length ?? 0}/{MAX_LENGTH}
-            </span>
-          </label>
+          <input
+            disabled={isLoading}
+            onChange={onFileInputChange}
+            type="file"
+          />
         </div>
 
         <button

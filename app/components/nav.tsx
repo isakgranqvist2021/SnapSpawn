@@ -36,30 +36,6 @@ export function AddCreditsDrawerProvider(props: React.PropsWithChildren) {
   );
 }
 
-export const GeneratePictureDrawerContext = React.createContext({
-  isOpen: false,
-  closeDrawer: () => {},
-  openDrawer: () => {},
-});
-
-export function GeneratePictureDrawerProvider(props: React.PropsWithChildren) {
-  const { children } = props;
-
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const closeDrawer = () => setIsOpen(false);
-
-  const openDrawer = () => setIsOpen(true);
-
-  return (
-    <GeneratePictureDrawerContext.Provider
-      value={{ isOpen, closeDrawer, openDrawer }}
-    >
-      {children}
-    </GeneratePictureDrawerContext.Provider>
-  );
-}
-
 function AddCreditsForm() {
   const addCreditsDrawerContext = React.useContext(AddCreditsDrawerContext);
 
@@ -299,10 +275,7 @@ export function Nav(props: React.ComponentPropsWithoutRef<'div'>) {
     <React.Fragment>
       <div className="navbar bg-base-200 flex fixed top-0 w-100" {...props}>
         <div className="flex-1">
-          <Link
-            href="/"
-            className="btn btn-ghost normal-case text-xl hidden lg:flex"
-          >
+          <Link href="/" className="btn btn-ghost normal-case text-xl">
             SnapSpawn
           </Link>
         </div>
