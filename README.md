@@ -1,3 +1,3 @@
 # SnapSpawn
 
-### generate avatars
+### generate images
