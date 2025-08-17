@@ -5,19 +5,9 @@ export function Footer() {
   return (
     <footer className="footer p-10 bg-neutral text-neutral-content">
       <div>
-        <Image
-          width={128}
-          height={128}
-          className="rounded-full"
-          alt=""
-          src="/logo.png"
-        />
+        <Image width={128} height={128} alt="" src="/logo.png" />
 
-        <div>
-          <header>SnapSpawn.</header>
-
-          <p>Bringing your vision to life with AI.</p>
-        </div>
+        <p>Bringing your vision to life with AI.</p>
       </div>
 
       <nav>

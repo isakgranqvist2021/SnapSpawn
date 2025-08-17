@@ -1,5 +1,5 @@
 import { EmptyState } from '@aa/components/empty-state';
-import { GenerateImageForm } from '@aa/components/forms';
+import { GenerateImageForm } from '@aa/components/generate-image-form';
 import { AddCreditsDrawerContext } from '@aa/components/nav';
 import { Spinner } from '@aa/components/spinner';
 import {
@@ -231,11 +231,15 @@ export default function Studio(props: DefaultProps) {
   return (
     <AppProvider {...props}>
       <AuthPageContainer title="Studio" {...props}>
-        <Avatars />
+        <div className="w-full flex flex-col justify-between flex-grow">
+          <div className="w-full">
+            <Avatars />
 
-        <ZeroCoinsEmptyState />
+            <ZeroCoinsEmptyState />
+          </div>
 
-        <GenerateImageForm />
+          <GenerateImageForm />
+        </div>
       </AuthPageContainer>
     </AppProvider>
   );
