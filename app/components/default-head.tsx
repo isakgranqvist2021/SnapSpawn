@@ -2,8 +2,16 @@ import Head from 'next/head';
 import Script from 'next/script';
 import React from 'react';
 
-export function DefaultHead(props: { title: string }) {
-  const { title } = props;
+export interface DefaultHeadProps {
+  title: string;
+  description?: string;
+}
+
+const defaultDescription =
+  'Get instant, custom portraits at SnapSpawn. Our AI technology generates unique images based on your pictures. Create a personalized work of art in minutes. Generate images with Dall-E and Stable Diffusion.';
+
+export function DefaultHead(props: DefaultHeadProps) {
+  const { title, description } = props;
 
   const documentTitle = `SnapSpawn | ${title}`;
 
@@ -11,10 +19,7 @@ export function DefaultHead(props: { title: string }) {
     <React.Fragment>
       <Head>
         <title>{documentTitle}</title>
-        <meta
-          name="description"
-          content="Get instant, custom portraits at SnapSpawn. Our AI technology generates unique images based on your pictures. Create a personalized work of art in minutes. Generate images with Dall-E and Stable Diffusion."
-        />
+        <meta name="description" content={description || defaultDescription} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta
           name="keywords"

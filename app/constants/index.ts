@@ -1,4 +1,4 @@
-export const COIN_FACTOR = 20; // How many coins per euro
+export const COIN_FACTOR = 10; // How many coins per euro
 
 export const ONE_MB_IN_BYTES = 1_000_000;
 

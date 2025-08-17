@@ -4,22 +4,22 @@ import { loadServerSideProps } from '@aa/utils';
 import { GetServerSidePropsContext } from 'next';
 import React from 'react';
 
-export default function Home(props: DefaultProps) {
+export default function Page(props: DefaultProps) {
   return (
     <LandingPage
       heroSection={{
-        title: <React.Fragment>SnapSpawn</React.Fragment>,
+        title: <React.Fragment>Best AI Image Generator</React.Fragment>,
         subtitle: (
           <React.Fragment>
-            Generate captivating pictures with ease. Our powerful tool lets you
-            generate pictures with{' '}
-            <span className="text-secondary">custom prompts</span>. Unleash your
-            creativity today! Our model is based on{' '}
-            <span className="text-secondary">DALL-E</span>.
+            Try out <span className="text-secondary">SnapSpawn</span> for
+            generating stunning images effortlessly. Generate images with{' '}
+            <span className="text-secondary">custom prompts</span> to bring your
+            ideas to life.
           </React.Fragment>
         ),
       }}
-      title="Home"
+      title="Best AI Image Generator"
+      description="Get instant, custom portraits at SnapSpawn. Our AI technology generates unique images based on your pictures. Create a personalized work of art in minutes. Generate images with Dall-E and Stable Diffusion."
       {...props}
     />
   );

@@ -41,7 +41,7 @@ function AddCreditsForm() {
 
   const appContext = React.useContext(AppContext);
 
-  const [credits, setCredits] = React.useState(100);
+  const [credits, setCredits] = React.useState(500);
 
   const addCredits = useAddCredits();
 
