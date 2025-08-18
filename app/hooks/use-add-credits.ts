@@ -1,11 +1,12 @@
 import { AppContext } from '@aa/context';
+import { DiscountModel } from '@aa/models/discount';
 import getStripe from '@aa/services/stripe';
 import React from 'react';
 
 export function useAddCredits() {
   const appContext = React.useContext(AppContext);
 
-  return async (credits: number) => {
+  return async (credits: number, discountId?: string) => {
     try {
       appContext.dispatch({ type: 'credits:set-is-loading', isLoading: true });
 
@@ -16,11 +17,9 @@ export function useAddCredits() {
       }
 
       const res = await fetch('/api/checkout_sessions', {
-        body: JSON.stringify({ credits }),
+        body: JSON.stringify({ credits, discountId }),
         method: 'POST',
       }).then((res) => res.json());
-
-      console.log(res.id);
 
       await stripe.redirectToCheckout({
         sessionId: res.id,

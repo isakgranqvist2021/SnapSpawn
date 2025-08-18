@@ -1,6 +1,8 @@
 import { COIN_FACTOR } from '@aa/constants';
 import { AppContext } from '@aa/context';
 import { useAddCredits } from '@aa/hooks/use-add-credits';
+import { useVerifyDiscountCode } from '@aa/hooks/use-verify-discount-code';
+import { DiscountModel } from '@aa/models/discount';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -42,17 +44,25 @@ function AddCreditsForm() {
   const appContext = React.useContext(AppContext);
 
   const [credits, setCredits] = React.useState(500);
+  const [discountCode, setDiscountCode] = React.useState('');
+  const [discount, setDiscount] = React.useState<DiscountModel | null>(null);
 
   const addCredits = useAddCredits();
+  const verifyDiscountCode = useVerifyDiscountCode();
 
   const continueToCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    addCredits(credits);
+    addCredits(credits, discount?.id);
   };
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredits(parseInt(e.target.value));
+  const applyDiscountCode = async () => {
+    const res = await verifyDiscountCode(discountCode);
+
+    if (res) {
+      setDiscountCode('');
+      setDiscount(res);
+    }
   };
 
   const getCheckoutButtonText = () => {
@@ -72,6 +82,12 @@ function AddCreditsForm() {
       return `Maximum ${MAX_CREDITS} credits`;
     }
 
+    if (discount) {
+      return `Continue to checkout €${
+        (credits / COIN_FACTOR) * (1 - discount.percent / 100)
+      }`;
+    }
+
     return `Continue to checkout €${credits / COIN_FACTOR}`;
   };
 
@@ -89,12 +105,57 @@ function AddCreditsForm() {
           <input
             type="number"
             value={credits}
-            onChange={onChange}
+            onChange={(e) => setCredits(e.target.valueAsNumber)}
             className="input input-bordered w-full"
             min={MIN_CREDITS}
             max={MAX_CREDITS}
           />
         </div>
+
+        <div className="form-control">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={discountCode}
+              onChange={(e) => setDiscountCode(e.target.value)}
+              className="input input-bordered w-full"
+              placeholder="Discount code (optional)"
+              disabled={Boolean(discount)}
+            />
+
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={applyDiscountCode}
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+
+        {discount && (
+          <div className="flex justify-between items-center">
+            <p>
+              Discount: {discount.code} ({discount.percent}%)
+            </p>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+              onClick={() => setDiscount(null)}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+        )}
       </DrawerContent>
 
       <DrawerFooter>

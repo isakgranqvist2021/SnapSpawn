@@ -1,5 +1,7 @@
 import { STRIPE_SECRET_KEY } from '@aa/config';
 import { COIN_FACTOR } from '@aa/constants';
+import { discounts } from '@aa/database/discount';
+import { DiscountModel } from '@aa/models/discount';
 import { Logger } from '@aa/services/logger';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import Stripe from 'stripe';
@@ -12,12 +14,20 @@ function getStripeCheckoutParams(options: {
   credits: number;
   email: string;
   url?: string;
+  discount?: DiscountModel;
 }) {
+  let unit_amount = Math.round((options.credits / COIN_FACTOR) * 100);
+  if (options.discount) {
+    unit_amount = Math.round(
+      unit_amount * (1 - options.discount.percent / 100),
+    );
+  }
+
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
     {
       price_data: {
         currency: 'EUR',
-        unit_amount: Math.round((options.credits / COIN_FACTOR) * 100),
+        unit_amount,
         product_data: { name: `${options.credits} Credits` },
       },
       quantity: 1,
@@ -52,10 +62,17 @@ export default withApiAuthRequired(async (req, res) => {
       throw new Error('cannot generate avatar while logged out');
     }
 
+    const discount = req.body.discountId
+      ? discounts.find((discount) => {
+          return discount.id === req.body.discountId;
+        })
+      : undefined;
+
     const stripeCheckoutParams = getStripeCheckoutParams({
       credits: req.body.credits,
       email: session.user.email,
       url: req.headers.origin,
+      discount,
     });
 
     const checkoutSession = await stripe.checkout.sessions.create(
