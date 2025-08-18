@@ -92,25 +92,26 @@ function AvatarCard(props: AvatarModel) {
 
   const renderDownloadLink = (key: string) => {
     return (
-      <a
-        className="link link-secondary"
-        download
-        href={urls[key as keyof typeof urls]}
-        key={key}
-        rel="noreferrer"
-        target="_blank"
-      >
-        {key}
-      </a>
+      <li>
+        <a
+          className="link link-secondary"
+          download
+          href={urls[key as keyof typeof urls]}
+          key={key}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {key}
+        </a>
+      </li>
     );
   };
 
   return (
     <React.Fragment>
       <input type="checkbox" id={id} className="modal-toggle" />
-
-      <label htmlFor={id} className="modal">
-        <div className="modal-box">
+      <label htmlFor={id} className="modal cursor-pointer">
+        <label className="modal-box relative" htmlFor="">
           <p className="content-base-300 text-center mb-2">
             {dayjs(createdAt).format('YYYY-MM-DD HH:mm')}
           </p>
@@ -122,63 +123,90 @@ function AvatarCard(props: AvatarModel) {
             src={urls['1024x1024']}
           />
 
-          <div className="max-w-prose text-center flex flex-col gap-2 p-4">
-            <p className="content-base-200">{prompt}</p>
-          </div>
+          {prompt && (
+            <div className="max-w-prose text-center flex flex-col gap-2 p-4">
+              <p className="content-base-200">{prompt}</p>
+            </div>
+          )}
 
           <div className="flex flex-col gap-5">
-            <div className="flex gap-5 flex-wrap justify-center">
-              {Object.keys(urls)
-                .sort((a, b) => {
-                  const aSize = parseInt(a.split('x')[0]);
-                  const bSize = parseInt(b.split('x')[0]);
+            <div className="flex items-center md:justify-center pt-4 gap-2 md:flex-row flex-col">
+              <div className="dropdown dropdown-top w-full md:w-auto">
+                <label tabIndex={0} className="btn gap-2 w-full md:w-auto">
+                  Download
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+                    />
+                  </svg>
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-full md:w-52 mb-1"
+                >
+                  {Object.keys(urls)
+                    .sort((a, b) => {
+                      const aSize = parseInt(a.split('x')[0]);
+                      const bSize = parseInt(b.split('x')[0]);
 
-                  return bSize - aSize;
-                })
-                .map(renderDownloadLink)}
-            </div>
+                      return bSize - aSize;
+                    })
+                    .map(renderDownloadLink)}
+                </ul>
+              </div>
 
-            <button
-              className="btn btn-primary btn-sm relative"
-              disabled={
-                !appContext.state.credits.data ||
-                appContext.state.avatars.isLoading
-              }
-              onClick={generateVariant}
-            >
-              {appContext.state.avatars.isLoading && (
-                <div className="absolute z-10">
-                  <Spinner />
-                </div>
-              )}
-
-              <span
-                className={
-                  appContext.state.avatars.isLoading ? 'opacity-0' : ''
+              <button
+                className="btn btn-primary relative w-full md:w-auto"
+                disabled={
+                  !appContext.state.credits.data ||
+                  appContext.state.avatars.isLoading
                 }
+                onClick={generateVariant}
               >
-                {!appContext.state.credits.data
-                  ? 'You have no credits'
-                  : 'Generate variant'}
-              </span>
-            </button>
+                {appContext.state.avatars.isLoading && (
+                  <div className="absolute z-10">
+                    <Spinner />
+                  </div>
+                )}
+
+                <span
+                  className={
+                    appContext.state.avatars.isLoading ? 'opacity-0' : ''
+                  }
+                >
+                  {!appContext.state.credits.data
+                    ? 'You have no credits'
+                    : 'Generate variant'}
+                </span>
+              </button>
+            </div>
           </div>
-        </div>
+        </label>
       </label>
 
-      <label
-        htmlFor={id}
-        style={{
-          display: 'block',
-          backgroundImage: `url(${urls['128x128']})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          minWidth: 128,
-          minHeight: 128,
-        }}
-        className="cursor-pointer ease-in-out transition-all duration-200"
-      />
+      <label htmlFor={id}>
+        <div
+          style={{
+            display: 'block',
+            backgroundImage: `url(${urls['128x128']})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            minWidth: 128,
+            minHeight: 128,
+          }}
+          className="cursor-pointer ease-in-out transition-all duration-200"
+        />
+      </label>
     </React.Fragment>
   );
 }
