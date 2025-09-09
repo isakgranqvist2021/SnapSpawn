@@ -8,6 +8,7 @@ import {
 } from '@aa/containers/auth-page-container';
 import { AppContext, AppProvider } from '@aa/context';
 import { completeReferral } from '@aa/database/referral';
+import { useEditAvatar } from '@aa/hooks/use-edit-avatar';
 import { AvatarModel } from '@aa/models/avatar';
 import { loadServerSideProps } from '@aa/utils';
 import { getSession, withPageAuthRequired } from '@auth0/nextjs-auth0';
@@ -39,6 +40,9 @@ function AvatarCard(props: AvatarModel) {
   const { id, urls, createdAt, prompt } = props;
 
   const appContext = React.useContext(AppContext);
+
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editPrompt, setEditPrompt] = React.useState('');
 
   const generateVariant = async () => {
     window.scrollTo(0, 0);
@@ -92,12 +96,11 @@ function AvatarCard(props: AvatarModel) {
 
   const renderDownloadLink = (key: string) => {
     return (
-      <li>
+      <li key={key}>
         <a
           className="link link-secondary"
           download
           href={urls[key as keyof typeof urls]}
-          key={key}
           rel="noreferrer"
           target="_blank"
         >
@@ -107,9 +110,20 @@ function AvatarCard(props: AvatarModel) {
     );
   };
 
+  const editAvatar = useEditAvatar();
+
+  const saveImage = async () => {
+    if (!editPrompt.trim()) {
+      return;
+    }
+
+    editAvatar(id, editPrompt);
+  };
+
   return (
     <React.Fragment>
       <input type="checkbox" id={id} className="modal-toggle" />
+
       <label htmlFor={id} className="modal cursor-pointer">
         <label className="modal-box relative" htmlFor="">
           <p className="content-base-300 text-center mb-2">
@@ -123,10 +137,20 @@ function AvatarCard(props: AvatarModel) {
             src={urls['1024x1024']}
           />
 
-          {prompt && (
+          {prompt && !isEditing && (
             <div className="max-w-prose text-center flex flex-col gap-2 p-4">
               <p className="content-base-200">{prompt}</p>
             </div>
+          )}
+
+          {isEditing && (
+            <textarea
+              className="mt-4 textarea w-full textarea-bordered"
+              placeholder="Put a cow in the right corner"
+              autoFocus
+              value={editPrompt}
+              onChange={(e) => setEditPrompt(e.target.value)}
+            />
           )}
 
           <div className="flex flex-col gap-5">
@@ -163,6 +187,54 @@ function AvatarCard(props: AvatarModel) {
                     .map(renderDownloadLink)}
                 </ul>
               </div>
+
+              {/* {isEditing ? (
+                <button
+                  className="btn btn-accent gap-2 w-full md:w-auto relative"
+                  onClick={saveImage}
+                  disabled={
+                    !appContext.state.credits.data ||
+                    appContext.state.avatars.isLoading
+                  }
+                >
+                  {appContext.state.avatars.isLoading && (
+                    <div className="absolute z-10">
+                      <Spinner />
+                    </div>
+                  )}
+
+                  <span
+                    className={
+                      appContext.state.avatars.isLoading ? 'opacity-0' : ''
+                    }
+                  >
+                    {!appContext.state.credits.data
+                      ? 'You have no credits'
+                      : 'Save'}
+                  </span>
+                </button>
+              ) : (
+                <button
+                  className="btn btn-accent gap-2 w-full md:w-auto"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Edit
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+                    />
+                  </svg>
+                </button>
+              )} */}
 
               <button
                 className="btn btn-primary relative w-full md:w-auto"

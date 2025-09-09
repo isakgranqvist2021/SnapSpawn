@@ -53,3 +53,29 @@ export async function createAvatarVariant(
     return null;
   }
 }
+
+export async function editAvatar(
+  image: OpenAI.ImageEditParams['image'],
+  prompt: string,
+) {
+  try {
+    const options: OpenAI.ImageEditParams = {
+      image,
+      n: 1,
+      size: '1024x1024',
+      prompt,
+    };
+
+    const res = await openai.images.edit(options);
+    if (!res.data) {
+      throw new Error('No data returned');
+    }
+
+    return res.data
+      .map((obj) => obj.url)
+      .filter((url): url is string => typeof url === 'string');
+  } catch (err) {
+    Logger.log('error', err);
+    return null;
+  }
+}
